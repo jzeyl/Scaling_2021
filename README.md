@@ -8,7 +8,7 @@
 # Scaling stats
 > * "Set up data_scl.R" - sets up data for analysis and runs pgls regressions
                       
-# Audiograms linked to analyses
+# Audiograms linked to anatomy
 > * "Audiograms linked to anatomy.R"   
 Links to best sensitivity, high frequency limit, low frequency limit, and best frequency
 >> * "pgls_audiogram_bs.R" (best sensitivity)              
