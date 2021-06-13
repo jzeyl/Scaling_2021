@@ -1,0 +1,22 @@
+audiograms.csv,Description,,scaling_ear_anatomy,Description,,Hearing limits.csv,Description
+Hz,Frequency of audiogram,,Binomial,Species name,,LowHzlimit,Low frequency hearing limit at the cutoff value (Hz)
+Threshold,Threshold of audiogram,,superorder,Supergroup from Prum,,HighHzlimit,High frequency hearing limit at the cutoff value (Hz)
+Species,Species name,,Head.mass..g.,Head mass,,Species,Species
+group,Species 'supergroup',,Umbo_distancetoTMplane,Conical height of eardrum,,supraorder,Superorder
+havescan,Whether or not have scan data for the species or its congener,,totalEClength,Extrastapedius length,,Hz,Frequency
+,,,Behind.TM,Cranial air behind eardrum,,besthz,Best frequncy
+,,,totalECDlength,Endosseous cochlear duct length,,bestsensitivity,Auditory threshold at best frequency
+,,,meanTMangle,Tympanic membrane angle,,binomial,Species
+,,,TMtotalarea,Tympanic membrane area,,TM,Tympanic membrane area
+,,,FPtotalarea,Footplate area,,RW,Round window area
+,,,CAtotalarea,Cochlear aqueduct area,,FP,Footplate area
+,,,RWtotalarea,Round window area,,air,Cranial air behind eardrum
+,,,dis_coltip_TMcentroid,Distance from columella tip to center of eardrum,,HM,Head mass
+,,,Columella.length.mm,Columella length,,ES,Extrastapedius length
+,,,Columella.volume.mm3,Columella volume,,AR,Area ratio
+,,,area_ratio,Tympanic membrane/footplate area ratio,,TMangle,Tympanic membrane angle
+,,,,,,coloffset,Distance from columella tip to center of eardrum
+,,,,,,ECD,Endosseous cochlear duct length
+,,,,,,collength,Columella length
+,,,,,,colvol,Columella volume
+,,,,,,range,Hearing range (HighHzlimit-LowHzlimit)

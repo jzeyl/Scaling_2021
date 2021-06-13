@@ -1,0 +1,201 @@
+,Hz,Threshold,Species,group,havescan
+1,2,78.63636,Chicken,Galloanserae,Have scan data for species
+2,4,70.928856,Chicken,Galloanserae,Have scan data for species
+3,8,61.93676,Chicken,Galloanserae,Have scan data for species
+4,16,55,Chicken,Galloanserae,Have scan data for species
+5,32,46.264824,Chicken,Galloanserae,Have scan data for species
+6,64,40.355732,Chicken,Galloanserae,Have scan data for species
+7,125,29.3083,Chicken,Galloanserae,Have scan data for species
+8,250,19.03162,Chicken,Galloanserae,Have scan data for species
+9,500,12.608696,Chicken,Galloanserae,Have scan data for species
+10,1000,7.4703555,Chicken,Galloanserae,Have scan data for species
+11,2000,1.5612649,Chicken,Galloanserae,Have scan data for species
+12,3000,5.41502,Chicken,Galloanserae,Have scan data for species
+13,4000,13.379447,Chicken,Galloanserae,Have scan data for species
+14,5600,23.39921,Chicken,Galloanserae,Have scan data for species
+15,8000,75.55336,Chicken,Galloanserae,Have scan data for species
+16,2,100.21739,Rock dove,Columbifores (Columbaves),Have scan data for species
+17,4,88.91304,Rock dove,Columbifores (Columbaves),Have scan data for species
+18,8,77.094864,Rock dove,Columbifores (Columbaves),Have scan data for species
+19,16,67.588936,Rock dove,Columbifores (Columbaves),Have scan data for species
+20,32,62.707508,Rock dove,Columbifores (Columbaves),Have scan data for species
+21,64,53.4585,Rock dove,Columbifores (Columbaves),Have scan data for species
+22,125,41.640316,Rock dove,Columbifores (Columbaves),Have scan data for species
+23,250,28.280632,Rock dove,Columbifores (Columbaves),Have scan data for species
+24,500,22.371542,Rock dove,Columbifores (Columbaves),Have scan data for species
+25,1000,13.379447,Rock dove,Columbifores (Columbaves),Have scan data for species
+26,2000,13.893281,Rock dove,Columbifores (Columbaves),Have scan data for species
+27,3000,14.664032,Rock dove,Columbifores (Columbaves),Have scan data for species
+28,4000,15.434783,Rock dove,Columbifores (Columbaves),Have scan data for species
+29,5600,47.549408,Rock dove,Columbifores (Columbaves),Have scan data for species
+30,8000,82.2332,Rock dove,Columbifores (Columbaves),Have scan data for species
+31,8,96.7,Budgerigar,Australaves,Have scan data for species
+32,16,90.4,Budgerigar,Australaves,Have scan data for species
+33,32,77.1,Budgerigar,Australaves,Have scan data for species
+34,63,66.8,Budgerigar,Australaves,Have scan data for species
+35,125,49.6,Budgerigar,Australaves,Have scan data for species
+36,250,30.3,Budgerigar,Australaves,Have scan data for species
+37,500,20.8,Budgerigar,Australaves,Have scan data for species
+38,1000,8.6,Budgerigar,Australaves,Have scan data for species
+39,2000,1.9,Budgerigar,Australaves,Have scan data for species
+40,3000,1.1,Budgerigar,Australaves,Have scan data for species
+41,4000,4.6,Budgerigar,Australaves,Have scan data for species
+42,5600,16.4,Budgerigar,Australaves,Have scan data for species
+43,8000,68.2,Budgerigar,Australaves,Have scan data for species
+44,10000,82.8,Budgerigar,Australaves,Have scan data for species
+45,16,90,Mallard duck,Galloanserae,Have scan data for species
+46,32,80,Mallard duck,Galloanserae,Have scan data for species
+47,64,60.7,Mallard duck,Galloanserae,Have scan data for species
+48,125,45.5,Mallard duck,Galloanserae,Have scan data for species
+49,250,35.1,Mallard duck,Galloanserae,Have scan data for species
+50,500,27.2,Mallard duck,Galloanserae,Have scan data for species
+51,1000,21.2,Mallard duck,Galloanserae,Have scan data for species
+52,2000,12.6,Mallard duck,Galloanserae,Have scan data for species
+53,4000,16.4,Mallard duck,Galloanserae,Have scan data for species
+54,5600,28.6,Mallard duck,Galloanserae,Have scan data for species
+55,8000,64.9,Mallard duck,Galloanserae,Have scan data for species
+56,9000,78,Mallard duck,Galloanserae,Have scan data for species
+57,249.462,31.9039,Cockatiel,Australaves,Have scan data for species
+58,497.312,22.8473,Cockatiel,Australaves,Have scan data for species
+59,1517.13,12.8645,Cockatiel,Australaves,Have scan data for species
+60,1999.28,7.7187,Cockatiel,Australaves,Have scan data for species
+61,3007.13,6.17496,Cockatiel,Australaves,Have scan data for species
+62,6029.41,47.1355,Cockatiel,Australaves,Have scan data for species
+63,7945.57,76.0549,Cockatiel,Australaves,Have scan data for species
+64,248.032,37.976,Budgerigar,Australaves,Have scan data for species
+65,690.162,11.1149,Budgerigar,Australaves,Have scan data for species
+66,1465.69,8.95369,Budgerigar,Australaves,Have scan data for species
+67,2989.89,2.88165,Budgerigar,Australaves,Have scan data for species
+68,4031.75,11.012,Budgerigar,Australaves,Have scan data for species
+69,5960.48,27.9931,Budgerigar,Australaves,Have scan data for species
+70,7945.57,76.4666,Budgerigar,Australaves,Have scan data for species
+71,249.462,54.9571,Orange fronted conure,Australaves,no scan data
+72,494.461,33.8593,Orange fronted conure,Australaves,no scan data
+73,1942.63,22.024,Orange fronted conure,Australaves,no scan data
+74,2855.49,20.1715,Orange fronted conure,Australaves,no scan data
+75,3985.65,24.9057,Orange fronted conure,Australaves,no scan data
+76,5659.9,46.1063,Orange fronted conure,Australaves,no scan data
+77,7900.02,76.5695,Orange fronted conure,Australaves,no scan data
+78,200.504,63.0875,Kea parrot,Australaves,no scan data
+79,397.421,58.3533,Kea parrot,Australaves,no scan data
+80,497.312,50.9434,Kea parrot,Australaves,no scan data
+81,597.763,47.5472,Kea parrot,Australaves,no scan data
+82,694.142,38.6964,Kea parrot,Australaves,no scan data
+83,893.945,33.3448,Kea parrot,Australaves,no scan data
+84,997.13,21.8182,Kea parrot,Australaves,no scan data
+85,1965.09,12.9674,Kea parrot,Australaves,no scan data
+86,2972.75,9.57118,Kea parrot,Australaves,no scan data
+87,3985.65,24.8027,Kea parrot,Australaves,no scan data
+88,4987.44,46.8268,Kea parrot,Australaves,no scan data
+89,5994.84,55.8834,Kea parrot,Australaves,no scan data
+90,7001.54,57.7358,Kea parrot,Australaves,no scan data
+91,7854.73,62.9846,Kea parrot,Australaves,no scan data
+92,249.601,22.083,Hooded crow,Australaves,Have scan data for species
+93,349.436,13.6364,Hooded crow,Australaves,Have scan data for species
+94,493.15,7.92885,Hooded crow,Australaves,Have scan data for species
+95,690.26,2.96774,Hooded crow,Australaves,Have scan data for species
+96,998.216,0.249074,Hooded crow,Australaves,Have scan data for species
+97,1396.67,1.76102,Hooded crow,Australaves,Have scan data for species
+98,2019.28,3.27473,Hooded crow,Australaves,Have scan data for species
+99,2734.69,1.79734,Hooded crow,Australaves,Have scan data for species
+100,3985.37,7.29492,Hooded crow,Australaves,Have scan data for species
+101,5529.56,12.2919,Hooded crow,Australaves,Have scan data for species
+102,7840.79,65.5892,Hooded crow,Australaves,Have scan data for species
+103,487.223,53.0978,Great cormorant,Suliformes,Have scan data for species
+104,971.372,35.2134,Great cormorant,Suliformes,Have scan data for species
+105,1996.63,18.2092,Great cormorant,Suliformes,Have scan data for species
+106,3992.12,36.6728,Great cormorant,Suliformes,Have scan data for species
+107,5997.21,57.3183,Great cormorant,Suliformes,Have scan data for species
+108,202.133,24.5676,Barn owl,Strigiformes,Have scan data for species
+109,410.267,9.31108,Barn owl,Strigiformes,Have scan data for species
+110,1016.68,-9.29601,Barn owl,Strigiformes,Have scan data for species
+111,2001.39,-17.4952,Barn owl,Strigiformes,Have scan data for species
+112,2999.67,-12.5289,Barn owl,Strigiformes,Have scan data for species
+113,4034.84,-18.9368,Barn owl,Strigiformes,Have scan data for species
+114,5045.18,-16.1438,Barn owl,Strigiformes,Have scan data for species
+115,5976.06,-18.2704,Barn owl,Strigiformes,Have scan data for species
+116,7034.38,-15.7925,Barn owl,Strigiformes,Have scan data for species
+117,8032.38,-10.2485,Barn owl,Strigiformes,Have scan data for species
+118,10103.8,-5.91964,Barn owl,Strigiformes,Have scan data for species
+119,10989.9,4.53018,Barn owl,Strigiformes,Have scan data for species
+120,12086.3,35.5517,Barn owl,Strigiformes,Have scan data for species
+121,239.654,55.482,Canary,Canary,Have scan data for species
+122,472.73,46.6526,Canary,Canary,Have scan data for species
+123,981.777,33.7966,Canary,Canary,Have scan data for species
+124,2001.38,16.9021,Canary,Canary,Have scan data for species
+125,2858.73,14.3443,Canary,Canary,Have scan data for species
+126,3959.27,14.0716,Canary,Canary,Have scan data for species
+127,5584.13,19.0369,Canary,Canary,Have scan data for species
+128,7708.66,42.2118,Canary,Canary,Have scan data for species
+129,245.042,54.7125,Zebra finch,Australaves,Have scan data for species
+130,491.1,52.4385,Zebra finch,Australaves,Have scan data for species
+131,989.597,33.1061,Zebra finch,Australaves,Have scan data for species
+132,1399.52,25.6168,Zebra finch,Australaves,Have scan data for species
+133,1972.88,23.5473,Zebra finch,Australaves,Have scan data for species
+134,2792.86,22.1882,Zebra finch,Australaves,Have scan data for species
+135,3953.76,21.0068,Zebra finch,Australaves,Have scan data for species
+136,5651.37,28.7979,Zebra finch,Australaves,Have scan data for species
+137,7768.85,73.8178,Zebra finch,Australaves,Have scan data for species
+138,253.456,36.3815,Eurasian sparrowhawk,Accipitriformes,Have scan data for species
+139,511.039,17.4138,Eurasian sparrowhawk,Accipitriformes,Have scan data for species
+140,1002.31,2.08734,Eurasian sparrowhawk,Accipitriformes,Have scan data for species
+141,2010.38,-4.37142,Eurasian sparrowhawk,Accipitriformes,Have scan data for species
+142,4069.7,4.38562,Eurasian sparrowhawk,Accipitriformes,Have scan data for species
+143,6083.82,9.88309,Eurasian sparrowhawk,Accipitriformes,Have scan data for species
+144,8101.71,43.5751,Eurasian sparrowhawk,Accipitriformes,Have scan data for species
+145,10176.5,62.5194,Eurasian sparrowhawk,Accipitriformes,Have scan data for species
+146,308.697,36.7499,American kestrel,Australaves,Have scan data for species
+147,508.048,25.5353,American kestrel,Australaves,Have scan data for species
+148,1010.05,6.56794,American kestrel,Australaves,Have scan data for species
+149,1999.1,5.43046,American kestrel,Australaves,Have scan data for species
+150,4048,16.1478,American kestrel,Australaves,Have scan data for species
+151,7193.21,48.7124,American kestrel,Australaves,Have scan data for species
+152,8253.76,74.9402,American kestrel,Australaves,Have scan data for species
+153,4.01281,94.305,Indian peafowl,Galloanserae,Have scan data for species
+154,8.0448,77.5987,Indian peafowl,Galloanserae,Have scan data for species
+155,15.8963,65.1621,Indian peafowl,Galloanserae,Have scan data for species
+156,31.1124,59.0823,Indian peafowl,Galloanserae,Have scan data for species
+157,60.3017,52.0539,Indian peafowl,Galloanserae,Have scan data for species
+158,126.33,41.7987,Indian peafowl,Galloanserae,Have scan data for species
+159,248.442,33.3469,Indian peafowl,Galloanserae,Have scan data for species
+160,498.215,26.1283,Indian peafowl,Galloanserae,Have scan data for species
+161,753.379,19.7669,Indian peafowl,Galloanserae,Have scan data for species
+162,994.093,13.7865,Indian peafowl,Galloanserae,Have scan data for species
+163,1503.59,15.5844,Indian peafowl,Galloanserae,Have scan data for species
+164,2033.49,19.4709,Indian peafowl,Galloanserae,Have scan data for species
+165,2845.53,24.2109,Indian peafowl,Galloanserae,Have scan data for species
+166,4079.91,28.8557,Indian peafowl,Galloanserae,Have scan data for species
+167,5737.16,34.5444,Indian peafowl,Galloanserae,Have scan data for species
+168,7997.46,73.6298,Indian peafowl,Galloanserae,Have scan data for species
+169,16,82.7,Japanese quail,Galloanserae,no scan data
+170,32,73.1,Japanese quail,Galloanserae,no scan data
+171,64,58.5,Japanese quail,Galloanserae,no scan data
+172,125,49.8,Japanese quail,Galloanserae,no scan data
+173,250,39.6,Japanese quail,Galloanserae,no scan data
+174,500,30.1,Japanese quail,Galloanserae,no scan data
+175,1000,16.1,Japanese quail,Galloanserae,no scan data
+176,2000,4.4,Japanese quail,Galloanserae,no scan data
+177,2800,4.9,Japanese quail,Galloanserae,no scan data
+178,4000,6.6,Japanese quail,Galloanserae,no scan data
+179,5600,18.7,Japanese quail,Galloanserae,no scan data
+180,8000,84.1,Japanese quail,Galloanserae,no scan data
+181,500,36.0942,Lesser scaup,Galloanserae,no scan data
+182,1000,25.1234,Lesser scaup,Galloanserae,no scan data
+183,2000,17.454,Lesser scaup,Galloanserae,no scan data
+184,2860,14.1346,Lesser scaup,Galloanserae,no scan data
+185,4000,20.8222,Lesser scaup,Galloanserae,no scan data
+186,5700,52.7835,Lesser scaup,Galloanserae,no scan data
+187,8000,67.9305,Lesser scaup,Galloanserae,no scan data
+188,250,43,Blue Jay,Australaves,no scan data
+189,500,38,Blue Jay,Australaves,no scan data
+190,1000,19.5,Blue Jay,Australaves,no scan data
+191,2000,11.5,Blue Jay,Australaves,no scan data
+192,4000,23.5,Blue Jay,Australaves,no scan data
+193,8000,61,Blue Jay,Australaves,no scan data
+194,10000,82.5,Blue Jay,Australaves,no scan data
+195,509.491,-13.7444,Eurasian eagle owl,Strigiformes,Have scan data for species
+196,1007.72,-13.96,Eurasian eagle owl,Strigiformes,Have scan data for species
+197,1981.77,-19.9968,Eurasian eagle owl,Strigiformes,Have scan data for species
+198,4015.22,-18.6775,Eurasian eagle owl,Strigiformes,Have scan data for species
+199,6048.62,-5.45037,Eurasian eagle owl,Strigiformes,Have scan data for species
+200,8020.99,22.4642,Eurasian eagle owl,Strigiformes,Have scan data for species
