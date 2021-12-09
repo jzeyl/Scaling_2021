@@ -1,9 +1,8 @@
 
 # Data files
-> * "audiograms.csv"    - contains behavioural audiograms from literature                  
-> * "databmadded.csv"  - contains anatomical data 
-> * "Column name descriptions.csv"  describes the column names in the data file                   
-> * "JZ tree Prum merged hackett.tree" - phylogeny
+There area 4 data files, which contain data on anatomical data (["databmadded.csv"](https://github.com/jzeyl/Scaling_2021/blob/main/databmadded.csv)), a file describing the files in the data file (["Column name descriptions.csv"](https://github.com/jzeyl/Scaling_2021/blob/main/Column%20name%20descriptions.csv)),
+audiogramsbehavioural audiograms from literature (["audiograms.csv"](https://github.com/jzeyl/Scaling_2021/blob/main/audiograms.csv)), and the phylogeny file (["JZ tree Prum merged hackett.tree"](https://github.com/jzeyl/Scaling_2021/blob/main/JZ%20tree%20Prum%20merged%20hackett.tree))
+
 
 # Scaling stats
 > * "Set up data_scl.R" - sets up data for analysis and runs pgls regressions
