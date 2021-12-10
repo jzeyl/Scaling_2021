@@ -37,7 +37,7 @@ for(i in seq_along(splt)){
   }
   
   #calculate high Hz limit
-  if(nrow(df_audiogram[df_audiogram$y>35 & df_audiogram$x >besthz,])==0){# #if the audiogram does not go above cutoff value, get max frequency tested
+  if(nrow(df_audiogram[df_audiogram$y>cutoff & df_audiogram$x >besthz,])==0){# #if the audiogram does not go above cutoff value, get max frequency tested
     highlimit<-max(df_audiogram$x)
     
   }

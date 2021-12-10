@@ -6,8 +6,9 @@ library(ggpubr)
 library(ggplot2)
 library(tidyr)
 
+################Set up data############
 #set working directory and load data
-setwd("E:/00_Manuscripts/0_Scaling comparative ms/scaling/scaling")
+setwd("C:/Users/jeffz/Desktop/New folder/Scaling_2021")
 
 #load main dataframe
 df<-read.csv("databmadded.csv", stringsAsFactors = F, header = T) #, stringsAsFactors = FALSE
@@ -19,28 +20,27 @@ pgls_models<-function(i){
                 bounds = list(lambda=c(0.0001,1)))#####
 }
 
-#note some missing headmass values to be imputed
+#Some missing headmass values to be imputed using PGLS of skull width and head mass
 df$Head.mass..g.
 
-#load phylogeny and correct names that were different between birdtree.org and the up-to-date species names
+#Load phylogeny and correct names that were different between birdtree.org and the up-to-date species names
 source("load phylogeny and make CDO.R")
 
-#add computed head mass from head mass~skullwidth pgls
-source("SW_HM_.R")#add phylogeney here
-df$Head.mass..g.
+#Ddd computed head mass from head mass~skullwidth pgls
+source("SW_HM_.R")#add phylogeny here
+df$Head.mass..g.#with imputed values
 
 #Since PGLS uses one point per species,I make the dataframe to have average values for species with more than one specimen:
-
 #First I make a dataframe with only one species per line
 distinctdf<-distinct(df, Binomial, .keep_all = TRUE)
 distinctdforder<-arrange(distinctdf,Binomial)#sort by species name
 
-#Then get averages for columns with continuous data
+#Next get averages by species for columns with continuous data
 avgdf<-df %>% group_by(Binomial) %>% summarise_at(vars(Skull.width..mm.:area_ratio),
                                                            mean, na.rm = TRUE)                         
 avgdf<-as.data.frame(avgdf)
 
-#And add back columns from distinct df which don't require averaging
+#Now we add back columns from the distinctdf dataframe which don't require averaging
 avgdf$Species<-distinctdforder$Species
 avgdf$Low.Hz<-distinctdforder$Low.Hz
 avgdf$Order<-distinctdforder$Order
@@ -77,10 +77,10 @@ avgdf$superorder[avgdf$Order=="Struthioniformes"|
                    avgdf$Order=="Cassuariiformes"]<-"Paleognathae"
 avgdf$waterbirds<-ifelse(avgdf$superorder=="Aequorlitornithes","Aequorlitornithes","not Aequelornithes")
 
-avgdf$birdsofprey<-NA
-avgdf$birdsofprey[avgdf$Order=="Accipitriformes"|
-                    avgdf$superorder=="Falconiformes"|
-                    avgdf$superorder=="Strigiformes"]<-"Birds of prey"
+#avgdf$birdsofprey<-NA
+#avgdf$birdsofprey[avgdf$Order=="Accipitriformes"|
+#                    avgdf$superorder=="Falconiformes"|
+#                    avgdf$superorder=="Strigiformes"]<-"Birds of prey"
 
 
 #made data frame object
@@ -92,7 +92,7 @@ birdCDO<-comparative.data(phy = birdtreels,data = avgdf,#[avgdf$Category!="Terre
 #check any tips dropped between linking phylogeny and dataframe
 birdCDO$dropped
 
-#create list of pgls odels to run (only models with head mass are used)
+####list of pgls models to run (only models with head mass are used)####
 
 pgls_todo_nogeomet <- c(
                         
@@ -139,7 +139,7 @@ pgls_todo_nogeomet <- c(
 #select models with head mass
 pgls_todo_hm<-pgls_todo_nogeomet[seq(2,length(pgls_todo_nogeomet),2)]
 
-#geometric coefficients
+####list of expected geometric coefficients for___###
 geomcoefs<-c(0,#impedance-matching
              0.33,
              0.33,
@@ -158,7 +158,7 @@ geomcoefs<-c(0,#impedance-matching
              1,
              
              1)
-
+#######functional category list#######
 categorylist<-c(rep("Impedance matching",4),
                 "Auditory endorgan length",
                 rep("Input/output areas",3),
@@ -166,10 +166,11 @@ categorylist<-c(rep("Impedance matching",4),
                 rep("Columella size",2),
                 "Body size")
 
-#####scaling vs head mass########
+############RUN PGLS############
+####scaling vs head mass########
 source("pgls_HM.R")#creates dataframe with results 'hm'
 
-#visualize the table better using the flextable package
+####visualize the table better using the flextable package####
 flexall<-flextable(hm) %>% 
   add_header_lines(  values = "Table X. Models for selection") %>%
   #bold(i = ~ P.val < 0.05) %>% # select columns add: j = ~ Coefficients + P.val
@@ -259,22 +260,22 @@ body_end_section_landscape(toprint)
 
 #go to 'Audiograms linked to anatomy.R' file to get model lists for audiogram pgls
 
-
-########################non-waterbirds only################################
-birdCDO<-comparative.data(phy = birdtreels,data = avgdf[avgdf$superorder!="Aequorlitornithes",],
-                          names.col = Binomial, 
-                          vcv = TRUE, na.omit = F, 
-                          warn.dropped = TRUE)
-
-#check any tips dropped between linking phylogeny and dataframe
-birdCDO$dropped
-
-#WATERBIRDS only
-birdCDO<-comparative.data(phy = birdtreels,data = avgdf[avgdf$superorder=="Aequorlitornithes",],
-                          names.col = Binomial, 
-                          vcv = TRUE, na.omit = F, 
-                          warn.dropped = TRUE)
-
-#check any tips dropped between linking phylogeny and dataframe
-birdCDO$dropped
+#
+#########################non-waterbirds only################################
+#birdCDO<-comparative.data(phy = birdtreels,data = avgdf[avgdf$superorder!="Aequorlitornithes",],
+#                          names.col = Binomial, 
+#                          vcv = TRUE, na.omit = F, 
+#                          warn.dropped = TRUE)
+#
+##check any tips dropped between linking phylogeny and dataframe
+#birdCDO$dropped
+#
+##WATERBIRDS only
+#birdCDO<-comparative.data(phy = birdtreels,data = avgdf[avgdf$superorder=="Aequorlitornithes",],
+#                          names.col = Binomial, 
+#                          vcv = TRUE, na.omit = F, 
+#                          warn.dropped = TRUE)
+#
+##check any tips dropped between linking phylogeny and dataframe
+#birdCDO$dropped
 
