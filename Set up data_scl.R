@@ -8,7 +8,7 @@ library(tidyr)
 
 ################Set up data############
 #set working directory and load data
-setwd("C:/Users/jeffz/Desktop/New folder/Scaling_2021")
+setwd("C:/Users/jeffz/Desktop/scling/Scaling_2021")
 
 #load main dataframe
 df<-read.csv("databmadded.csv", stringsAsFactors = F, header = T) #, stringsAsFactors = FALSE
@@ -77,11 +77,6 @@ avgdf$superorder[avgdf$Order=="Struthioniformes"|
                    avgdf$Order=="Cassuariiformes"]<-"Paleognathae"
 avgdf$waterbirds<-ifelse(avgdf$superorder=="Aequorlitornithes","Aequorlitornithes","not Aequelornithes")
 
-#avgdf$birdsofprey<-NA
-#avgdf$birdsofprey[avgdf$Order=="Accipitriformes"|
-#                    avgdf$superorder=="Falconiformes"|
-#                    avgdf$superorder=="Strigiformes"]<-"Birds of prey"
-
 
 #made data frame object
 birdCDO<-comparative.data(phy = birdtreels,data = avgdf,#[avgdf$Category!="Terrestrial",]
@@ -93,9 +88,7 @@ birdCDO<-comparative.data(phy = birdtreels,data = avgdf,#[avgdf$Category!="Terre
 birdCDO$dropped
 
 ####list of pgls models to run (only models with head mass are used)####
-
 pgls_todo_nogeomet <- c(
-                        
                         "log(area_ratio)~log(Skull.width..mm.)",
                         "log(area_ratio)~log(Head.mass..g.)",
                         
@@ -184,7 +177,7 @@ body_end_section_landscape(toprint)
 
 #write result/table to files
 #write.csv(hm,"E:/Analysis_plots/scaling_hm Feb 17.csv")
-#print(toprint,target = "E:/Analysis_plots/pgls_hm_all apr 13.docx")
+print(toprint,target = "pgls_hm_all Dec 18 2021.docx")
 #print(toprint,target = "E:/Analysis_plots/pgls_hm_scaling waterbirds mar 3.docx")
 
 
@@ -237,7 +230,7 @@ toprint<-read_docx() #create word doc object
 body_add_flextable(toprint,flexall)#add pgls output table
 body_end_section_landscape(toprint)
 #write.csv(intra,"E:/Analysis_plots/scalingintra feb 17.csv")
-#print(toprint,target = "E:/Analysis_plots/pgls_intra_scaling all_apr 14.docx")
+print(toprint,target = "pgls_intra_scaling all_Dec 18 2021.docx")
 #print(toprint,target = "E:/Analysis_plots/pgls_intra_scaling watermar17.docx")
 
 #########scaling with body mass##########
@@ -255,7 +248,7 @@ toprint<-read_docx() #create word doc object
 body_add_flextable(toprint,flexall)#add pgls output table
 body_end_section_landscape(toprint)
 #write.csv(intra,"E:/Analysis_plots/scalingintra feb 17.csv")
-#print(toprint,target = "E:/Analysis_plots/pgls_bm_scaling all_apr 14.docx")
+print(toprint,target = "pgls_bm_scaling all_apr 14.docx")
 
 
 #go to 'Audiograms linked to anatomy.R' file to get model lists for audiogram pgls

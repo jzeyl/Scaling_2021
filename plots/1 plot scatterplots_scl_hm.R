@@ -135,7 +135,7 @@ runplot_HM_only<-function(e){
 }
 runplot_HM_only(3)
 
-
+#export multipanel plot
 runplot_HM_only(1)+
 runplot_HM_only(2)+
 runplot_HM_only(3)+
