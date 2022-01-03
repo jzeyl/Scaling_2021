@@ -1,13 +1,11 @@
 library(patchwork)
 library(dplyr)
 
-modellist_intra 
+#modellist_intra
 modellist_bs
 modellist_lf
 modellist_bh
 modellist_hf
-
-strsplit(modellist_bh,"~")
 
 splt_modellist_bs<-strsplit(modellist_bs,"~")
 splt_modellist_lf<-strsplit(modellist_lf,"~")
@@ -35,19 +33,20 @@ vecty_modellist_hf
 
 #all x variables
 vectx_modellist_lf<-numeric()
-for (i in seq_along(modellist_lf)){
-  vectx_modellist_lf[i]<-splt_modellist_lf[[i]][2]
+for (i in seq_along(modellist_bs)){
+  vectx_modellist_lf[i]<-splt_modellist_bs[[i]][2]
 }
 vectx_modellist_lf
 
-#log transform anatomy data for the slope line
-ok<-limits%>% mutate_at(vectxsimple_lf,log)
-okselect<-ok[,vectxsimple_lf]
 # remove variable from within log
 vectxsimple_lf<-numeric()
 for(i in seq_along(vectx_modellist_lf)){
   vectxsimple_lf[i]<-gsub("[\\(\\)]", "", regmatches(vectx_modellist_lf, gregexpr("\\(.*?\\)", vectx_modellist_lf))[[i]])
 }
+
+#log transform anatomy data for the slope line
+ok<-limits%>% mutate_at(vectxsimple_lf,log)
+okselect<-ok[,vectxsimple_lf]
 
 
 ##########best Hz##########
@@ -77,8 +76,8 @@ runplotpgls_aud_bh<-function(e){
     hjust = c(-0.1,-0),
     vjust = c(-1,-0)
   )
-  
-  p<-ggplot(limits, 
+
+  p<-ggplot(limits,
             aes_string(x = vectx_modellist_lf[e], y = "log(besthz)"))+
     theme_classic()+
     theme(legend.position = "none",
@@ -103,6 +102,7 @@ runplotpgls_aud_bh<-function(e){
 
 runplotpgls_aud_bh(1)
 
+#PLOT ALL BEST FREQUENCY
 runplotpgls_aud_bh(1)+
   runplotpgls_aud_bh(2)+
   runplotpgls_aud_bh(3)+
@@ -116,6 +116,12 @@ runplotpgls_aud_bh(1)+
   runplotpgls_aud_bh(11)+
   runplotpgls_aud_bh(12)+
   runplotpgls_aud_bh(13)+plot_annotation(tag_levels = "A")
+
+
+#signif bh
+runplotpgls_aud_bh(8)+
+runplotpgls_aud_bh(10)+
+runplotpgls_aud_bh(11)+plot_annotation(tag_levels = "A")
 
 
 ##############best sensitivity##############3
@@ -137,8 +143,8 @@ runplotpgls_aud_bs<-function(e){
     hjust = c(-0.1,-0),
     vjust = c(-1,-0)
                      )
-  
-  p<-ggplot(limits, 
+
+  p<-ggplot(limits,
             aes_string(x = vectx_modellist_lf[e], y = "bestsensitivity"))+
     theme_classic()+
     theme(legend.position = "none",
@@ -158,7 +164,7 @@ runplotpgls_aud_bs<-function(e){
                              hjust = hjust, vjust = vjust))+
     ggtitle(categorylist_aud[e])
   #geom_line(aes_string(x = vectxsimple[e],
-  #                     y = paste0("slpline_",as.character(e))), 
+  #                     y = paste0("slpline_",as.character(e))),
   #          col = "black", size = 2)
   p
 }
@@ -179,7 +185,17 @@ runplotpgls_aud_bs(1)+
   runplotpgls_aud_bs(12)+
   runplotpgls_aud_bs(13)+plot_annotation(tag_levels = "A")
 
-
+###signif bs
+runplotpgls_aud_bs(1)+
+runplotpgls_aud_bs(2)+
+runplotpgls_aud_bs(3)+
+runplotpgls_aud_bs(4)+
+runplotpgls_aud_bs(6)+
+runplotpgls_aud_bs(7)+
+runplotpgls_aud_bs(8)+
+runplotpgls_aud_bs(9)+
+runplotpgls_aud_bs(12)+
+runplotpgls_aud_bs(13)+plot_annotation(tag_levels = "A")
 
 ##############low frequency limit##############
 for(i in seq_along(vectxsimple_lf)){
@@ -200,7 +216,7 @@ runplotpgls_aud_lf<-function(e){
     hjust = c(-0.1,-0),
     vjust = c(-1,-0)
   )
-  p<-ggplot(limits, 
+  p<-ggplot(limits,
             aes_string(x = vectx_modellist_lf[e], y = "log(LowHzlimit)"))+
     theme_classic()+
     theme(legend.position = "none",
@@ -220,7 +236,7 @@ runplotpgls_aud_lf<-function(e){
                              hjust = hjust, vjust = vjust))+
     ggtitle(categorylist_aud[e])
   #geom_line(aes_string(x = vectxsimple[e],
-  #                     y = paste0("slpline_",as.character(e))), 
+  #                     y = paste0("slpline_",as.character(e))),
   #          col = "black", size = 2)
   p
 }
@@ -240,8 +256,13 @@ runplotpgls_aud_lf(9)+
 runplotpgls_aud_lf(10)+
 runplotpgls_aud_lf(11)+
 runplotpgls_aud_lf(12)+
-runplotpgls_aud_lf(13)+plot_annotation(tag_levels = "A")
+runplotpgls_aud_lf(13)+
 
+#signif
+runplotpgls_aud_lf(1)+
+runplotpgls_aud_lf(2)+
+runplotpgls_aud_lf(4)+
+plot_annotation(tag_levels = "A")
 
 
 ##############high frequency limit##############
@@ -263,7 +284,7 @@ runplotpgls_aud_hf<-function(e){
     hjust = c(-0.1,-0),
     vjust = c(-1,-0)
   )
-  p<-ggplot(limits, 
+  p<-ggplot(limits,
             aes_string(x = vectx_modellist_lf[e], y = "log(HighHzlimit)"))+
     theme_classic()+
     theme(legend.position = "none",
@@ -301,4 +322,10 @@ runplotpgls_aud_hf(1)+
   runplotpgls_aud_hf(12)+
   runplotpgls_aud_hf(13)+plot_annotation(tag_levels = "A")
 
+
+#signif
+runplotpgls_aud_hf(3)+
+runplotpgls_aud_hf(4)+
+runplotpgls_aud_hf(5)+
+runplotpgls_aud_hf(7)+plot_annotation(tag_levels = "A")
 

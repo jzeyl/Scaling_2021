@@ -11,7 +11,7 @@ fig1<-read.csv(paste0(getwd(),"/audiograms.csv"), stringsAsFactors = FALSE)
 ####################get the high and low Hz limits from a cutoff level##########
 splt<-split(fig1,fig1$Species)
 #set cutoff for the high and low Hz limits (dB)
-cutoff<-35 
+cutoff<-35
 
 #create new matrix to populate with data and convert to data audiogramram
 limits<-matrix(nrow=length(splt),ncol = 7)
@@ -25,28 +25,28 @@ for(i in seq_along(splt)){
   #df_audiogram$x is frequency (Hz)
   besthz<-df_audiogram$x[df_audiogram$y==min(df_audiogram$y)]
   bestsensitivity<-df_audiogram$y[df_audiogram$y==min(df_audiogram$y)]
-  
+
   #calcualte low Hz limit
   if(nrow(df_audiogram[df_audiogram$y>cutoff & df_audiogram$x <besthz,])==0){#if the audiogram does not go above cutoff value, get minimum frequency tested
     lowlimit<-min(df_audiogram$x)
   }
-  
+
   else{
     lowflank<-df_audiogram[df_audiogram$y>cutoff & df_audiogram$x <besthz,]#get frequency where audiogram crosses cutoff value
-    lowlimit<-max(lowflank$x)#lowhz limit 
+    lowlimit<-max(lowflank$x)#lowhz limit
   }
-  
+
   #calculate high Hz limit
   if(nrow(df_audiogram[df_audiogram$y>cutoff & df_audiogram$x >besthz,])==0){# #if the audiogram does not go above cutoff value, get max frequency tested
     highlimit<-max(df_audiogram$x)
-    
+
   }
-  
+
   else{
     highflank<-df_audiogram[df_audiogram$y>35 & df_audiogram$x >besthz,]#get frequency where audiogram crosses cutoff value
     highlimit<-min(highflank$x)#High hz limit
   }
-  
+
   limits[i,1]<-lowlimit
   limits[i,2]<-highlimit
   limits[i,3]<-splt[[i]]$Species[1]
@@ -88,17 +88,19 @@ limits$binomial[limits$Species=="Zebra finch"]<-"Taeniopygia_guttata"
 limits$TM<-avgdf$TMtotalarea[match(limits$binomial,avgdf$Binomial)]
 limits$RW<-avgdf$RWtotalarea[match(limits$binomial,avgdf$Binomial)]
 limits$FP<-avgdf$FPtotalarea[match(limits$binomial,avgdf$Binomial)]
-limits$air<-avgdf$Behind.TM[match(limits$binomial,avgdf$Binomial)]
+limits$Air<-avgdf$Behind.TM[match(limits$binomial,avgdf$Binomial)]
 limits$TM<-avgdf$TMtotalarea[match(limits$binomial,avgdf$Binomial)]
 limits$HM<-avgdf$Head.mass..g.[match(limits$binomial,avgdf$Binomial)]
-limits$bodymass<-avgdf$bodymass[match(limits$binomial,avgdf$Binomial)]
+limits$BM<-avgdf$bodymass[match(limits$binomial,avgdf$Binomial)]
 limits$ES<-avgdf$totalEClength[match(limits$binomial,avgdf$Binomial)]
-limits$AR<-avgdf$area_ratio[match(limits$binomial,avgdf$Binomial)]
-limits$TMangle<-avgdf$meanTMangle[match(limits$binomial,avgdf$Binomial)]
-limits$coloffset<-avgdf$dis_coltip_TMcentroid[match(limits$binomial,avgdf$Binomial)]
+limits$TM_FP<-avgdf$area_ratio[match(limits$binomial,avgdf$Binomial)]
+limits$TMA<-avgdf$meanTMangle[match(limits$binomial,avgdf$Binomial)]
+limits$COff<-avgdf$dis_coltip_TMcentroid[match(limits$binomial,avgdf$Binomial)]
 limits$ECD<-avgdf$totalECDlength[match(limits$binomial,avgdf$Binomial)]
-limits$collength<-avgdf$Columella.length.mm[match(limits$binomial,avgdf$Binomial)]
-limits$colvol<-avgdf$Columella.volume.mm3[match(limits$binomial,avgdf$Binomial)]
+limits$CL<-avgdf$Columella.length.mm[match(limits$binomial,avgdf$Binomial)]
+limits$CV<-avgdf$Columella.volume.mm3[match(limits$binomial,avgdf$Binomial)]
+limits$UH<-avgdf$Umbo_distancetoTMplane[match(limits$binomial,avgdf$Binomial)]
+
 #limits$pPC1<-speciesPCAvalues$PC1[match(limits$binomial,speciesPCAvalues$Binomial)]
 limits$rw_fp<-avgdf$rw_fp[match(limits$binomial,avgdf$Binomial)]
 limits$ec_cl<-avgdf$EC_CL[match(limits$binomial,avgdf$Binomial)]
@@ -112,6 +114,13 @@ audlog<-aud_data %>% mutate_at(vars(c("LowHzlimit","HighHzlimit","besthz")),log)
 
 library(PerformanceAnalytics)
 chart.Correlation(audlog, histogram = TRUE, method = "pearson")
+
+# p-values from correlation tests
+cor.test(aud_data$LowHzlimit, aud_data$HighHzlimit)
+cor.test(aud_data$LowHzlimit, aud_data$besthz)
+cor.test(aud_data$LowHzlimit, aud_data$bestsensitivity)
+cor.test(aud_data$HighHzlimit, aud_data$bestsensitivity)
+
 
 #summary statistics of audiograms
 mean(limits$HighHzlimit)
@@ -129,37 +138,39 @@ sd(limits$bestsensitivity)/sqrt(length(limits$bestsensitivity))
 
 ###############PGLS MODELS BEST SENSITIVITY####################
 modellist_bs<-c(
-  "bestsensitivity~log(air)",
+  "bestsensitivity~log(Air)",
   "bestsensitivity~log(ES)",
-  "bestsensitivity~log(TMangle)",
-  "bestsensitivity~log(coloffset)",
-  "bestsensitivity~log(AR)",
+  "bestsensitivity~log(TMA)",
+  "bestsensitivity~log(UH)",
+  "bestsensitivity~log(COff)",
+  "bestsensitivity~log(TM_FP)",
   "bestsensitivity~log(ECD)",
   "bestsensitivity~log(TM)",
   "bestsensitivity~log(FP)",
   "bestsensitivity~log(RW)",
   "bestsensitivity~log(HM)",
-  "bestsensitivity~log(bodymass)",
-  "bestsensitivity~log(collength)",
-  "bestsensitivity~log(colvol)")
+  "bestsensitivity~log(BM)",
+  "bestsensitivity~log(CL)",
+  "bestsensitivity~log(CV)")
 
 #####################PGLS MODELS LOW HZ LIMIT#################
 modellist_lf<-c(
   "log(LowHzlimit)~log(air)",
   "log(LowHzlimit)~log(ES)",
-                
+
              "log(LowHzlimit)~log(TMangle)",
+             "log(LowHzlimit)~log(UH)",
              "log(LowHzlimit)~log(coloffset)",
              "log(LowHzlimit)~log(AR)",
              "log(LowHzlimit)~log(ECD)",
-             
+
              "log(LowHzlimit)~log(TM)",
              "log(LowHzlimit)~log(FP)",
              "log(LowHzlimit)~log(RW)",
-             
+
              "log(LowHzlimit)~log(HM)",
             "log(LowHzlimit)~log(bodymass)",
-             
+
              "log(LowHzlimit)~log(collength)",
              "log(LowHzlimit)~log(colvol)")
 
@@ -167,19 +178,20 @@ modellist_lf<-c(
 modellist_hf<-c(
   "log(HighHzlimit)~log(air)",
   "log(HighHzlimit)~log(ES)",
-  
+
   "log(HighHzlimit)~log(TMangle)",
+  "log(HighHzlimit)~log(UH)",
   "log(HighHzlimit)~log(coloffset)",
   "log(HighHzlimit)~log(AR)",
   "log(HighHzlimit)~log(ECD)",
-  
+
   "log(HighHzlimit)~log(TM)",
   "log(HighHzlimit)~log(FP)",
   "log(HighHzlimit)~log(RW)",
-  
+
   "log(HighHzlimit)~log(HM)",
   "log(HighHzlimit)~log(bodymass)",
-  
+
   "log(HighHzlimit)~log(collength)",
   "log(HighHzlimit)~log(colvol)")
 
@@ -187,19 +199,20 @@ modellist_hf<-c(
 modellist_bh<-c(
   "log(besthz)~log(air)",
   "log(besthz)~log(ES)",
-  
+
   "log(besthz)~log(TMangle)",
+  "log(besthz)~log(UH)",
   "log(besthz)~log(coloffset)",
   "log(besthz)~log(AR)",
   "log(besthz)~log(ECD)",
-  
+
   "log(besthz)~log(TM)",
   "log(besthz)~log(FP)",
   "log(besthz)~log(RW)",
-  
+
   "log(besthz)~log(HM)",
   "log(besthz)~log(bodymass)",
-  
+
   "log(besthz)~log(collength)",
   "log(besthz)~log(colvol)")
 
@@ -208,10 +221,11 @@ categorylist_lf<-c("Stiffness",
                    "Impedance match",
                    "Impedance match",
                    "Impedance match",
+                   "Impedance match",
                    "Auditory endorgan length",
-                   "Input/output areas", 
-                   "Input/output areas", 
-                   "Input/output areas", 
+                   "Input/output areas",
+                   "Input/output areas",
+                   "Input/output areas",
                    "Animal size",
                    "Animal size",
                    "Columella size",
@@ -226,8 +240,8 @@ limitsanat<-limits[which(!is.na(limits$binomial)),]
 
 #made data frame object
 birdCDO<-comparative.data(phy = birdtreels,data = limitsanat,#[avgdf$Category!="Terrestrial",]
-                          names.col =binomial, 
-                          vcv = TRUE, na.omit = F, 
+                          names.col =binomial,
+                          vcv = TRUE, na.omit = F,
                           warn.dropped = TRUE)
 
 #check any tips dropped between linking phylogeny and dataframe
@@ -244,7 +258,7 @@ flexall<-flextable(audiogrampgls_bs) %>% add_header_lines(
   autofit()
 flexall
 
-#write.csv(audiogrampgls_bs,"E:/Analysis_plots/audiogrambestsensitivity.csv")
+write.csv(audiogrampgls_bs,"E:/Analysis_plots/audiogrambestsensitivity Jan3_21.csv")
 #print(toprint,target = "E:/Analysis_plots/_pgls_audio_bs_apr 15.docx")
 
 source("pgls_audiogram_lf.R")
@@ -256,7 +270,7 @@ flexall<-flextable(audiogrampgls_lf) %>% add_header_lines(
   autofit()
 flexall
 
-#write.csv(audiogrampgls_bs,"E:/Analysis_plots/audiogrambestsensitivity.csv")
+write.csv(audiogrampgls_lf,"E:/Analysis_plots/audiogramlfJan3_21.csv")
 #print(toprint,target = "E:/Analysis_plots/_pgls_audio_lf_apr15.docx")
 
 source("pgls_audiogram_hf.R")
@@ -268,7 +282,7 @@ flexall<-flextable(audiogrampgls_hf) %>% add_header_lines(
   autofit()
 flexall
 
-#write.csv(audiogrampgls_bs,"E:/Analysis_plots/audiogrambestsensitivity.csv")
+write.csv(audiogrampgls_hf,"E:/Analysis_plots/audiogramhfJan3_21.csv")
 #print(toprint,target = "E:/Analysis_plots/_pgls_audio_hf_apr15.docx")
 
 source("pgls_audiogram_bh.R")
@@ -280,7 +294,7 @@ flexall<-flextable(audiogrampgls_bh) %>% add_header_lines(
   autofit()
 flexall
 
-#write.csv(audiogrampgls_bs,"E:/Analysis_plots/audiogrambestsensitivity.csv")
+write.csv(audiogrampgls_bh,"E:/Analysis_plots/audiogrambh vJan3_21.csv")
 #print(toprint,target = "E:/Analysis_plots/_pgls_audio_bh_apr15.docx")
 
 
@@ -292,15 +306,15 @@ aas<-function(d){
   highHz<-set$HighHzlimit
   lowHz<-set$LowHzlimit
   ggplot(fig1[fig1$Species==set$Species,], aes(x = Hz, y = Threshold, factor = Species))+
-    scale_x_log10()+ 
+    scale_x_log10()+
     #geom_vline(xintercept = lowHz, col = "grey", size = 2)+
-    
+
     #Hz metrics
     geom_segment(aes(x = lowHz, y = -Inf, xend = lowHz, yend = 35), col = "grey", size = 2)+
     geom_segment(aes(x = bestHz, y = -Inf, xend = bestHz, yend = bestsensitivity), col = "grey", size = 2)+
     geom_segment(aes(x = highHz, y = -Inf, xend = highHz, yend = 35), col = "grey", size = 2)+
     geom_line(aes(x = Hz, y = Threshold), size = 2)+
-    
+
     #geom    geom_line(aes(x = Hz, y = Threshold), size = 2)+
     scale_color_brewer(palette = "Set1")+
     geom_hline(yintercept = bestsensitivity)+
@@ -317,12 +331,12 @@ aas<-function(d){
     annotate("text",x = bestHz, y = 5, label = "Best frequency")+
     annotate("text",x = lowHz, y = 5, label = "Low frequency limit")+
     annotate("text",x = highHz, y = 5, label = "High frequency limit")
-  
+
 }
 aas(16)
 
 aas(16)+ xlim(c(0,50000))
-  
+
 
 #CVs
 #CV high Hz
