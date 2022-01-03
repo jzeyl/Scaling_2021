@@ -38,6 +38,6 @@
 |["3 plot link to anaomy Apr 13.R"](https://github.com/jzeyl/Scaling_2021/blob/main/plots/3%20plot%20link%20to%20anaomy%20Apr%2013.R)|Plotting of ear measures and audiogram data |
 - 
 
-
+![alt text](Picture1.svg)
 ![alt text](superorder.png)
-![alt text](audiogrammeasures.png)
+
