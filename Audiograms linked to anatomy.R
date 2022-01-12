@@ -155,66 +155,54 @@ modellist_bs<-c(
 
 #####################PGLS MODELS LOW HZ LIMIT#################
 modellist_lf<-c(
-  "log(LowHzlimit)~log(air)",
+  "log(LowHzlimit)~log(Air)",
   "log(LowHzlimit)~log(ES)",
-
-             "log(LowHzlimit)~log(TMangle)",
-             "log(LowHzlimit)~log(UH)",
-             "log(LowHzlimit)~log(coloffset)",
-             "log(LowHzlimit)~log(AR)",
-             "log(LowHzlimit)~log(ECD)",
-
-             "log(LowHzlimit)~log(TM)",
-             "log(LowHzlimit)~log(FP)",
-             "log(LowHzlimit)~log(RW)",
-
-             "log(LowHzlimit)~log(HM)",
-            "log(LowHzlimit)~log(bodymass)",
-
-             "log(LowHzlimit)~log(collength)",
-             "log(LowHzlimit)~log(colvol)")
+  "log(LowHzlimit)~log(TMA)",
+  "log(LowHzlimit)~log(UH)",
+  "log(LowHzlimit)~log(COff)",
+  "log(LowHzlimit)~log(TM_FP)",
+  "log(LowHzlimit)~log(ECD)",
+  "log(LowHzlimit)~log(TM)",
+  "log(LowHzlimit)~log(FP)",
+  "log(LowHzlimit)~log(RW)",
+  "log(LowHzlimit)~log(HM)",
+  "log(LowHzlimit)~log(BM)",
+  "log(LowHzlimit)~log(CL)",
+  "log(LowHzlimit)~log(CV)")
 
 ###################PGLS MODELS HIGH LIMIT##############
 modellist_hf<-c(
-  "log(HighHzlimit)~log(air)",
+  "log(HighHzlimit)~log(Air)",
   "log(HighHzlimit)~log(ES)",
-
-  "log(HighHzlimit)~log(TMangle)",
+  "log(HighHzlimit)~log(TMA)",
   "log(HighHzlimit)~log(UH)",
-  "log(HighHzlimit)~log(coloffset)",
-  "log(HighHzlimit)~log(AR)",
+  "log(HighHzlimit)~log(COff)",
+  "log(HighHzlimit)~log(TM_FP)",
   "log(HighHzlimit)~log(ECD)",
-
   "log(HighHzlimit)~log(TM)",
   "log(HighHzlimit)~log(FP)",
   "log(HighHzlimit)~log(RW)",
-
   "log(HighHzlimit)~log(HM)",
-  "log(HighHzlimit)~log(bodymass)",
-
-  "log(HighHzlimit)~log(collength)",
-  "log(HighHzlimit)~log(colvol)")
+  "log(HighHzlimit)~log(BM)",
+  "log(HighHzlimit)~log(CL)",
+  "log(HighHzlimit)~log(CV)")
 
 ##################PGLS MODELS besthz###############
 modellist_bh<-c(
-  "log(besthz)~log(air)",
+  "log(besthz)~log(Air)",
   "log(besthz)~log(ES)",
-
-  "log(besthz)~log(TMangle)",
+  "log(besthz)~log(TMA)",
   "log(besthz)~log(UH)",
-  "log(besthz)~log(coloffset)",
-  "log(besthz)~log(AR)",
+  "log(besthz)~log(COff)",
+  "log(besthz)~log(TM_FP)",
   "log(besthz)~log(ECD)",
-
   "log(besthz)~log(TM)",
   "log(besthz)~log(FP)",
   "log(besthz)~log(RW)",
-
   "log(besthz)~log(HM)",
-  "log(besthz)~log(bodymass)",
-
-  "log(besthz)~log(collength)",
-  "log(besthz)~log(colvol)")
+  "log(besthz)~log(BM)",
+  "log(besthz)~log(CL)",
+  "log(besthz)~log(CV)")
 
 categorylist_lf<-c("Stiffness",
                    "Stiffness",
@@ -258,7 +246,7 @@ flexall<-flextable(audiogrampgls_bs) %>% add_header_lines(
   autofit()
 flexall
 
-write.csv(audiogrampgls_bs,"E:/Analysis_plots/audiogrambestsensitivity Jan3_21.csv")
+#write.csv(audiogrampgls_bs,"E:/Analysis_plots/audiogrambestsensitivity Jan3_21.csv")
 #print(toprint,target = "E:/Analysis_plots/_pgls_audio_bs_apr 15.docx")
 
 source("pgls_audiogram_lf.R")
@@ -270,7 +258,7 @@ flexall<-flextable(audiogrampgls_lf) %>% add_header_lines(
   autofit()
 flexall
 
-write.csv(audiogrampgls_lf,"E:/Analysis_plots/audiogramlfJan3_21.csv")
+#write.csv(audiogrampgls_lf,"E:/Analysis_plots/audiogramlfJan3_21.csv")
 #print(toprint,target = "E:/Analysis_plots/_pgls_audio_lf_apr15.docx")
 
 source("pgls_audiogram_hf.R")
@@ -282,7 +270,7 @@ flexall<-flextable(audiogrampgls_hf) %>% add_header_lines(
   autofit()
 flexall
 
-write.csv(audiogrampgls_hf,"E:/Analysis_plots/audiogramhfJan3_21.csv")
+#write.csv(audiogrampgls_hf,"E:/Analysis_plots/audiogramhfJan3_21.csv")
 #print(toprint,target = "E:/Analysis_plots/_pgls_audio_hf_apr15.docx")
 
 source("pgls_audiogram_bh.R")
@@ -294,7 +282,7 @@ flexall<-flextable(audiogrampgls_bh) %>% add_header_lines(
   autofit()
 flexall
 
-write.csv(audiogrampgls_bh,"E:/Analysis_plots/audiogrambh vJan3_21.csv")
+#write.csv(audiogrampgls_bh,"E:/Analysis_plots/audiogrambh vJan3_21.csv")
 #print(toprint,target = "E:/Analysis_plots/_pgls_audio_bh_apr15.docx")
 
 
