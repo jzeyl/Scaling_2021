@@ -33,11 +33,15 @@
 # Plotting
 |File|Description|
 |-----|-----|
- |["1 plot scatterplots_scl_hm.R"](https://github.com/jzeyl/Scaling_2021/blob/main/plots/1%20plot%20scatterplots_scl_hm.R)|Plotting of ear measures relative to head mass and body mass|
-| "[2 plot_intra_april 14.R"](https://github.com/jzeyl/Scaling_2021/blob/main/plots/2%20plot_intra_april%2014.R)|Plotting of ear measure relative to each other|
-|["3 plot link to anaomy Apr 13.R"](https://github.com/jzeyl/Scaling_2021/blob/main/plots/3%20plot%20link%20to%20anaomy%20Apr%2013.R)|Plotting of ear measures and audiogram data |
+ |["Scatterplots relative to head mass.R"  ](https://github.com/jzeyl/Scaling_2021/blob/main/plots/1%20plot%20scatterplots_scl_hm.R)|Plotting of ear measures relative to head mass and body mass|
+| "Scatterplots, between ear measures.R"  ](https://github.com/jzeyl/Scaling_2021/blob/main/plots/2%20plot_intra_april%2014.R)|Plotting of ear measure relative to each other|
+|["Scatterplots relative to audiogram measures.R"](https://github.com/jzeyl/Scaling_2021/blob/main/plots/3%20plot%20link%20to%20anaomy%20Apr%2013.R)|Plotting of ear measures and audiogram data |
+|["Audiogram bar plots_Supplemental.R"]   |Plots for supplemental material|
 - 
-
+[1]         
+[2] 
+[3]        
+[4] 
 ![alt text](Picture1.svg)
 ![alt text](superorder.png)
 
