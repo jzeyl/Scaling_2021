@@ -126,11 +126,11 @@ runplotpglsintra<-function(e){
     theme_classic()+
     theme(legend.position = "none")+{
       if(intra$scalingtype[e*2] == "isometric")
-        geom_point(aes(shape = waterbirds), size = 2, col = "grey")
+        geom_point(aes(), size = 2, col = "grey")
       else if(intra$scalingtype[e*2] == "hypoallometric")
-        geom_point(aes(shape = waterbirds), size = 2, col = "blue")
+        geom_point(aes(), size = 2, col = "blue")
       else  if(intra$scalingtype[e*2] == "hyperallometric")
-        geom_point(aes(shape = waterbirds), size = 2, col = "red")
+        geom_point(aes(), size = 2, col = "red")
     }  +
     geom_line(aes_string(x = vectxsimple[e],
                          y = paste0("slplineiso_",as.character(e))),
@@ -138,8 +138,10 @@ runplotpglsintra<-function(e){
     geom_line(aes_string(x = vectxsimple[e],
                   y = paste0("slpline_",as.character(e))),
               col = "black", size = 2)+
-    geom_text(data = lbl,aes(x = xpos, y = ypos, label = annotateText,
-                             hjust = hjust, vjust = vjust))+
+    #geom_text(data = lbl,aes(x = xpos, y = ypos, label = annotateText,
+    #                         hjust = hjust, vjust = vjust))+
+    annotate(geom = 'text', x = Inf, y = -Inf, label = paste('R^2 == ',signif(summary(pgls_models_list_intra[[e]])$r.squared,2)), hjust = "inward", vjust = -0.5, parse = TRUE)+
+
     ggtitle(categorylist_intra[e])+
     ylab(paste0("log(",codeintray[e],")"))+
     xlab(paste0("log(",codeintrax[e],")"))

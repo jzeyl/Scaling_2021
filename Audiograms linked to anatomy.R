@@ -66,6 +66,11 @@ limits$Hz<-as.numeric(as.character(limits$Hz))
 limits$besthz<-as.numeric(as.character(limits$besthz))
 limits$bestsensitivity<-as.numeric(as.character(limits$bestsensitivity))
 
+
+# Get average for Corvus and Phalacrocorax spp. ---------------------------
+
+
+
 ###################add species from scan data that correspond with audiograms###############
 limits$binomial<-NA
 limits$binomial[limits$Species=="Barn owl"]<-"Tyto_alba"
@@ -321,7 +326,7 @@ aas<-function(d){
     annotate("text",x = highHz, y = 5, label = "High frequency limit")
 
 }
-aas(16)
+aas(16)+theme()
 
 aas(16)+ xlim(c(0,50000))
 

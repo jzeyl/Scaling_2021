@@ -42,6 +42,9 @@ bound$bestsensitivity<-NA
 
 #add best hz to interpolated datset for sorting
 bound$besthz<-limits$besthz[match(bound$Species,limits$Species)]
+bound$bestsensitivity<-limits$bestsensitivity[match(bound$Species,limits$Species)]
+bound$HighHzlimit<-limits$HighHzlimit[match(bound$Species,limits$Species)]
+bound$LowHzlimit<-limits$LowHzlimit[match(bound$Species,limits$Species)]
 
 
 bound2<-bound
@@ -56,9 +59,9 @@ newrow2<-c(5,5,as.factor("test2"), 5,5)
 
 bound2<-rbind(bound2,newrow,newrow1,newrow2)
 
-bound2[95001,c("Species","besthz")]<-c("High freq. limit",10)
+bound2[95001,c("Species","besthz")]<-c("Low freq. limit",10)
  bound2[95002,c("Species","besthz")]<-c("Best freq.", 10)
-bound2[95003,c("Species","besthz")]<-c("Low freq. limit" ,10)
+bound2[95003,c("Species","besthz")]<-c("High freq. limit" ,10)
 #bound$Species<-as.character(bound$Species)
 #bound$besthz<-as.numeric(bound$besthz)
 
@@ -66,16 +69,17 @@ bound2[95003,c("Species","besthz")]<-c("Low freq. limit" ,10)
 bound$Hz<-bound$x
 bound$Species = with(bound, reorder(Species, besthz, median))
 bound2$Species = with(bound2, reorder(Species, besthz, median))
+bound2$`Threshold (dB)`<-bound2$y
 
-
+#View(bound2[seq(1, nrow(bound2), 10), ])
 range<-ggplot(bound2, aes(x = Hz, y = Species))+   #, col= supraorder
-  geom_path(aes(col = y), size = 2)+
+  geom_path(data = bound2[c(seq(1, 95000, 10),95001,95002,95003), ],aes(col = `Threshold (dB)`), size = 2)+
   geom_point(data = limitslong, col = "black", size = 2)+
   scale_color_viridis()+
   scale_x_log10()+
   theme_classic()+
   coord_cartesian(clip = "off", ylim = c(1,22))+
-  annotation_logticks(sides = "b", outside = TRUE)+
+  annotation_logticks(sides = "b", outside = TRUE, colour = "black")+
   geom_point(data = limits, shape = 21, size = 2, colour = "black", fill = "white")+
   #geom_vline(xintercept = min(limits$LowHzlimit))+
   #geom_vline(xintercept = max(limits$LowHzlimit))+
@@ -84,11 +88,14 @@ range<-ggplot(bound2, aes(x = Hz, y = Species))+   #, col= supraorder
   xlab("Frequency(Hz)")+
   #theme(legend.position = "none")
   #ylim(c(-2,20))+
-  geom_boxplot(data = limits,aes(x = LowHzlimit, y = 3), width = 1)+
-  geom_boxplot(data = limits,aes(x =  besthz, y = 2), width = 1)+
-  geom_boxplot(data = limits,aes(x = HighHzlimit, y = 1), width = 1)
-
+  geom_boxplot(data = limits,aes(x = LowHzlimit, y = 1), width = 0.8)+
+  geom_boxplot(data = limits,aes(x =  besthz, y = 2), width = 0.8)+
+  geom_boxplot(data = limits,aes(x = HighHzlimit, y = 3), width = 0.8)+
+  geom_hline(yintercept = 3.5)+
+  theme(axis.title.y = element_text(angle= 0, vjust = 0.5, hjust=1),
+        axis.text.x = element_text(angle= 0, vjust = -2.5, hjust=0.5))
 range
+
 
 bestsens<-ggplot(limits, aes(x = 0,y = bestsensitivity))+
   geom_boxplot()+
@@ -103,7 +110,12 @@ bestsens<-ggplot(limits, aes(x = 0,y = bestsensitivity))+
   #geom_text(aes(x = 0, label = Species))+
   theme_classic()+
   xlim(c(-4,4))+
-  ylab("Best sensitivity(dB SPL)")
+  ylab("Best sensitivity(dB SPL)")+
+  xlab("")+
+  theme(axis.title.y = element_text(angle= 0, vjust = 0.5, hjust=1),
+        axis.text.y = element_blank(),
+        axis.ticks.y = element_blank(),
+        axis.line.y = element_blank())
 bestsens
 
 range/bestsens+
@@ -111,53 +123,3 @@ range/bestsens+
   plot_annotation(tag_levels = "A")
 
 
-scale_x_log10(breaks = c(1,2,5,10,15,20,22,25^1.0,
-                         25^(1+1*0.09166667),
-                         25^(1+2*0.09166667),
-                         25^(1+3*0.09166667),60),
-              labels = c("1","2","5","10","15","20","","FG","GF","F","G",""))+
-
-
-lowmidhigh<-gather(limits, key = "range", value = "Hzvalue",LowHzlimit,      HighHzlimit ,    Species,
-                    besthz)
- View(head(lowmidhigh))
-
- low<-ggplot(limitslong, aes(x = reorder(limit,Hz,median), y = Hz))+
-   geom_boxplot()+
-   coord_flip()+
-   theme_minimal()
- low
-
- high<-ggplot(limits, aes(x = HighHzlimit))+
-   geom_boxplot()+
-   coord_flip()+
-   theme_minimal()
- high
-
- besthz<-ggplot(limits, aes(x = besthz))+
-   geom_boxplot()+
-   coord_flip()+
-   theme_minimal()
- besthz
-
-
- bestsens<-ggplot(limits, aes(x = bestsensitivity))+
-   geom_boxplot()+
-   coord_flip()+
-   theme_minimal()
- bestsens
-
-range/low+besthz+high+bestsens
-+plot_layout(nrow = 1)
-
-
- library(dplyr)
- bound %>% group_by(Species) %>% summarise(rangey = max(y)-min(y))
-
- bymin<-bound %>% group_by(Species) %>% summarise(min = min(y))
-
- sort(bymin$min)
-
- bymin$Species[bymin$min== sort(bymin$min)]
-
- match(bymin$Species
