@@ -2,6 +2,10 @@ library(patchwork)
 library(dplyr)
 ########SETUP############
 #modellist_intra
+
+limits$aud_rel[limits$binomial=="Corvus_cornix"]<-"Congener"
+limits$aud_rel[limits$binomial=="Phalacrocorax_carbo"]<-"Congener"
+
 modellist_bs
 modellist_lf
 modellist_bh
@@ -64,17 +68,6 @@ for(i in seq_along(vectxsimple_lf)){
 
 runplotpgls_aud_bh<-function(e){
   pval<-summary(pgls_models_list_bh[[e]])$coefficients[,4][[2]]
-  lbl<-data.frame(
-    xpos = c(-Inf,-Inf),
-    ypos = c(-Inf,-Inf),
-    annotateText = c(paste0("P = ",
-                            signif(summary(pgls_models_list_bh[[e]])$coefficients[,4][[2]],2),
-                            ",",
-                            " R2 = ",signif(summary(pgls_models_list_bh[[e]])$r.squared,2))
-                     ,""),
-    hjust = c(-0.1,-0),
-    vjust = c(-1,-0)
-  )
 
   p<-ggplot(limits,
             aes_string(x = vectx_modellist_lf[e], y = "log(besthz)"))+
@@ -82,24 +75,25 @@ runplotpgls_aud_bh<-function(e){
     theme(legend.position = "none",
           axis.text.y = element_blank(),
           axis.title.y = element_blank())+
-    geom_point(aes_string(), size = 2)+{
-      if (pval<0.05)  geom_point(aes_string(), size = 2, col = "black")
-      # geom_line(aes_string(x = vectx_modellist_lf[e],
-      #                      y = paste0("slpline_",as.character(e))),
-      #           col = "red", size = 2)
-      else geom_point(aes_string(), size = 2, col = "black", alpha = 0.4)
+    geom_point(aes_string(shape="aud_rel"), size = 2)+{
+      if (pval<0.05)  geom_point(aes_string(shape="aud_rel"), size = 2, col = "black")
+      else geom_point(aes_string(shape="aud_rel"), size = 2, col = "black", alpha = 0.4)
     } + {
       if (pval<0.05)  geom_line(aes_string(x = vectx_modellist_lf[e],
                                            y = paste0("slpline_",as.character(e))),
                                 col = "black", size = 2)
     }+
-    geom_text(data = lbl,aes(x = xpos, y = ypos, label = annotateText,
-                             hjust = hjust, vjust = vjust))+
+    #geom_text(data = lbl,aes(x = xpos, y = ypos, label = annotateText,
+    #                         hjust = hjust, vjust = vjust))+
+    #scale_shape_manual(values=c(17, 16))+
+    annotate(geom = 'text', x = -Inf, y = -Inf, label = paste(' ',' R^2 == ',signif(summary(pgls_models_list_bh[[e]])$r.squared,2)), hjust = -0.05, vjust = -0.1, parse = TRUE)+
+    annotate(geom = 'text', x = -Inf, y = -Inf, label = paste(' ',' P == ',signif(summary(pgls_models_list_bh[[e]])$coefficients[,4][[2]],2)), hjust = -0.05, vjust = -2.1, parse = TRUE)
+
     ggtitle(categorylist_aud[e])
   p
 }
 
-runplotpgls_aud_bh(1)
+runplotpgls_aud_bh(10)+  geom_text(aes(label=binomial), angle = 30)
 
 #PLOT ALL BEST FREQUENCY
 runplotpgls_aud_bh(1)+
@@ -150,16 +144,17 @@ runplotpgls_aud_bs<-function(e){
     theme(legend.position = "none",
           axis.text.y = element_blank(),
           axis.title.y = element_blank())+{
-      if (pval<0.05)  geom_point(aes_string(), size = 2, col = "black")
-       else geom_point(aes_string(), size = 2, col = "black", alpha = 0.4)
+      if (pval<0.05)  geom_point(aes_string(shape="aud_rel"), size = 2, col = "black")
+       else geom_point(aes_string(shape="aud_rel"), size = 2, col = "black", alpha = 0.4)
     } + {
       if (pval<0.05)  geom_line(aes_string(x = vectx_modellist_lf[e],
                          y = paste0("slpline_",as.character(e))),
               col = "black", size = 2)
     }+
-    geom_text(data = lbl,aes(x = xpos, y = ypos, label = annotateText,
-                             hjust = hjust, vjust = vjust))+
-    ggtitle(categorylist_aud[e])
+    scale_shape_manual(values=c(17, 16))+
+    annotate(geom = 'text', x = -Inf, y = -Inf, label = paste(' ',' R^2 == ',signif(summary(pgls_models_list_bs[[e]])$r.squared,2)), hjust = -0.05, vjust = -0.1, parse = TRUE)+
+    annotate(geom = 'text', x = -Inf, y = -Inf, label = paste(' ',' P == ',signif(summary(pgls_models_list_bs[[e]])$coefficients[,4][[2]],2)), hjust = -0.05, vjust = -2.1, parse = TRUE)
+  ggtitle(categorylist_aud[e])
   p
 }
 
@@ -218,19 +213,20 @@ runplotpgls_aud_lf<-function(e){
     theme(legend.position = "none",
           axis.text.y = element_blank(),
           axis.title.y = element_blank())+{
-      if (pval<0.05)  geom_point(aes_string(), size = 2, col = "black")
+      if (pval<0.05)  geom_point(aes_string(shape="aud_rel"), size = 2, col = "black")
       # geom_line(aes_string(x = vectx_modellist_lf[e],
       #                      y = paste0("slpline_",as.character(e))),
       #           col = "red", size = 2)
-      else geom_point(aes_string(), size = 2, col = "black", alpha = 0.5)
+      else geom_point(aes_string(shape="aud_rel"), size = 2, col = "black", alpha = 0.5)
     } +{
       if (pval<0.05)  geom_line(aes_string(x = vectx_modellist_lf[e],
                                            y = paste0("slpline_",as.character(e))),
                                 col = "black", size = 2)
     }+
-    geom_text(data = lbl,aes(x = xpos, y = ypos, label = annotateText,
-                             hjust = hjust, vjust = vjust))+
-    ggtitle(categorylist_aud[e])
+    scale_shape_manual(values=c(17, 16))+
+    annotate(geom = 'text', x = -Inf, y = -Inf, label = paste(' ',' R^2 == ',signif(summary(pgls_models_list_lf[[e]])$r.squared,2)), hjust = -0.05, vjust = -0.1, parse = TRUE)+
+    annotate(geom = 'text', x = -Inf, y = -Inf, label = paste(' ',' P == ',signif(summary(pgls_models_list_lf[[e]])$coefficients[,4][[2]],2)), hjust = -0.05, vjust = -2.1, parse = TRUE)
+  ggtitle(categorylist_aud[e])
   #geom_line(aes_string(x = vectxsimple[e],
   #                     y = paste0("slpline_",as.character(e))),
   #          col = "black", size = 2)
@@ -286,19 +282,20 @@ runplotpgls_aud_hf<-function(e){
     theme(legend.position = "none",
           axis.text.y = element_blank(),
           axis.title.y = element_blank())+{
-      if (pval<0.05)  geom_point(aes_string(), size = 2, col = "black")
+      if (pval<0.05)  geom_point(aes_string(shape="aud_rel"), size = 2, col = "black")
       # geom_line(aes_string(x = vectx_modellist_lf[e],
       #                      y = paste0("slpline_",as.character(e))),
       #           col = "red", size = 2)
-      else geom_point(aes_string(), size = 2, col = "black", alpha = 0.5)
+      else geom_point(aes_string(shape="aud_rel"), size = 2, col = "black", alpha = 0.5)
     } +{
       if (pval<0.05)  geom_line(aes_string(x = vectx_modellist_lf[e],
                                            y = paste0("slpline_",as.character(e))),
                                 col = "black", size = 2)
     }+
-    geom_text(data = lbl,aes(x = xpos, y = ypos, label = annotateText,
-                             hjust = hjust, vjust = vjust))+
-    ggtitle(categorylist_aud[e])
+    scale_shape_manual(values=c(17, 16))+
+    annotate(geom = 'text', x = Inf, y = -Inf, label = paste(' ',' R^2 == ',signif(summary(pgls_models_list_hf[[e]])$r.squared,2)), hjust = 0.99, vjust = -0.1, parse = TRUE)+
+    annotate(geom = 'text', x = Inf, y = -Inf, label = paste(' ',' P == ',signif(summary(pgls_models_list_hf[[e]])$coefficients[,4][[2]],2)), hjust = 0.99, vjust = -2.1, parse = TRUE)
+  ggtitle(categorylist_aud[e])
   p
 }
 

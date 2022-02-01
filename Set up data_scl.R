@@ -48,9 +48,10 @@ avgdf$Family<-distinctdforder$Family
 avgdf$maxdivedepth<-distinctdforder$max
 avgdf$Category<-as.character(distinctdforder$Category)
 avgdf$birdtree<-gsub(" ","_",distinctdforder$Birdtree)
-avgdf$Behind.TM<-distinctdforder$Behind.TM
+#avgdf$Behind.TM<-distinctdforder$Behind.TM
 avgdf$bodymass<-distinctdforder$bodymass_lit
-
+avgdf$aud_spp<-distinctdforder$spp_audio
+avgdf$aud_rel<-distinctdforder$audio_relation
 
 avgdf$superorder<-avgdf$Order
 avgdf$superorder[avgdf$Order=="Passeriformes"|

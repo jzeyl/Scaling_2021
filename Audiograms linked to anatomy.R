@@ -5,10 +5,34 @@ library(flextable)
 library(officer)
 library(dplyr)
 
-#load audiograms
+
+# add avg Corvus and Phalacrocorax values----------------------------------------
+
+
+phalacrocoraxavg<-avgdf[grepl('Phalacrocorax', avgdf$Binomial), ] %>%
+  dplyr::select(where(is.numeric)) %>%
+  summarise_all(mean, na.rm=T)
+
+corvusavg<-avgdf[grepl('Corvus', avgdf$Binomial), ] %>%
+  dplyr::select(where(is.numeric)) %>%
+  summarise_all(mean, na.rm=T)
+names(corvusavg)
+
+cong_avg<-dplyr::bind_rows(avgdf,corvusavg,phalacrocoraxavg)
+cong_avg$Binomial[128]<-"Corvus_cornix"
+cong_avg$Binomial[129]<-"Phalacrocorax_carbo"
+cong_avg<-cong_avg[-c(grep('Corvus_albus|Corvus_splendens', cong_avg$Binomial)), ]
+cong_avg<-cong_avg[-c(grep('Phalacrocorax_capensis|Phalacrocorax_lucidus|Phalacrocorax_neglectus', cong_avg$Binomial)), ]
+avgdf<-cong_avg
+
+# load audiograms ---------------------------------------------------------
+
 fig1<-read.csv(paste0(getwd(),"/audiograms.csv"), stringsAsFactors = FALSE)
 
-####################get the high and low Hz limits from a cutoff level##########
+
+
+)# get the high and low Hz limits from a cutoff level ----------------------
+
 splt<-split(fig1,fig1$Species)
 #set cutoff for the high and low Hz limits (dB)
 cutoff<-35
@@ -67,9 +91,6 @@ limits$besthz<-as.numeric(as.character(limits$besthz))
 limits$bestsensitivity<-as.numeric(as.character(limits$bestsensitivity))
 
 
-# Get average for Corvus and Phalacrocorax spp. ---------------------------
-
-
 
 ###################add species from scan data that correspond with audiograms###############
 limits$binomial<-NA
@@ -81,8 +102,8 @@ limits$binomial[limits$Species=="Chicken"]<-"Gallus_domesticus"
 limits$binomial[limits$Species=="Cockatiel"]<-"Nymphicus_hollandicus"
 limits$binomial[limits$Species=="Eurasian eagle owl"]<-"Bubo_africanus"
 limits$binomial[limits$Species=="Eurasian sparrowhawk"]<-"Accipiter_melanoleucus"
-limits$binomial[limits$Species=="Great cormorant"]<-"Phalacrocorax_capensis"#
-limits$binomial[limits$Species=="Hooded crow"]<-"Corvus_albus"#
+limits$binomial[limits$Species=="Great cormorant"]<-"Phalacrocorax_carbo"
+limits$binomial[limits$Species=="Hooded crow"]<-"Corvus_cornix"
 limits$binomial[limits$Species=="Indian peafowl"]<-"Pavo_muticus"
 limits$binomial[limits$Species=="Mallard duck"]<-"Anas_georgica_georgica"
 limits$binomial[limits$Species=="Rock dove"]<-"Columba_livia"#
@@ -105,6 +126,10 @@ limits$ECD<-avgdf$totalECDlength[match(limits$binomial,avgdf$Binomial)]
 limits$CL<-avgdf$Columella.length.mm[match(limits$binomial,avgdf$Binomial)]
 limits$CV<-avgdf$Columella.volume.mm3[match(limits$binomial,avgdf$Binomial)]
 limits$UH<-avgdf$Umbo_distancetoTMplane[match(limits$binomial,avgdf$Binomial)]
+
+limits$spp_aud<-avgdf$aud_spp[match(limits$binomial,avgdf$Binomial)]
+limits$aud_rel<-avgdf$aud_rel[match(limits$binomial,avgdf$Binomial)]
+
 
 #limits$pPC1<-speciesPCAvalues$PC1[match(limits$binomial,speciesPCAvalues$Binomial)]
 limits$rw_fp<-avgdf$rw_fp[match(limits$binomial,avgdf$Binomial)]
@@ -231,6 +256,8 @@ categorylist_hf<-categorylist_lf
 #only select the rows for which anatomical data is available for the corresponding audiograms
 limitsanat<-limits[which(!is.na(limits$binomial)),]
 
+birdtreels$tip.label[14]<-"Corvus_cornix"
+birdtreels$tip.label[51]<-"Phalacrocorax_carbo"
 #made data frame object
 birdCDO<-comparative.data(phy = birdtreels,data = limitsanat,#[avgdf$Category!="Terrestrial",]
                           names.col =binomial,
@@ -250,9 +277,8 @@ flexall<-flextable(audiogrampgls_bs) %>% add_header_lines(
   bold(i = ~ P.val < 0.05) %>% # select columns add: j = ~ Coefficients + P.val
   autofit()
 flexall
-
-#write.csv(audiogrampgls_bs,"E:/Analysis_plots/audiogrambestsensitivity Jan3_21.csv")
-#print(toprint,target = "E:/Analysis_plots/_pgls_audio_bs_apr 15.docx")
+write.csv(audiogrampgls_bs,"audiogrampgls_bs.csv")
+print(toprint,target = "audiogrampgls_bs.docx")
 
 source("pgls_audiogram_lf.R")
 
@@ -263,8 +289,8 @@ flexall<-flextable(audiogrampgls_lf) %>% add_header_lines(
   autofit()
 flexall
 
-#write.csv(audiogrampgls_lf,"E:/Analysis_plots/audiogramlfJan3_21.csv")
-#print(toprint,target = "E:/Analysis_plots/_pgls_audio_lf_apr15.docx")
+write.csv(audiogrampgls_lf,"audiogrampgls_lf.csv")
+print(toprint,target = "audiogrampgls_lf.docx")
 
 source("pgls_audiogram_hf.R")
 
@@ -275,8 +301,8 @@ flexall<-flextable(audiogrampgls_hf) %>% add_header_lines(
   autofit()
 flexall
 
-#write.csv(audiogrampgls_hf,"E:/Analysis_plots/audiogramhfJan3_21.csv")
-#print(toprint,target = "E:/Analysis_plots/_pgls_audio_hf_apr15.docx")
+write.csv(audiogrampgls_hf,"audiogrampgls_hf.csv")
+print(toprint,target = "audiogrampgls_hf.docx")
 
 source("pgls_audiogram_bh.R")
 
@@ -287,8 +313,8 @@ flexall<-flextable(audiogrampgls_bh) %>% add_header_lines(
   autofit()
 flexall
 
-#write.csv(audiogrampgls_bh,"E:/Analysis_plots/audiogrambh vJan3_21.csv")
-#print(toprint,target = "E:/Analysis_plots/_pgls_audio_bh_apr15.docx")
+write.csv(audiogrampgls_bh,"audiogrampgls_bh.csv")
+print(toprint,target = "audiogrampgls_bh.docx")
 
 
 #######plotting metrics on audiogram########

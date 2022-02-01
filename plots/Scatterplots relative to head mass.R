@@ -36,13 +36,6 @@ longdfplotting<-gather(avgdf,key = "earmeasures", value = "earmeasureval",
                           Family))#
 longdfplotting$earmeasures<-as.factor(longdfplotting$earmeasures)
 longdfplotting$earmeasureval<-as.numeric(longdfplotting$earmeasureval)
-#longdfplotting$Orderpdonly<-ifelse(longdfplotting$Category== "Pursuit diving", longdfplotting$Binomial, "")
-#longdfplotting$SW1<-ifelse(longdfplotting$Binomial == "Ardenna gravis", "Ardenna gravis", "")
-#longdfplotting$SW2<-ifelse(longdfplotting$Binomial == "Ardenna_grisea", longdfplotting$Binomial, "")
-
-#textdf <- longdfplotting[rbind(longdfplotting$Binomial == "Ardenna gravis",longdfplotting$Binomial,"")
-#                               longdfplotting$Binomial =="Ardenna_grisea"), ]
-
 
 pgls_todo_hm
 
