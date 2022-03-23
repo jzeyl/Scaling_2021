@@ -50,5 +50,5 @@ To reproduce the analysis, start with "Set up data_scl.R"
 [3]        
 [4] 
 ![alt text](Picture1.svg)
-![alt text](superorder.png)
+<!--![alt text](superorder.png)-->
 
