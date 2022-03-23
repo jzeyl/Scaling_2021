@@ -7,8 +7,6 @@ library(dplyr)
 
 
 # add avg Corvus and Phalacrocorax values----------------------------------------
-
-
 phalacrocoraxavg<-avgdf[grepl('Phalacrocorax', avgdf$Binomial), ] %>%
   dplyr::select(where(is.numeric)) %>%
   summarise_all(mean, na.rm=T)
@@ -31,10 +29,10 @@ fig1<-read.csv(paste0(getwd(),"/audiograms.csv"), stringsAsFactors = FALSE)
 
 
 
-)# get the high and low Hz limits from a cutoff level ----------------------
+# get the high and low Hz limits from a cutoff level ----------------------
 
 splt<-split(fig1,fig1$Species)
-#set cutoff for the high and low Hz limits (dB)
+#set cutoff for the high and low Hz limits (35 dB)
 cutoff<-35
 
 #create new matrix to populate with data and convert to data audiogramram
@@ -43,7 +41,7 @@ limits<-matrix(nrow=length(splt),ncol = 7)
 
 for(i in seq_along(splt)){
   audiogram<-data.frame()#
-  df_audiogram<-as.data.frame(approx(splt[[i]]$Hz,splt[[i]]$Threshold,n = 500))#approx function to interpolate audiogram
+  df_audiogram<-as.data.frame(approx(splt[[i]]$Hz,splt[[i]]$Threshold,n = 5000))#approx function to interpolate audiogram
   df_audiogram
   #df_audiogram$y is sound level (dB)
   #df_audiogram$x is frequency (Hz)
@@ -132,10 +130,10 @@ limits$aud_rel<-avgdf$aud_rel[match(limits$binomial,avgdf$Binomial)]
 
 
 #limits$pPC1<-speciesPCAvalues$PC1[match(limits$binomial,speciesPCAvalues$Binomial)]
-limits$rw_fp<-avgdf$rw_fp[match(limits$binomial,avgdf$Binomial)]
-limits$ec_cl<-avgdf$EC_CL[match(limits$binomial,avgdf$Binomial)]
-limits$rw_fp<-avgdf$rw_fp[match(limits$binomial,avgdf$Binomial)]
-limits$col2.3_TM<-avgdf$col2.3_TM[match(limits$binomial,avgdf$Binomial)]
+#limits$rw_fp<-avgdf$rw_fp[match(limits$binomial,avgdf$Binomial)]
+#limits$ec_cl<-avgdf$EC_CL[match(limits$binomial,avgdf$Binomial)]
+#limits$rw_fp<-avgdf$rw_fp[match(limits$binomial,avgdf$Binomial)]
+#limits$col2.3_TM<-avgdf$col2.3_TM[match(limits$binomial,avgdf$Binomial)]
 
 # cor plots
 aud_data<- limits[,c("LowHzlimit","HighHzlimit","besthz","bestsensitivity")]

@@ -26,7 +26,7 @@ df$Head.mass..g.
 #Load phylogeny and correct names that were different between birdtree.org and the up-to-date species names
 source("load phylogeny and make CDO.R")
 
-#Ddd computed head mass from head mass~skullwidth pgls
+#Computed head mass from head mass~skullwidth pgls
 source("SW_HM_.R")#add phylogeny here
 df$Head.mass..g.#with imputed values
 
@@ -36,8 +36,8 @@ distinctdf<-distinct(df, Binomial, .keep_all = TRUE)
 distinctdforder<-arrange(distinctdf,Binomial)#sort by species name
 
 #Next get averages by species for columns with continuous data
-avgdf<-df %>% group_by(Binomial) %>% summarise_at(vars(Skull.width..mm.:area_ratio),
-                                                           mean, na.rm = TRUE)
+avgdf<-df %>% group_by(Binomial) %>%
+  summarise_at(vars(Skull.width..mm.:area_ratio),mean, na.rm = TRUE)
 avgdf<-as.data.frame(avgdf)
 
 #Now we add back columns from the distinctdf dataframe which don't require averaging
@@ -79,7 +79,7 @@ avgdf$superorder[avgdf$Order=="Struthioniformes"|
 avgdf$waterbirds<-ifelse(avgdf$superorder=="Aequorlitornithes","Aequorlitornithes","not Aequelornithes")
 
 
-#made data frame object
+#make comparative data frame object
 birdCDO<-comparative.data(phy = birdtreels,data = avgdf,#[avgdf$Category!="Terrestrial",]
                           names.col = Binomial,
                           vcv = TRUE, na.omit = FALSE,
@@ -87,6 +87,62 @@ birdCDO<-comparative.data(phy = birdtreels,data = avgdf,#[avgdf$Category!="Terre
 
 #check any tips dropped between linking phylogeny and dataframe
 birdCDO$dropped
+
+#########scaling intraear##########
+#set up intra-ear analyses
+modellist_intra <- c(  "log(TMtotalarea)~log(FPtotalarea)",
+                       "log(dis_coltip_TMcentroid)~log(TMtotalarea)",
+                       "log(Umbo_distancetoTMplane)~log(TMtotalarea)",
+                       "log(meanTMangle)~log(TMtotalarea)",
+                       "log(RWtotalarea)~log(FPtotalarea)",
+
+                       "log(totalEClength)~log(Columella.length.mm)",
+
+                       "log(Columella.length.mm)~log(Columella.volume.mm3)",
+                       "log(Columella.length.mm)~log(FPtotalarea)",#
+                       "log(FPtotalarea)~log(Columella.volume.mm3)",#
+
+                       "log(TMtotalarea)~log(Columella.volume.mm3)")
+
+geomcoefs_intra<-c(1,
+                   0.5,
+                   0.5,
+                   0,
+                   1,
+
+                   1,
+
+                   0.33,
+                   0.5,
+                   0.67,
+                   0.67)
+
+#list of functional categories for table
+categorylist_intra<-c(rep("Impedance match",5),
+                      "Stiffness",
+                      rep("Columella morphology",2),
+                      rep("Columella inertia",2))
+
+#run the
+source("pgls_intraear.R")
+
+#visualize the table better using the flextable package
+flexall<-flextable(intra) %>%
+  add_header_lines(  values = "Table X. Models for selection") %>%
+  #bold(i = ~ P.val < 0.05) %>% # select columns add: j = ~ Coefficients + P.val
+  autofit()
+flexall
+
+#write table to word file
+toprint<-read_docx() #create word doc object
+body_add_flextable(toprint,flexall)#add pgls output table
+body_end_section_landscape(toprint)
+#write.csv(intra,"E:/Analysis_plots/scalingintra feb 17.csv")
+print(toprint,target = "pgls_intra_scaling all_Dec 18 2021.docx")
+#print(toprint,target = "E:/Analysis_plots/pgls_intra_scaling watermar17.docx")
+
+
+
 
 ####list of pgls models to run (only models with head mass are used)####
 pgls_todo_nogeomet <- c(
@@ -152,6 +208,8 @@ geomcoefs<-c(0,#impedance-matching
              1,
 
              1)
+
+
 #######functional category list#######
 categorylist<-c(rep("Impedance matching",4),
                 "Auditory endorgan length",
@@ -183,56 +241,6 @@ print(toprint,target = "pgls_hm_all Dec 18 2021.docx")
 
 
 
-#########scaling intraear##########
-#set up intra-ear analyses
-modellist_intra <- c(  "log(TMtotalarea)~log(FPtotalarea)",
-                       "log(dis_coltip_TMcentroid)~log(TMtotalarea)",
-                       "log(Umbo_distancetoTMplane)~log(TMtotalarea)",
-                       "log(meanTMangle)~log(TMtotalarea)",
-                       "log(RWtotalarea)~log(FPtotalarea)",
-
-                       "log(totalEClength)~log(Columella.length.mm)",
-
-                       "log(Columella.length.mm)~log(Columella.volume.mm3)",
-                       "log(Columella.length.mm)~log(FPtotalarea)",#
-                       "log(FPtotalarea)~log(Columella.volume.mm3)",#
-
-                       "log(TMtotalarea)~log(Columella.volume.mm3)")
-
-geomcoefs_intra<-c(1,
-                   0.5,
-                   0.5,
-                   0,
-                   1,
-
-                   1,
-
-                   0.33,
-                   0.5,
-                   0.67,
-                   0.67)
-
-categorylist_intra<-c(rep("Impedance match",5),
-                      "Stiffness",
-                      rep("Columella morphology",2),
-                      rep("Columella inertia",2))
-
-source("pgls_intraear.R")
-
-#visualize the table better using the flextable package
-flexall<-flextable(intra) %>%
-  add_header_lines(  values = "Table X. Models for selection") %>%
-  #bold(i = ~ P.val < 0.05) %>% # select columns add: j = ~ Coefficients + P.val
-  autofit()
-flexall
-
-#write table to word file
-toprint<-read_docx() #create word doc object
-body_add_flextable(toprint,flexall)#add pgls output table
-body_end_section_landscape(toprint)
-#write.csv(intra,"E:/Analysis_plots/scalingintra feb 17.csv")
-print(toprint,target = "pgls_intra_scaling all_Dec 18 2021.docx")
-#print(toprint,target = "E:/Analysis_plots/pgls_intra_scaling watermar17.docx")
 
 #########scaling with body mass##########
 source("pgls_bm.R")

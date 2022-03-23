@@ -2,8 +2,6 @@ library(ggplot2)
 library(RColorBrewer)
 library(ggtree)
 library(colorspace)
-#divecol<-c(sequential_hcl(6, palette = "Purple-Blue",rev = T)[2:6])
-
 
 #count number of orders present in the full phylogenetic tree
 orderdf<-avgdf %>% count(Order)
@@ -42,13 +40,6 @@ P<-findMRCA(birdtreels,avgdf$Binomial[avgdf$Order=="Anseriformes"])
 
 #plot
 p<-ggtree(birdtreels, layout = "circular", open.angle = 150) %<+% avgdf + ###########, layout = "circular"
-  #geom_tiplab(aes(label = Binomial2), linesize = 0.1, offset = 4) + #circular
-  #geom_text(aes(label = node))+
-  #xlim(NA, 150) +
-  #ylim(NA,140) +
-  #geom_tippoint(aes(color = Category), size = 5, shape = 15) +
-  #geom_tippoint(aes(x = x+2.5,color = plungedistinct), size = 5, shape = 15) +
-  #geom_tippoint(aes(x = x+5, color = as.factor(divescore)), size = 5, shape = 15) +
   scale_color_manual(values = c(mypal(5),"black","grey","green","blue"))+
   geom_cladelabel(A, grep("Passeriformes",g2order$full, value = T), offset=25, barsize=2, align = T, angle=0,offset.text=15, fontsize=3)+
   geom_cladelabel(B, grep("Charadriiformes",g2order$full, value = T), offset=25, barsize=2, align = T, angle=0, offset.text=15,   fontsize=3)+
@@ -93,6 +84,8 @@ p<-ggtree(birdtreels, layout = "circular", open.angle = 150) %<+% avgdf + ######
   geom_strip(g2order$Binomial[5], g2order$Binomial[5], offset=16, offset.text=15, hjust=0, fontsize=3,
              label=g2order$full[5])
 p
+
+#label rownames of dataframe by species name
 ###########ESSENTIAL step to change row names forheatmap#############
 rownames(avgdf)<-avgdf$Binomial
 
@@ -108,7 +101,10 @@ avgdf %>% dplyr::select(aud_rel) %>%
             colnames_angle = 0,
             colnames_offset_x = 0,
             colnames_offset_y = 0)+
-  scale_fill_manual(values = c("White","red","black"), na.value = "#FFFFFF")
+  scale_fill_manual(values = c("white","grey","black"), na.value = "#FFFFFF")
+
+
+#order level plot
 
 
 

@@ -1,3 +1,10 @@
+# Workflow
+This work [] in prep.
+
+To reproduce the analysis, start with "Set up data_scl.R"
+[Title] in prep. or recently submitted, with an abstract or a summary of the abstract of the paper. Then, a workflow of the scripts. To reproduce the analyses in the paper, where should I start? where should I go next?
+
+
 
 # Data files
 |File|Description|
