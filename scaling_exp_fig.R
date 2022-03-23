@@ -9,9 +9,9 @@ three_d_hypo<-three_d*0.9
 
 #0 is angle vs 3D
 
-three_three<-
 
-ggplot()+
+
+lineplot<-ggplot()+
   #3d vs 3D
 #geom_path(aes(x = log(bm), y = log(three_d)*1.1), col = "red", alpha = 0.5)+
 #geom_path(aes(x = log(bm), y = log(three_d)*0.9), col = "red", alpha = 0.5)+
@@ -36,8 +36,8 @@ ggplot()+
 # geom_ribbon(aes(x = log(bm),ymin=(log(three_d)*0.56),
 #                 ymax=log(three_d)*0.66),
 #             fill="red", alpha=0.5) +
-# geom_text(aes(x = max(log(three_d)+1), y = max(log(three_d)*0.66)),
-#            label = "2D~3D (slope: 0.66)")+
+ geom_text(aes(x = max(log(three_d)+1), y = max(log(three_d)*0.66)),
+            label = "2D~3D (slope: 0.66)")+
   geom_path(aes(x = log(bm), y = log(three_d)*0.66))+
 
 #are vs
@@ -50,16 +50,37 @@ ggplot()+
 #                 ymax=log(three_d)*0.43),
 #             fill="red", alpha=0.5) +
   geom_text(aes(x = max(log(three_d)+1), y = max(log(three_d)*0.33)),
-            label = "2D~3D (slope: 0.33)")+
-geom_path(aes(x = log(bm), y = log(y)*0.33))+
+            label = "1D~3D (slope: 0.33)")+
+geom_path(aes(x = log(bm), y = log(three_d)*0.33))+
 
 #angle vs 3D
-geom_path(aes(x = log(bm), y = log(y)*0))+
+geom_path(aes(x = log(bm), y = log(three_d)*0))+
 
 #themes, scales
 theme_minimal()+
 scale_x_continuous(limits = c(0,11), breaks = seq(0,10,2))+
 scale_y_continuous(limits = c(-2,10))
+
+lineplot
+
+#table
+
+slopes<-c(1,0.66,0.5,0.3,0)
+dimensions<-c("1D:1:D,2D:2D")
+intra_rel<-c("ESL~CL, TM~FP,RW~FP",
+             "TM~CV,FP~CV",
+             "COff~TM,CL~FP,UH~TM",
+             "CL~CV",
+             "TMA~TM")
+tabl<-as.data.frame(cbind(slopes,intra_rel))
+
+library(gt)
+plottab<-gt(tabl)
+
+library(patchwork)
+lineplot+plottab
+
+
 
 
 
