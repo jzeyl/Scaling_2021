@@ -133,6 +133,19 @@ flexall<-flextable(intra) %>%
   autofit()
 flexall
 
+#pgls model diagnostics
+par(mfrow=c(2,2))
+par(mar=c(1,1,1,1))
+plots_intra<-lapply(pgls_models_list, plot)
+plots_intra
+i <- 1
+while (i<length(pgls_models_list))
+{
+  plot(pgls_models_list[[i]])
+i<-i+1
+  }
+
+
 #write table to word file
 toprint<-read_docx() #create word doc object
 body_add_flextable(toprint,flexall)#add pgls output table
@@ -228,6 +241,20 @@ flexall<-flextable(hm) %>%
   #bold(i = ~ P.val < 0.05) %>% # select columns add: j = ~ Coefficients + P.val
   autofit()
 flexall
+
+
+#pgls model diagnostics
+par(mfrow=c(2,2))
+par(mar=c(1,1,1,1))
+plots_intra<-lapply(pgls_models_list, plot)
+plots_intra
+i <- 1
+while (i<length(pgls_models_list))
+{
+
+  plot(pgls_models_list[[i]])
+  i<-i+1
+}
 
 #write table to word file
 toprint<-read_docx() #create word doc object

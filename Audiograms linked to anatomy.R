@@ -30,8 +30,8 @@ fig1<-read.csv(paste0(getwd(),"/audiograms.csv"), stringsAsFactors = FALSE)
 
 
 # get the high and low Hz limits from a cutoff level ----------------------
-
 splt<-split(fig1,fig1$Species)
+
 #set cutoff for the high and low Hz limits (35 dB)
 cutoff<-35
 

@@ -17,6 +17,18 @@ three_d_hypo<-three_d*0.9
 
 
 lineplot<-ggplot()+
+
+ #geom_textabline(slope = 1, intercept = 0, label = "b:1",
+ #                hjust = 0.6, vjust = -0.2)+
+ #geom_textabline(slope = 0.66, intercept = 0, label = "b:0.66",
+ #                hjust = 0.6, vjust = -0.2)+
+ #geom_textabline(slope = 0.5, intercept = 0, label = "b:0.5",
+ #                hjust = 0.6, vjust = -0.2)+
+ #geom_textabline(slope = 0.33, intercept = 0, label = "b:0.33",
+ #                hjust = 0.6, vjust = -0.2)+
+ #geom_textabline(slope = 0, intercept = 0, label = "b:0",
+ #                hjust = 0.6, vjust = -0.2)+
+
   geom_richtext(aes(x = max(log(three_d))+0.1, y = max(log(three_d))),
             label = "**b: 1** (CV~HM)", hjust = 0)+
   geom_path(aes(x = log(bm), y = log(three_d)))+
@@ -40,16 +52,7 @@ geom_path(aes(x = log(bm), y = log(three_d)*0))+
   geom_richtext(aes(x = max(log(three_d)+0.1), y = max(log(three_d)*0)),
             label = "**b: 0.0** (degrees~g)", hjust = 0)+
 
-geom_textabline(slope = 1, intercept = 0, label = "b:1",
-                hjust = 0.6, vjust = -0.2)+
-  geom_textabline(slope = 0.66, intercept = 0, label = "b:0.66",
-                  hjust = 0.6, vjust = -0.2)+
-  geom_textabline(slope = 0.5, intercept = 0, label = "b:0.5",
-                  hjust = 0.6, vjust = -0.2)+
-  geom_textabline(slope = 0.33, intercept = 0, label = "b:0.33",
-                  hjust = 0.6, vjust = -0.2)+
-  geom_textabline(slope = 0, intercept = 0, label = "b:0",
-                  hjust = 0.6, vjust = -0.2)+
+
 #themes, scales
 ylab("log(measure)")+
   xlab("log(measure)")+
@@ -60,7 +63,6 @@ scale_y_continuous(limits = c(-2,11))+
 theme(axis.text = element_blank(),
       panel.grid = element_blank())
 lineplot
-
 
 #geom_textabline(slope = 15, intercept = -100, label = "partition line",
 #                color = "green4", hjust = 0.6, vjust = -0.2)
