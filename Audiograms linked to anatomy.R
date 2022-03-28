@@ -151,18 +151,24 @@ cor.test(aud_data$HighHzlimit, aud_data$bestsensitivity)
 
 
 #summary statistics of audiograms
-mean(limits$HighHzlimit)
-sd(limits$HighHzlimit)/sqrt(length(limits$HighHzlimit))
+meanhigh<-mean(limits$HighHzlimit)
+se_high<-sd(limits$HighHzlimit)/sqrt(length(limits$HighHzlimit))
 
-mean(limits$LowHzlimit)
-sd(limits$LowHzlimit)/sqrt(length(limits$LowHzlimit))
+meanlow<-mean(limits$LowHzlimit)
+se_low<-sd(limits$LowHzlimit)/sqrt(length(limits$LowHzlimit))
 
-mean(limits$besthz)
-sd(limits$besthz)/sqrt(length(limits$besthz))
+meanbesthz<-mean(limits$besthz)
+se_besthz<-sd(limits$besthz)/sqrt(length(limits$besthz))
 
-mean(limits$bestsensitivity)
-sd(limits$bestsensitivity)/sqrt(length(limits$bestsensitivity))
+meanbestsens<-mean(limits$bestsensitivity)
+se_bestsens<-sd(limits$bestsensitivity)/sqrt(length(limits$bestsensitivity))
 
+0
+meanlow
+se_low
+
+meanbestsens,
+se_bestsens
 
 ###############PGLS MODELS BEST SENSITIVITY####################
 modellist_bs<-c(
@@ -254,8 +260,11 @@ categorylist_hf<-categorylist_lf
 #only select the rows for which anatomical data is available for the corresponding audiograms
 limitsanat<-limits[which(!is.na(limits$binomial)),]
 
-birdtreels$tip.label[14]<-"Corvus_cornix"
-birdtreels$tip.label[51]<-"Phalacrocorax_carbo"
+#matching congeners to the appropriate position in the phylogeny
+birdtreels$tip.label[14]<-"Corvus_cornix" #renamed from Corvus_albus
+birdtreels$tip.label[51]<-"Phalacrocorax_carbo" #rename "phalacrocorax_lucidus"
+
+
 #made data frame object
 birdCDO<-comparative.data(phy = birdtreels,data = limitsanat,#[avgdf$Category!="Terrestrial",]
                           names.col =binomial,
@@ -275,8 +284,26 @@ flexall<-flextable(audiogrampgls_bs) %>% add_header_lines(
   bold(i = ~ P.val < 0.05) %>% # select columns add: j = ~ Coefficients + P.val
   autofit()
 flexall
+
+#define pgls model diagnostics function
+pgls_dplot<-function(modellist){
+  par(mfrow=c(2,2))
+  par(mar=c(1,1,1,1))
+  i <- 1
+  while (i<length(modellist))
+  {
+    plot(modellist[[i]])
+    i<-i+1
+  }
+}
+
+pgls_dplot(pgls_models_list_bs)
+###print results
 write.csv(audiogrampgls_bs,"audiogrampgls_bs.csv")
 print(toprint,target = "audiogrampgls_bs.docx")
+
+
+# low frequency limit (Hz) ------------------------------------------------
 
 source("pgls_audiogram_lf.R")
 
@@ -287,8 +314,15 @@ flexall<-flextable(audiogrampgls_lf) %>% add_header_lines(
   autofit()
 flexall
 
+#diagnostics
+pgls_dplot(pgls_models_list_lf)
+
+#print to file
 write.csv(audiogrampgls_lf,"audiogrampgls_lf.csv")
 print(toprint,target = "audiogrampgls_lf.docx")
+
+
+# high frequency limit ----------------------------------------------------
 
 source("pgls_audiogram_hf.R")
 
@@ -299,8 +333,16 @@ flexall<-flextable(audiogrampgls_hf) %>% add_header_lines(
   autofit()
 flexall
 
+
+#diagnostics
+pgls_dplot(pgls_models_list_hf)
+
+#print to file
 write.csv(audiogrampgls_hf,"audiogrampgls_hf.csv")
 print(toprint,target = "audiogrampgls_hf.docx")
+
+
+# best frequency ----------------------------------------------------------
 
 source("pgls_audiogram_bh.R")
 
@@ -310,6 +352,10 @@ flexall<-flextable(audiogrampgls_bh) %>% add_header_lines(
   bold(i = ~ P.val < 0.05) %>% # select columns add: j = ~ Coefficients + P.val
   autofit()
 flexall
+
+#diagnostics
+pgls_dplot(pgls_models_list_bh)
+
 
 write.csv(audiogrampgls_bh,"audiogrampgls_bh.csv")
 print(toprint,target = "audiogrampgls_bh.docx")

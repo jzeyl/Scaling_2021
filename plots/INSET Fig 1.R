@@ -1,4 +1,29 @@
 
+#superorder group
+avgdf$superorder<-avgdf$Order
+avgdf$superorder[avgdf$Order=="Passeriformes"|
+                   avgdf$Order=="Falconiformes"|
+                   avgdf$Order=="Psittaciformes"]<-"Australaves"
+avgdf$superorder[avgdf$Order=="Coraciiformes"|
+                   avgdf$Order=="Piciformes"|
+                   avgdf$Order=="Bucerotiformes"|
+                   avgdf$Order=="Coliiformes"]<-"Coraciimorphae"
+avgdf$superorder[avgdf$Order=="Suliformes"|
+                   avgdf$Order=="Sphenisciformes"|
+                   avgdf$Order=="Charadriiformes"|
+                   avgdf$Order=="Procellariiformes"|
+                   avgdf$Order=="Gaviiformes"|
+                   avgdf$Order=="Pelecaniformes"|
+                   avgdf$Order=="Phoenicopteriformes"|
+                   avgdf$Order=="Phaethontiformes"]<-"Aequorlitornithes"
+avgdf$superorder[avgdf$Order=="Columbiformes"|
+                   avgdf$Order=="Cuculiformes"|
+                   avgdf$Order=="Musophagiformes"]<-"Columbaves"
+avgdf$superorder[avgdf$Order=="Galliformes"|
+                   avgdf$Order=="Anseriformes"]<-"Galloanserae"
+avgdf$superorder[avgdf$Order=="Struthioniformes"|
+                   avgdf$Order=="Cassuariiformes"]<-"Paleognathae"
+
 #count number of orders present in the full phylogenetic tree
 superorderdf<-avgdf %>% count(superorder)
 

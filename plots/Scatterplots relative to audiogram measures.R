@@ -3,6 +3,7 @@ library(dplyr)
 ########SETUP############
 #modellist_intra
 
+#classification for the two species withaverage
 limits$aud_rel[limits$binomial=="Corvus_cornix"]<-"Congener"
 limits$aud_rel[limits$binomial=="Phalacrocorax_carbo"]<-"Congener"
 
