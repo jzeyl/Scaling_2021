@@ -8,15 +8,12 @@ pgls_models<-function(i){
                 bounds = list(lambda=c(0.001,1)))#####
 }
 
-
 pgls_models_list<-lapply(modellist_intra,pgls_models)#run pgls
 
-
-
-#make list of dataframes with the PGLS outputs. 
+#make list of dataframes with the PGLS outputs.
 tbllist_intra<-list()
 for (i in seq_along(pgls_models_list)){#change th 'Model' colume in this as appropriate
-  
+
   #put stats outputs into dataframe
   tbllist_intra[[i]]<-as.data.frame(summary(pgls_models_list[[i]])$'coefficients')
   tbllist_intra[[i]]$Adj_Rsquared<-summary(pgls_models_list[[i]])$'adj.r.squared'[1]#rsquared
@@ -31,7 +28,7 @@ for (i in seq_along(pgls_models_list)){#change th 'Model' colume in this as appr
 #organize the dataframe table (significant digits, remove redundant F stat & R squared)
 for(i in seq_along(tbllist_intra)){
   tbllist_intra[[i]]$Coefficients<-row.names(tbllist_intra[[i]])
-  #identify numeric cols and character cols to apply the significant digits function 
+  #identify numeric cols and character cols to apply the significant digits function
   character_cols<-unlist(lapply(tbllist_intra[[i]], is.character))
   numeric_cols <- unlist(lapply(tbllist_intra[[i]], is.numeric))# Identify numeric columns
   tbllist_intra[[i]]<-cbind(tbllist_intra[[i]][,which(character_cols)],signif(tbllist_intra[[i]][,which(numeric_cols)], digits = 2))
@@ -52,14 +49,18 @@ intra$scalingtype<-ifelse(intra$CI95_low>intra$geometric_exp,"hyperallometric",
                        intra$scalingtype)
 intra$scalingtype<-ifelse(intra$CI95_high>intra$geometric_exp&intra$CI95_low<intra$geometric_exp,"isometric",
                        intra$scalingtype)
+intra$tval<-(intra$Estimate-intra$geometric_exp)/intra$`Std. Error`#t-value of differnce between estimate and isometric slope
+intra$pval<-2*pt(abs(intra$tval),df=intra$Fstat_dendf, lower.tail = FALSE)#two tailed p-val
 
-intra = subset(intra, select = c(category,Model,Coefficients,geometric_exp,Estimate, CI95_low,
-                           CI95_high,scalingtype,Adj_Rsquared,Lambda))
+
+#subset the columns to present concise paper
+intra <- subset(intra, select = c(category,Model,Coefficients,geometric_exp,Estimate, CI95_low,
+                           CI95_high,scalingtype,tval,pval,Adj_Rsquared,Lambda))
 
 #visualize the table better using the flextable package
 flexall<-flextable(intra) %>% add_header_lines(
 values = "Table X. Models for selection") %>%
-  #bold(i = ~ ChangeAIC < 0.01) %>% # select columns add: j = ~ Coefficients + P.val
+  bold(i = ~ pval < 0.05) %>% # select columns add: j = ~ Coefficients + P.val
   autofit()
 flexall
 

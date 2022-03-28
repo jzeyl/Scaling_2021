@@ -138,7 +138,7 @@ toprint<-read_docx() #create word doc object
 body_add_flextable(toprint,flexall)#add pgls output table
 body_end_section_landscape(toprint)
 #write.csv(intra,"E:/Analysis_plots/scalingintra feb 17.csv")
-print(toprint,target = "pgls_intra_scaling all_Dec 18 2021.docx")
+print(toprint,target = "pgls_intra_scaling all_Mar 28 2022.docx")
 #print(toprint,target = "E:/Analysis_plots/pgls_intra_scaling watermar17.docx")
 
 
@@ -236,7 +236,7 @@ body_end_section_landscape(toprint)
 
 #write result/table to files
 #write.csv(hm,"E:/Analysis_plots/scaling_hm Feb 17.csv")
-print(toprint,target = "pgls_hm_all Dec 18 2021.docx")
+print(toprint,target = "pgls_hm_all Mar 28 2022.docx")
 #print(toprint,target = "E:/Analysis_plots/pgls_hm_scaling waterbirds mar 3.docx")
 
 

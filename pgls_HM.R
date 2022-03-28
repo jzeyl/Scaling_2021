@@ -1,5 +1,5 @@
 options(digits = 3)
-
+options(scipen = 100)
 library(flextable)
 library(officer)
 #pgls_todo_hm<-pgls_todo_nogeomet[seq(2,length(pgls_todo_nogeomet),2)]
@@ -9,7 +9,7 @@ modellist<-pgls_todo_hm
 pgls_models_list<-lapply(modellist,pgls_models)#run pgls
 
 
-#make list of dataframes with the PGLS outputs. 
+#make list of dataframes with the PGLS outputs.
 tbllist_HM<-list()
 for (i in seq_along(pgls_models_list)){#change th 'Model' colume in this as appropriate
   tbllist_HM[[i]]<-as.data.frame(summary(pgls_models_list[[i]])$'coefficients')
@@ -24,14 +24,14 @@ for (i in seq_along(pgls_models_list)){#change th 'Model' colume in this as appr
   tbllist_HM[[i]]$T_0<-(coef(pgls_models_list[[i]])[2]-0)/pgls_models_list[[i]]$sterr[2]
   tbllist_HM[[i]]$p_slope_re_1<- 2*pt(abs(tbllist_HM[[i]]$T_1), pgls_models_list[[i]]$n-2, lower.tail = FALSE)
   tbllist_HM[[i]]$p_slope_re_0<- 2*pt(abs(tbllist_HM[[i]]$T_0), pgls_models_list[[i]]$n-2, lower.tail = FALSE)
-  
+
 }
 
 #organize the dataframe table (significant digist, remove redundant F stat & R squared)
 for(i in seq_along(tbllist_HM)){
   tbllist_HM[[i]]$Coefficients<-row.names(tbllist_HM[[i]])
   tbllist_HM[[i]]$Coefficients<-gsub('[[:digit:]]+', '', tbllist_HM[[i]]$Coefficients)#regex to remove number automatically added during the loop
-  #identify numeric cols and character cols to apply the significant digits function 
+  #identify numeric cols and character cols to apply the significant digits function
   character_cols<-unlist(lapply(tbllist_HM[[i]], is.character))
   numeric_cols <- unlist(lapply(tbllist_HM[[i]], is.numeric))# Identify numeric columns
   tbllist_HM[[i]]<-cbind(tbllist_HM[[i]][,which(character_cols)],signif(tbllist_HM[[i]][,which(numeric_cols)], digits = 2))
@@ -41,6 +41,7 @@ for(i in seq_along(tbllist_HM)){
  row.names(tbllist_HM[[i]])<-c()#remove row names
   print(tbllist_HM[[i]])
 }
+
 
 hm<-do.call(rbind.data.frame,tbllist_HM)
 hm$CI95_low<-hm$Estimate-hm$`Std. Error`*1.96
@@ -55,14 +56,19 @@ hm$scalingtype<-ifelse(hm$CI95_low>hm$geometric_exp,"hyperallometric",
 hm$scalingtype<-ifelse(hm$CI95_high>hm$geometric_exp&hm$CI95_low<hm$geometric_exp,"isometric",
                        hm$scalingtype)
 
+hm$tval<-(hm$Estimate-hm$geometric_exp)/hm$`Std. Error`#t-value of differnce between estimate and isometric slope
+hm$pval<-2*pt(abs(hm$tval),df=hm$Fstat_dendf, lower.tail = FALSE)#two tailed p-val
+hm$pval<-round(hm$pval,digits = 5)
+
+
 hm <- subset(hm, select = c(category,Model,Coefficients,
                             geometric_exp,Estimate, CI95_low,
-                      CI95_high,scalingtype,Adj_Rsquared,Lambda))
+                      CI95_high,scalingtype,pval,Adj_Rsquared,Lambda))
 
 #visualize the table better using the flextable package
-flexall<-flextable(hm) %>% 
+flexall<-flextable(hm) %>%
   add_header_lines(  values = "Table X. Models for selection") %>%
-  #bold(i = ~ P.val < 0.05) %>% # select columns add: j = ~ Coefficients + P.val
+  bold(i = ~ pval < 0.05) %>% # select columns add: j = ~ Coefficients + P.val
   autofit()
 flexall
 
