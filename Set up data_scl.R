@@ -8,7 +8,7 @@ library(tidyr)
 
 ################Set up data############
 #set working directory and load data
-setwd("C:/Users/jeffz/Desktop/scling/Scaling_2021")
+setwd(choose.dir())
 
 #load main dataframe
 df<-read.csv("databmadded.csv", stringsAsFactors = F, header = T) #, stringsAsFactors = FALSE

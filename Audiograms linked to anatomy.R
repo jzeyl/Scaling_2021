@@ -163,12 +163,6 @@ se_besthz<-sd(limits$besthz)/sqrt(length(limits$besthz))
 meanbestsens<-mean(limits$bestsensitivity)
 se_bestsens<-sd(limits$bestsensitivity)/sqrt(length(limits$bestsensitivity))
 
-0
-meanlow
-se_low
-
-meanbestsens,
-se_bestsens
 
 ###############PGLS MODELS BEST SENSITIVITY####################
 modellist_bs<-c(
@@ -278,12 +272,14 @@ birdCDO$dropped
 ###########best sensitivity#################
 source("pgls_audiogram_bs.R")
 
+#results table is saved as 'audiogrampgls-bs'
+
 #visualize the table better using the flextable package
-flexall<-flextable(audiogrampgls_bs) %>% add_header_lines(
-  values = "Table X. Models for selection") %>%
-  bold(i = ~ P.val < 0.05) %>% # select columns add: j = ~ Coefficients + P.val
-  autofit()
-flexall
+#flexall<-flextable(audiogrampgls_bs) %>% add_header_lines(
+#  values = "Table X. Models for selection") %>%
+#  bold(i = ~ P.val < 0.05) %>% # select columns add: j = ~ Coefficients + P.val
+#  autofit()
+#flexall
 
 #define pgls model diagnostics function
 pgls_dplot<-function(modellist){
@@ -307,12 +303,15 @@ print(toprint,target = "audiogrampgls_bs.docx")
 
 source("pgls_audiogram_lf.R")
 
+#results table is saved as 'audiogrampgls-lf'
+
+
 #visualize the table better using the flextable package
-flexall<-flextable(audiogrampgls_lf) %>% add_header_lines(
-  values = "Table X. Models for selection") %>%
-  bold(i = ~ P.val < 0.05) %>% # select columns add: j = ~ Coefficients + P.val
-  autofit()
-flexall
+#flexall<-flextable(audiogrampgls_lf) %>% add_header_lines(
+# values = "Table X. Models for selection") %>%
+#  bold(i = ~ P.val < 0.05) %>% # select columns add: j = ~ Coefficients + P.val
+#  autofit()
+#flexall
 
 #diagnostics
 pgls_dplot(pgls_models_list_lf)
@@ -326,12 +325,15 @@ print(toprint,target = "audiogrampgls_lf.docx")
 
 source("pgls_audiogram_hf.R")
 
+#results table is saved as 'audiogrampgls-hf'
+
+
 #visualize the table better using the flextable package
-flexall<-flextable(audiogrampgls_hf) %>% add_header_lines(
-  values = "Table X. Models for selection") %>%
-  bold(i = ~ P.val < 0.05) %>% # select columns add: j = ~ Coefficients + P.val
-  autofit()
-flexall
+#flexall<-flextable(audiogrampgls_hf) %>% add_header_lines(
+#  values = "Table X. Models for selection") %>%
+#  bold(i = ~ P.val < 0.05) %>% # select columns add: j = ~ Coefficients + P.val
+#  autofit()
+#flexall
 
 
 #diagnostics
@@ -346,19 +348,42 @@ print(toprint,target = "audiogrampgls_hf.docx")
 
 source("pgls_audiogram_bh.R")
 
+#results table is saved as 'audiogrampgls-bh'
+
+audio_pgls_results<-bind_rows(audiogrampgls_bh,
+                              audiogrampgls_bs,
+                              audiogrampgls_lf,
+                              audiogrampgls_hf)
+#split up model column
+spltmodel<-strsplit(audio_pgls_results$Model,"~")
+audio_pgls_results$`Audiogram metric`<-lapply(spltmodel, `[[`, 1)
+audio_pgls_results$anattraitx<-lapply(spltmodel, `[[`, 2)
+
+#reorder columns
+audio_pgls_results<-audio_pgls_results %>% relocate(`Audiogram metric`)
+
+#remove intercept estimates, drop model column,
+#only keep significant relationships
+audio_pgls_results<-audio_pgls_results %>% select(-Model) %>%
+  filter(Coefficients!="(Intercept)" &
+                                P.val <0.05)
+
+
+
+
 #visualize the table better using the flextable package
-flexall<-flextable(audiogrampgls_bh) %>% add_header_lines(
+flexall<-flextable(audio_pgls_results) %>% add_header_lines(
   values = "Table X. Models for selection") %>%
-  bold(i = ~ P.val < 0.05) %>% # select columns add: j = ~ Coefficients + P.val
+  #bold(i = ~ P.val < 0.05) %>% # select columns add: j = ~ Coefficients + P.val
   autofit()
 flexall
 
 #diagnostics
 pgls_dplot(pgls_models_list_bh)
 
-
-write.csv(audiogrampgls_bh,"audiogrampgls_bh.csv")
-print(toprint,target = "audiogrampgls_bh.docx")
+setwd(choose.dir())
+write.csv(audiogrampgls_bh,"audiogrampgls_all.csv")
+print(toprint,target = "audiogrampgls_all.docx")
 
 
 #######plotting metrics on audiogram########

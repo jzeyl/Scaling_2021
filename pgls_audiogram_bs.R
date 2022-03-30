@@ -3,7 +3,7 @@
 #Head mass only
 #modellist<-pgls_todo_hm
 
-options(digits = 3)
+options(digits = 3, scipen = 1000)
 pgls_models_list_bs<-lapply(modellist_bs,pgls_models)#run pgls
 
 
@@ -12,7 +12,7 @@ tbllist_audiogram<-list()
 for (i in seq_along(pgls_models_list_bs)){#change th 'Model' colume in this as appropriate
   tbllist_audiogram[[i]]<-as.data.frame(summary(pgls_models_list_bs[[i]])$'coefficients')
   tbllist_audiogram[[i]]$Adj_Rsquared<-summary(pgls_models_list_bs[[i]])$'adj.r.squared'[1]#rsquared
-  tbllist_audiogram[[i]]$Model<-modellist_bs[i]#formula<_____________________CHECK FORMULA LIST HERE is correct
+  tbllist_audiogram[[i]]$Model<-rep(modellist_bs[i],2)#formula<_____________________CHECK FORMULA LIST HERE is correct
   tbllist_audiogram[[i]]$Lambda<-summary(pgls_models_list_bs[[i]])$'param'[[2]]#lambda
   tbllist_audiogram[[i]]$Fstat<-summary(pgls_models_list_bs[[i]])$fstatistic[1]
   tbllist_audiogram[[i]]$Fstat_numdf<-summary(pgls_models_list_bs[[i]])$fstatistic[2]
@@ -29,7 +29,7 @@ for(i in seq_along(tbllist_audiogram)){
   numeric_cols <- unlist(lapply(tbllist_audiogram[[i]], is.numeric))# Identify numeric columns
   tbllist_audiogram[[i]]<-cbind(tbllist_audiogram[[i]][,which(character_cols)],signif(tbllist_audiogram[[i]][,which(numeric_cols)], digits = 2))
   colnames(tbllist_audiogram[[i]])[6]<-"P.val"#rename b/c flextable doesn't work will with the '>' sign
-  tbllist_audiogram[[i]]$Model[2:nrow(tbllist_audiogram[[i]])]<-""
+  #tbllist_audiogram[[i]]$Model[2:nrow(tbllist_audiogram[[i]])]<-""
   row.names(tbllist_audiogram[[i]])<-c()#remove row names
   print(tbllist_audiogram[[i]])
 }

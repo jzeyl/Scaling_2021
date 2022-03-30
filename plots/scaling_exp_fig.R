@@ -30,27 +30,37 @@ lineplot<-ggplot()+
  #                hjust = 0.6, vjust = -0.2)+
 
   geom_richtext(aes(x = max(log(three_d))+0.1, y = max(log(three_d))),
-            label = "**b: 1** (CV~HM)", hjust = 0)+
-  geom_path(aes(x = log(bm), y = log(three_d)))+
-
+            label = "**b: 1** (mm~mm,mm<sup>2</sup>~mm<sup>2</sup>,mm<sup>3</sup>~mm<sup>3</sup>,g)", hjust = 0)+
+  #geom_path(aes(x = log(bm), y = log(three_d)))+
+  geom_textpath(aes(x = log(bm), y = log(three_d)),
+                label = "b:1",
+                hjust = 0.6, vjust = -0.2)+
  geom_richtext(aes(x = max(log(three_d)+0.1), y = max(log(three_d)*0.66)),
-            label = "**b: 0.66** (TM~CV,FP~CV,TM~HM)", hjust = 0)+
-  geom_path(aes(x = log(bm), y = log(three_d)*0.66))+
-  #geom_text(aes(x = max(log(three_d)+3), y = max(log(three_d)*0.66)),
-  #          label = "TM~CV,FP~CV", hjust = 0)+
-
+            label = "**b: 0.66** (mm<sup>2</sup>~mm<sup>3</sup>,g)", hjust = 0)+
+  #geom_path(aes(x = log(bm), y = log(three_d)*0.66))+
+  geom_textpath(aes(x = log(bm), y = log(three_d)*0.66),
+                label = "b:0.66",
+                hjust = 0.6, vjust = -0.2)+
   geom_richtext(aes(x = max(log(three_d)+0.1), y = max(log(three_d)*0.5)),
-            label = "**b: 0.5** (UH~TM, COff~TM))", hjust = 0)+
-  geom_path(aes(x = log(bm), y = log(three_d)*0.5))+
-
+            label = "**b: 0.5** (mm~mm<sup>2</sup>))", hjust = 0)+
+  #geom_path(aes(x = log(bm), y = log(three_d)*0.5))+
+  geom_textpath(aes(x = log(bm), y = log(three_d)*0.5),
+                label = "b:0.5",
+                hjust = 0.6, vjust = -0.2)+
   geom_richtext(aes(x = max(log(three_d)+0.1), y = max(log(three_d)*0.33)),
-            label = "**b: 0.33** (mm~g)", hjust = 0)+
+            label = "**b: 0.33** (mm~mm<sup>3</sup>,g)" , hjust = 0)+
 geom_path(aes(x = log(bm), y = log(three_d)*0.33))+
+  geom_textpath(aes(x = log(bm), y = log(three_d)*0),
+                label = "b:0.33",
+                hjust = 0.6, vjust = -0.2)+
 
 #angle vs 3D
 geom_path(aes(x = log(bm), y = log(three_d)*0))+
+  geom_textpath(aes(x = log(bm), y = log(three_d)*0.33),
+                label = "b:0.0",
+                hjust = 0.6, vjust = -0.2)+
   geom_richtext(aes(x = max(log(three_d)+0.1), y = max(log(three_d)*0)),
-            label = "**b: 0.0** (degrees~g)", hjust = 0)+
+                label = "**b: 0.0** (degree~mm<sup>3</sup>,g)" , hjust = 0)+
 
 
 #themes, scales
@@ -72,33 +82,36 @@ lineplot
 # hypo-hyper-iso ----------------------------------------------------------
 
 inset<-ggplot()+
- geom_ribbon(aes(x = log(bm),ymin=(log(three_d)*0.25),
-                  ymax=log(three_d)),
-              fill="red", alpha = 0.5)+
-  geom_ribbon(aes(x = log(bm),ymin=(log(three_d)*1.75),
-                  ymax=log(three_d)),
-              fill="red", alpha = 0.5) +
-  geom_textpath(aes(x = log(bm), y = log(three_d)), label = "Isometric")+
-  geom_textpath(aes(x = log(bm), y = log(three_d)*1.75), col = "black",  label = "Hyperallometric")+
-  geom_textpath(aes(x = log(bm), y = log(three_d)*0.25), col = "black",  label = "Hypoallometric")+
+ #geom_ribbon(aes(x = log(bm),ymin=(log(three_d)*0.25),
+ #                 ymax=log(three_d)),
+ #             fill="red", alpha = 0.5)+
+ # geom_ribbon(aes(x = log(bm),ymin=(log(three_d)*1.75),
+ #                 ymax=log(three_d)),
+ #             fill="red", alpha = 0.5) +
+  geom_textpath(aes(x = log(bm), y = log(three_d)), label = "Isometric",
+                hjust = 0.6, vjust = -0.2)+
+  geom_textpath(aes(x = log(bm), y = log(three_d)*1.75), col = "black",  label = "Hyperallometric",
+                hjust = 0.6, vjust = -0.2)+
+  geom_textpath(aes(x = log(bm), y = log(three_d)*0.25), col = "black",  label = "Hypoallometric",
+                hjust = 0.6, vjust = -0.2)+
 
-  geom_segment(aes(x = max(log(bm)), #hyperallometric
-                 y = max(log(three_d)),
-                 xend = max(log(bm)),
-                 yend = max(log(three_d))*1.75),
-                arrow = arrow(type = "closed"))+
-  geom_segment(aes(x = max(log(bm)), #hyperallometric
-                   y = max(log(three_d)),
-                   xend = max(log(bm)),
-                   yend = max(log(three_d))*0.25),
-               arrow = arrow(type = "closed"))+
+  #geom_segment(aes(x = max(log(bm)), #hyperallometric
+  #               y = max(log(three_d)),
+  #               xend = max(log(bm)),
+  #               yend = max(log(three_d))*1.75),
+  #              arrow = arrow(type = "closed"))+
+  #geom_segment(aes(x = max(log(bm)), #hyperallometric
+  #                 y = max(log(three_d)),
+  #                 xend = max(log(bm)),
+  #                 yend = max(log(three_d))*0.25),
+  #             arrow = arrow(type = "closed"))+
   theme_minimal()+
-  theme(axis.text = element_blank(),
-        panel.grid = element_blank())+
-ylab(" ")+
-  xlab("")+
-  scale_x_continuous(limits = c(0,20), breaks = seq(0,10,2))+
-  scale_y_continuous(limits = c(-2,20))
+  #theme(axis.text = element_blank(),
+   #     panel.grid = element_blank())+
+ylab("log(y)")+
+  xlab("log(x)")+
+  scale_x_continuous(limits = c(0,10))+
+  scale_y_continuous(limits = c(0,10))
   #geom_text(aes(x = max(log(three_d)+1), y = max(log(three_d))),
   #          label = "Isometric", hjust = 0)+
   #geom_text(aes(x = max(log(three_d)+1), y = max(log(three_d)*1.75)),

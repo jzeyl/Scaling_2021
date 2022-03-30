@@ -38,7 +38,7 @@ for(i in seq_along(tbllist_audiogram)){
   #tbllist_audiogram[[i]]$Fstat[2:nrow(tbllist_audiogram[[i]])]<-""
   #tbllist_audiogram[[i]]$Fstat_numdf[2:nrow(tbllist_audiogram[[i]])]<-""
   #tbllist_audiogram[[i]]$Fstat_dendf[2:nrow(tbllist_audiogram[[i]])]<-" "
-  tbllist_audiogram[[i]]$Model[2:nrow(tbllist_audiogram[[i]])]<-""
+  #tbllist_audiogram[[i]]$Model[2:nrow(tbllist_audiogram[[i]])]<-""
   #tbllist_audiogram[[i]]$Lambda[2:nrow(tbllist_audiogram[[i]])]<-""
   #tbllist_audiogram[[i]]$Adj_Rsquared[2:nrow(tbllist_audiogram[[i]])]<-""
   #tbllist_audiogram[[i]]$AICc[2:nrow(tbllist_audiogram[[i]])]<-""

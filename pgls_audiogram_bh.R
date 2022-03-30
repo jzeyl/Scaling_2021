@@ -6,7 +6,7 @@ pgls_models_list_bh<-lapply(modellist_bh,pgls_models)#run pgls
 
 
 
-#make list of dataframes with the PGLS outputs. 
+#make list of dataframes with the PGLS outputs.
 tbllist_audiogram<-list()
 for (i in seq_along(pgls_models_list_bh)){#change th 'Model' colume in this as appropriate
   tbllist_audiogram[[i]]<-as.data.frame(summary(pgls_models_list_bh[[i]])$'coefficients')
@@ -16,14 +16,14 @@ for (i in seq_along(pgls_models_list_bh)){#change th 'Model' colume in this as a
   tbllist_audiogram[[i]]$Fstat<-summary(pgls_models_list_bh[[i]])$fstatistic[1]
   tbllist_audiogram[[i]]$Fstat_numdf<-summary(pgls_models_list_bh[[i]])$fstatistic[2]
   tbllist_audiogram[[i]]$Fstat_dendf<-summary(pgls_models_list_bh[[i]])$fstatistic[3]
-  
+
 }
 
 #organize the dataframe table (significant digist, remove redundant F stat & R squared)
 for(i in seq_along(tbllist_audiogram)){
   tbllist_audiogram[[i]]$Coefficients<-row.names(tbllist_audiogram[[i]])
   tbllist_audiogram[[i]]$Coefficients<-gsub('[[:digit:]]+', '', tbllist_audiogram[[i]]$Coefficients)#regex to remove number automatically added during the loop
-  #identify numeric cols and character cols to apply the significant digits function 
+  #identify numeric cols and character cols to apply the significant digits function
   character_cols<-unlist(lapply(tbllist_audiogram[[i]], is.character))
   numeric_cols <- unlist(lapply(tbllist_audiogram[[i]], is.numeric))# Identify numeric columns
   tbllist_audiogram[[i]]<-cbind(tbllist_audiogram[[i]][,which(character_cols)],signif(tbllist_audiogram[[i]][,which(numeric_cols)], digits = 2))
@@ -33,7 +33,7 @@ for(i in seq_along(tbllist_audiogram)){
   #tbllist_audiogram[[i]]$Fstat[2:nrow(tbllist_audiogram[[i]])]<-""
   #tbllist_audiogram[[i]]$Fstat_numdf[2:nrow(tbllist_audiogram[[i]])]<-""
   #tbllist_audiogram[[i]]$Fstat_dendf[2:nrow(tbllist_audiogram[[i]])]<-" "
-  tbllist_audiogram[[i]]$Model[2:nrow(tbllist_audiogram[[i]])]<-""
+  #tbllist_audiogram[[i]]$Model[2:nrow(tbllist_audiogram[[i]])]<-""
   #tbllist_audiogram[[i]]$Lambda[2:nrow(tbllist_audiogram[[i]])]<-""
   #tbllist_audiogram[[i]]$Adj_Rsquared[2:nrow(tbllist_audiogram[[i]])]<-""
   #tbllist_audiogram[[i]]$AICc[2:nrow(tbllist_audiogram[[i]])]<-""
