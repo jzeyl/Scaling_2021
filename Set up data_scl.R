@@ -5,6 +5,7 @@ library(dplyr)
 library(ggpubr)
 library(ggplot2)
 library(tidyr)
+library(purrr)
 
 ################Set up data############
 #set working directory and load data
@@ -20,15 +21,17 @@ pgls_models<-function(i){
                 bounds = list(lambda=c(0.0001,1)))#####
 }
 
-#Some missing headmass values to be imputed using PGLS of skull width and head mass
-df$Head.mass..g.
 
 #Load phylogeny and correct names that were different between birdtree.org and the up-to-date species names
 source("load phylogeny and make CDO.R")
 
+#Some missing headmass values to be imputed using PGLS of skull width and head mass
+df$HM
 #Computed head mass from head mass~skullwidth pgls
+df$HM#without imputed values
 source("SW_HM_.R")#add phylogeny here
-df$Head.mass..g.#with imputed values
+df$HM#with imputed values
+
 
 #Since PGLS uses one point per species,I make the dataframe to have average values for species with more than one specimen:
 #First I make a dataframe with only one species per line
@@ -37,10 +40,10 @@ distinctdforder<-arrange(distinctdf,Binomial)#sort by species name
 
 #Next get averages by species for columns with continuous data
 avgdf<-df %>% group_by(Binomial) %>%
-  summarise_at(vars(Skull.width..mm.:area_ratio),mean, na.rm = TRUE)
+  summarise_at(vars(Skull.width..mm.:TM_FP),mean, na.rm = TRUE)
 avgdf<-as.data.frame(avgdf)
 
-#Now we add back columns from the distinctdf dataframe which don't require averaging
+#Columns from the distinctdf dataframe which don't require averaging are added back
 avgdf$Species<-distinctdforder$Species
 avgdf$Low.Hz<-distinctdforder$Low.Hz
 avgdf$Order<-distinctdforder$Order
@@ -48,8 +51,7 @@ avgdf$Family<-distinctdforder$Family
 avgdf$maxdivedepth<-distinctdforder$max
 avgdf$Category<-as.character(distinctdforder$Category)
 avgdf$birdtree<-gsub(" ","_",distinctdforder$Birdtree)
-#avgdf$Behind.TM<-distinctdforder$Behind.TM
-avgdf$bodymass<-distinctdforder$bodymass_lit
+avgdf$BM_lit<-distinctdforder$BM_lit
 avgdf$aud_spp<-distinctdforder$spp_audio
 avgdf$aud_rel<-distinctdforder$audio_relation
 
@@ -63,47 +65,75 @@ birdCDO<-comparative.data(phy = birdtreels,data = avgdf,#[avgdf$Category!="Terre
 #check any tips dropped between linking phylogeny and dataframe
 birdCDO$dropped
 
+#go to 'Audiograms linked to anatomy.R' file to audiogram analysis
+
+
 #########scaling intraear##########
 #set up intra-ear analyses
-modellist_intra <- c(  "log(TMtotalarea)~log(FPtotalarea)",
-                       "log(dis_coltip_TMcentroid)~log(TMtotalarea)",
-                       "log(Umbo_distancetoTMplane)~log(TMtotalarea)",
-                       "log(meanTMangle)~log(TMtotalarea)",
-                       "log(RWtotalarea)~log(FPtotalarea)",
+modellist_intra <- c(  "log(TM)~log(FP)",#impedance-related measures
+                       "log(COffset)~log(TM)",
+                       "log(UH)~log(TM)",
+                       "log(TMA)~log(TM)",
+                       "log(RW)~log(FP)",
 
-                       "log(totalEClength)~log(Columella.length.mm)",
+                       "log(ES)~log(CL)",
 
-                       "log(Columella.length.mm)~log(Columella.volume.mm3)",
-                       "log(Columella.length.mm)~log(FPtotalarea)",#
-                       "log(FPtotalarea)~log(Columella.volume.mm3)",#
+                       "log(CL)~log(CV)",
+                       "log(CL)~log(FP)",#
+                       "log(FP)~log(CV)",#
 
-                       "log(TMtotalarea)~log(Columella.volume.mm3)")
+                       "log(TM)~log(CV)")
 
-geomcoefs_intra<-c(1,
-                   0.5,
-                   0.5,
-                   0,
-                   1,
+  geomcoefs_intra<-c(1,
+                     0.5,
+                     0.5,
+                     0,
+                     1,
 
-                   1,
+                     1,
 
-                   0.33,
-                   0.5,
-                   0.67,
-                   0.67)
+                     0.33,
+                     0.5,
+                     0.67,
+                     0.67)
 
 #list of functional categories for table
 categorylist_intra<-c(rep("Impedance match",5),
                       "Stiffness",
-                      rep("Columella morphology",2),
-                      rep("Columella inertia",2))
+                      rep("Columella morphology",4))
 
 #run the
 source("pgls_intraear.R")
 
+#remove intercept estimates, drop model column,
+#only keep significant relationships
+
+#combine estimate +/- 95 CI into one cell
+intra$pglsslope<-paste0(intra$Estimate," (",intra$CI95_low,",",intra$CI95_high,")")
+
+#split up the model formula to get x and y components
+splitmodel<-strsplit(intra$Model,"~")
+intra$ymodel<-map(splitmodel,1)#left side of formula
+
+# remove the "log" from each character string
+intra$ymodel_nolog<-numeric()
+for(i in seq_along(intra$ymodel)){
+  intra$ymodel_nolog[i]<-gsub("[\\(\\)]", "", regmatches(intra$ymodel, gregexpr("\\(.*?\\)", intra$ymodel))[[i]])
+}
+
+options(scipen = 100, digits = 2)
+intra<-intra %>% select(category, ymodel_nolog,Coefficients,
+                  scalingtype,geometric_exp, pglsslope,Adj_Rsquared,pval, Lambda) %>%
+  filter(Coefficients!="(Intercept)")
+# remove the "log" from 'Coefficients'
+#intra$xmodel_nolog<-numeric()
+for(i in seq_along(intra$Coefficients)){
+  intra$Coefficients[i]<-gsub("[\\(\\)]", "", regmatches(intra$Coefficients, gregexpr("\\(.*?\\)", intra$Coefficients))[[i]])
+}
+
 #visualize the table better using the flextable package
 flexall<-flextable(intra) %>%
-  add_header_lines(  values = "Table X. Models for selection") %>%
+  add_header_lines(values = "Table X. ") %>%
   #bold(i = ~ P.val < 0.05) %>% # select columns add: j = ~ Coefficients + P.val
   autofit()
 flexall
@@ -113,24 +143,14 @@ par(mfrow=c(2,2))
 par(mar=c(1,1,1,1))
 plots_intra<-lapply(pgls_models_list, plot)
 plots_intra
-i <- 1
-while (i<length(pgls_models_list))
-{
-  plot(pgls_models_list[[i]])
-i<-i+1
-  }
-
 
 #write table to word file
 toprint<-read_docx() #create word doc object
 body_add_flextable(toprint,flexall)#add pgls output table
 body_end_section_landscape(toprint)
 #write.csv(intra,"E:/Analysis_plots/scalingintra feb 17.csv")
-print(toprint,target = "pgls_intra_scaling all_Mar 28 2022.docx")
+print(toprint,target = paste0(choose.dir(),"/pgls_intra_scaling all_Apr1 2022.docx")
 #print(toprint,target = "E:/Analysis_plots/pgls_intra_scaling watermar17.docx")
-
-
-
 
 ####list of pgls models to run (only models with head mass are used)####
 pgls_todo_nogeomet <- c(
@@ -261,25 +281,4 @@ body_end_section_landscape(toprint)
 #write.csv(intra,"C:/Users/jeffz/Desktop/outputs/hm.csv")
 print(toprint,target = "pgls_bm_scaling all_apr 14.docx")
 
-
-#go to 'Audiograms linked to anatomy.R' file to get model lists for audiogram pgls
-
-#
-#########################non-waterbirds only################################
-#birdCDO<-comparative.data(phy = birdtreels,data = avgdf[avgdf$superorder!="Aequorlitornithes",],
-#                          names.col = Binomial,
-#                          vcv = TRUE, na.omit = F,
-#                          warn.dropped = TRUE)
-#
-##check any tips dropped between linking phylogeny and dataframe
-#birdCDO$dropped
-#
-##WATERBIRDS only
-#birdCDO<-comparative.data(phy = birdtreels,data = avgdf[avgdf$superorder=="Aequorlitornithes",],
-#                          names.col = Binomial,
-#                          vcv = TRUE, na.omit = F,
-#                          warn.dropped = TRUE)
-#
-##check any tips dropped between linking phylogeny and dataframe
-#birdCDO$dropped
 

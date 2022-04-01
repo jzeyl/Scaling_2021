@@ -24,8 +24,8 @@ birdtreels$tip.label<-as.character(birdtreels$tip.label)
 
 #make comparative data object for caper
 birdCDO<-comparative.data(phy = birdtreels,data = distinctdf, #avgdf[avgdf$Category!="Terrestrial",]
-                          names.col = Binomial, 
-                          vcv = TRUE, na.omit = FALSE, 
+                          names.col = Binomial,
+                          vcv = TRUE, na.omit = FALSE,
                           warn.dropped = TRUE)
 
 #check any tips dropped between linking phylogeny and dataframe

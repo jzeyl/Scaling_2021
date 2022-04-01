@@ -35,13 +35,6 @@ for(i in seq_along(tbllist_audiogram)){
   #tbllist_audiogram[[i]] <- tbllist_audiogram[[i]][, c(6,11,8:10,7,5,1:4)]#change order of columns
   #dplyr::select_if(tbllist_audiogram[[i]], is.numeric)#select only numeric data
   colnames(tbllist_audiogram[[i]])[6]<-"P.val"#rename b/c flextable doesn't work will with the '>' sign
-  #tbllist_audiogram[[i]]$Fstat[2:nrow(tbllist_audiogram[[i]])]<-""
-  #tbllist_audiogram[[i]]$Fstat_numdf[2:nrow(tbllist_audiogram[[i]])]<-""
-  #tbllist_audiogram[[i]]$Fstat_dendf[2:nrow(tbllist_audiogram[[i]])]<-" "
-  #tbllist_audiogram[[i]]$Model[2:nrow(tbllist_audiogram[[i]])]<-""
-  #tbllist_audiogram[[i]]$Lambda[2:nrow(tbllist_audiogram[[i]])]<-""
-  #tbllist_audiogram[[i]]$Adj_Rsquared[2:nrow(tbllist_audiogram[[i]])]<-""
-  #tbllist_audiogram[[i]]$AICc[2:nrow(tbllist_audiogram[[i]])]<-""
   row.names(tbllist_audiogram[[i]])<-c()#remove row names
   print(tbllist_audiogram[[i]])
 }

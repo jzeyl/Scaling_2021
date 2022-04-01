@@ -43,11 +43,11 @@ intra$CI95_high<-intra$Estimate+intra$`Std. Error`*1.96
 intra$geometric_exp<-rep(geomcoefs_intra,each =2)
 
 intra$category<-rep(categorylist_intra,each = 2)
-intra$scalingtype<-ifelse(intra$CI95_high<intra$geometric_exp,"hypoallometric",
+intra$scalingtype<-ifelse(intra$CI95_high<intra$geometric_exp,"Hypo",
                        "other")
-intra$scalingtype<-ifelse(intra$CI95_low>intra$geometric_exp,"hyperallometric",
+intra$scalingtype<-ifelse(intra$CI95_low>intra$geometric_exp,"Hyper",
                        intra$scalingtype)
-intra$scalingtype<-ifelse(intra$CI95_high>intra$geometric_exp&intra$CI95_low<intra$geometric_exp,"isometric",
+intra$scalingtype<-ifelse(intra$CI95_high>intra$geometric_exp&intra$CI95_low<intra$geometric_exp,"Iso",
                        intra$scalingtype)
 intra$tval<-(intra$Estimate-intra$geometric_exp)/intra$`Std. Error`#t-value of differnce between estimate and isometric slope
 intra$pval<-2*pt(abs(intra$tval),df=intra$Fstat_dendf, lower.tail = FALSE)#two tailed p-val

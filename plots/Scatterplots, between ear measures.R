@@ -4,9 +4,9 @@ library(patchwork)
 
 ###########
 modellist_intra
+
+#split up the model formula to get x and y components
 spleet<-strsplit(modellist_intra,"~")
-
-
 vecty<-numeric()
 for (i in seq_along(spleet)){
   vecty[i]<-spleet[[i]][1]
@@ -19,44 +19,45 @@ for (i in seq_along(spleet)){
 }
 vectx
 
-# remove variable from within log
-vectxsimple<-numeric()
-for(i in seq_along(vectx)){
-  vectxsimple[i]<-gsub("[\\(\\)]", "", regmatches(vectx, gregexpr("\\(.*?\\)", vectx))[[i]])
-}
-
+# remove the "log" from each character string
 vectysimple<-numeric()
 for(i in seq_along(vecty)){
   vectysimple[i]<-gsub("[\\(\\)]", "", regmatches(vecty, gregexpr("\\(.*?\\)", vecty))[[i]])
 }
 
+vectxsimple<-numeric()
+for(i in seq_along(vectx)){
+  vectxsimple[i]<-gsub("[\\(\\)]", "", regmatches(vectx, gregexpr("\\(.*?\\)", vectx))[[i]])
+}
+
+#re-run the pgls models between ear measures
 pgls_models_list_intra<-lapply(modellist_intra,pgls_models)#run pgls
 
-
+#logtransform measures of interest
 o<-avgdf%>% mutate_at(c(
 
-"TMtotalarea",
-"FPtotalarea",
+"TM",
+"FP",
 
-"area_ratio",
-"dis_coltip_TMcentroid",
+"TM_FP",
+"Coffset",
 
-"Umbo_distancetoTMplane",
-"meanTMangle",
+"UH",
+"TMA",
 
-"RWtotalarea",
-"totalECDlength",
+"RW",
+"ECD",
 
-"totalEClength",
-"CAtotalarea",
+"ES",
 
-"Behind.TM",
-"Columella.length.mm",
+"Air",
+"CL",
 
-"Columella.volume.mm3",
-"bodymass"
+"CV",
+"BM_lit"
 ),log)
 
+#select columns to plot
 oselect<-o[,c("waterbirds",
 
   "TMtotalarea",
@@ -81,34 +82,13 @@ oselect<-o[,c("waterbirds",
   "bodymass"
 )]
 
-codeintray<-c("TM",
-             "COff",
-             "UH",
-             "TMA",
-             "RW",
-             "ES",
-             "CL",
-             "CL",
-             "FP",
-             "TM")
 
-codeintrax<-c("FP",
-              "TM",
-              "TM",
-              "TM",
-              "FP",
-              "CL",
-              "CV",
-              "FP",
-              "CV",
-              "CV")
-
-#plot intra
+#extract slope lines from pgls models
 for(i in seq_along(vecty)){
   assign(paste0("slpline","_",as.character(i)),pgls_models_list_intra[i][[1]]$model$coef[1]+
-           oselect[,vectxsimple[i]]*pgls_models_list_intra[i][[1]]$model$coef[2])
+           o[,vectxsimple[i]]*pgls_models_list_intra[i][[1]]$model$coef[2])
   assign(paste0("slplineiso_",as.character(i)),pgls_models_list_intra[i][[1]]$model$coef[1]+
-           oselect[,vectxsimple[i]]*geomcoefs_intra[i])
+           o[,vectxsimple[i]]*geomcoefs_intra[i])
 }
 
 runplotpglsintra<-function(e){
@@ -121,7 +101,7 @@ runplotpglsintra<-function(e){
     hjust = c(-0.1,-0.5),
     vjust = c(-0.5,-0.5)
   )
-  p<-ggplot(oselect,
+  p<-ggplot(o,
             aes_string(x = vectxsimple[e], y = vectysimple[e]))+
     theme_classic()+
     theme(legend.position = "none")+{
@@ -132,9 +112,9 @@ runplotpglsintra<-function(e){
       else  if(intra$scalingtype[e*2] == "hyperallometric")
         geom_point(aes(), size = 2, col = "red")
     }  +
-    geom_line(aes_string(x = vectxsimple[e],
-                         y = paste0("slplineiso_",as.character(e))),
-              col = "grey", size = 2)+
+    #geom_line(aes_string(x = vectxsimple[e],#isometric slope line
+    #                     y = paste0("slplineiso_",as.character(e))),
+    #          col = "grey", size = 2)+
     geom_line(aes_string(x = vectxsimple[e],
                   y = paste0("slpline_",as.character(e))),
               col = "black", size = 2)+
@@ -143,8 +123,8 @@ runplotpglsintra<-function(e){
     annotate(geom = 'text', x = Inf, y = -Inf, label = paste('R^2 == ',signif(summary(pgls_models_list_intra[[e]])$r.squared,2)), hjust = "inward", vjust = -0.5, parse = TRUE)+
 
     ggtitle(categorylist_intra[e])+
-    ylab(paste0("log(",codeintray[e],")"))+
-    xlab(paste0("log(",codeintrax[e],")"))
+    ylab(paste0("log(",vectysimple[e],")"))+
+    xlab(paste0("log(",vectxsimple[e],")"))
   p
 }
 
@@ -160,3 +140,6 @@ runplotpglsintra(7)+
 runplotpglsintra(8)+
 runplotpglsintra(9)+
 runplotpglsintra(10)+plot_annotation(tag_levels = "A")
+
+plotdir<-setwd(choose.dir())
+ggsave(file=paste0(plotdir,"/test.svg"), width=10, height=8)
