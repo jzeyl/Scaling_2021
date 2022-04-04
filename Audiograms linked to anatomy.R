@@ -23,10 +23,22 @@ cong_avg<-cong_avg[-c(grep('Corvus_albus|Corvus_splendens', cong_avg$Binomial)),
 cong_avg<-cong_avg[-c(grep('Phalacrocorax_capensis|Phalacrocorax_lucidus|Phalacrocorax_neglectus', cong_avg$Binomial)), ]
 avgdf<-cong_avg
 
-# load audiograms ---------------------------------------------------------
 
+# load audiograms ---------------------------------------------------------
 fig1<-read.csv(paste0(getwd(),"/audiograms.csv"), stringsAsFactors = FALSE)
 
+#check how many reach cutoff
+#lower Hz limit:
+minsubset<-fig1 %>% group_by(Species) %>% filter(Hz == min(Hz))
+minsubset$reachcutoff<-ifelse(minsubset$Threshold <35, "under35","over35")
+table(minsubset$reachcutoff)#count number
+minsubset$Species[minsubset$reachcutoff=="under35"]
+
+#upper Hz limit
+maxsubset<-fig1 %>% group_by(Species) %>% filter(Hz == max(Hz))
+maxsubset$reachcutoff<-ifelse(maxsubset$Threshold <35, "under35","over35")
+table(maxsubset$reachcutoff)#count number
+maxsubset$Species[maxsubset$reachcutoff=="under35"]
 
 
 # get the high and low Hz limits from a cutoff level ----------------------
@@ -88,8 +100,6 @@ limits$Hz<-as.numeric(as.character(limits$Hz))
 limits$besthz<-as.numeric(as.character(limits$besthz))
 limits$bestsensitivity<-as.numeric(as.character(limits$bestsensitivity))
 
-
-
 ###################add species from scan data that correspond with audiograms###############
 limits$binomial<-NA
 limits$binomial[limits$Species=="Barn owl"]<-"Tyto_alba"
@@ -107,37 +117,32 @@ limits$binomial[limits$Species=="Mallard duck"]<-"Anas_georgica_georgica"
 limits$binomial[limits$Species=="Rock dove"]<-"Columba_livia"#
 limits$binomial[limits$Species=="Zebra finch"]<-"Taeniopygia_guttata"
 
-##################add anatomical data from df############
-
-limits$TM<-avgdf$TMtotalarea[match(limits$binomial,avgdf$Binomial)]
-limits$RW<-avgdf$RWtotalarea[match(limits$binomial,avgdf$Binomial)]
-limits$FP<-avgdf$FPtotalarea[match(limits$binomial,avgdf$Binomial)]
-limits$Air<-avgdf$Behind.TM[match(limits$binomial,avgdf$Binomial)]
-limits$TM<-avgdf$TMtotalarea[match(limits$binomial,avgdf$Binomial)]
-limits$HM<-avgdf$Head.mass..g.[match(limits$binomial,avgdf$Binomial)]
-limits$BM<-avgdf$bodymass[match(limits$binomial,avgdf$Binomial)]
-limits$ES<-avgdf$totalEClength[match(limits$binomial,avgdf$Binomial)]
-limits$TM_FP<-avgdf$area_ratio[match(limits$binomial,avgdf$Binomial)]
-limits$TMA<-avgdf$meanTMangle[match(limits$binomial,avgdf$Binomial)]
-limits$COff<-avgdf$dis_coltip_TMcentroid[match(limits$binomial,avgdf$Binomial)]
-limits$ECD<-avgdf$totalECDlength[match(limits$binomial,avgdf$Binomial)]
-limits$CL<-avgdf$Columella.length.mm[match(limits$binomial,avgdf$Binomial)]
-limits$CV<-avgdf$Columella.volume.mm3[match(limits$binomial,avgdf$Binomial)]
-limits$UH<-avgdf$Umbo_distancetoTMplane[match(limits$binomial,avgdf$Binomial)]
-
+##################add anatomical data from anatomy df############
+limits$TM<-avgdf$TM[match(limits$binomial,avgdf$Binomial)]
+limits$RW<-avgdf$RW[match(limits$binomial,avgdf$Binomial)]
+limits$FP<-avgdf$FP[match(limits$binomial,avgdf$Binomial)]
+limits$Air<-avgdf$Air[match(limits$binomial,avgdf$Binomial)]
+limits$TM<-avgdf$TM[match(limits$binomial,avgdf$Binomial)]
+limits$HM<-avgdf$HM[match(limits$binomial,avgdf$Binomial)]
+limits$BM<-avgdf$BM_lit[match(limits$binomial,avgdf$Binomial)]
+limits$ES<-avgdf$ES[match(limits$binomial,avgdf$Binomial)]
+limits$TM_FP<-avgdf$TM_FP[match(limits$binomial,avgdf$Binomial)]
+limits$TMA<-avgdf$TMA[match(limits$binomial,avgdf$Binomial)]
+limits$COffset<-avgdf$COffset[match(limits$binomial,avgdf$Binomial)]
+limits$ECD<-avgdf$ECD[match(limits$binomial,avgdf$Binomial)]
+limits$CL<-avgdf$CL[match(limits$binomial,avgdf$Binomial)]
+limits$CV<-avgdf$CV[match(limits$binomial,avgdf$Binomial)]
+limits$UH<-avgdf$UH[match(limits$binomial,avgdf$Binomial)]
 limits$spp_aud<-avgdf$aud_spp[match(limits$binomial,avgdf$Binomial)]
 limits$aud_rel<-avgdf$aud_rel[match(limits$binomial,avgdf$Binomial)]
 
+#classification for the two species withaverage
+limits$aud_rel[limits$binomial=="Corvus_cornix"]<-"Congener"
+limits$aud_rel[limits$binomial=="Phalacrocorax_carbo"]<-"Congener"
 
-#limits$pPC1<-speciesPCAvalues$PC1[match(limits$binomial,speciesPCAvalues$Binomial)]
-#limits$rw_fp<-avgdf$rw_fp[match(limits$binomial,avgdf$Binomial)]
-#limits$ec_cl<-avgdf$EC_CL[match(limits$binomial,avgdf$Binomial)]
-#limits$rw_fp<-avgdf$rw_fp[match(limits$binomial,avgdf$Binomial)]
-#limits$col2.3_TM<-avgdf$col2.3_TM[match(limits$binomial,avgdf$Binomial)]
 
-# cor plots
+# correlation plots - summary stats for audiogram metrics
 aud_data<- limits[,c("LowHzlimit","HighHzlimit","besthz","bestsensitivity")]
-
 audlog<-aud_data %>% mutate_at(vars(c("LowHzlimit","HighHzlimit","besthz")),log)
 
 library(PerformanceAnalytics)
@@ -170,14 +175,13 @@ modellist_bs<-c(
   "bestsensitivity~log(ES)",
   "bestsensitivity~log(TMA)",
   "bestsensitivity~log(UH)",
-  "bestsensitivity~log(COff)",
+  "bestsensitivity~log(COffset)",
   "bestsensitivity~log(TM_FP)",
   "bestsensitivity~log(ECD)",
   "bestsensitivity~log(TM)",
   "bestsensitivity~log(FP)",
   "bestsensitivity~log(RW)",
   "bestsensitivity~log(HM)",
-  "bestsensitivity~log(BM)",
   "bestsensitivity~log(CL)",
   "bestsensitivity~log(CV)")
 
@@ -187,14 +191,13 @@ modellist_lf<-c(
   "log(LowHzlimit)~log(ES)",
   "log(LowHzlimit)~log(TMA)",
   "log(LowHzlimit)~log(UH)",
-  "log(LowHzlimit)~log(COff)",
+  "log(LowHzlimit)~log(COffset)",
   "log(LowHzlimit)~log(TM_FP)",
   "log(LowHzlimit)~log(ECD)",
   "log(LowHzlimit)~log(TM)",
   "log(LowHzlimit)~log(FP)",
   "log(LowHzlimit)~log(RW)",
   "log(LowHzlimit)~log(HM)",
-  "log(LowHzlimit)~log(BM)",
   "log(LowHzlimit)~log(CL)",
   "log(LowHzlimit)~log(CV)")
 
@@ -204,14 +207,13 @@ modellist_hf<-c(
   "log(HighHzlimit)~log(ES)",
   "log(HighHzlimit)~log(TMA)",
   "log(HighHzlimit)~log(UH)",
-  "log(HighHzlimit)~log(COff)",
+  "log(HighHzlimit)~log(COffset)",
   "log(HighHzlimit)~log(TM_FP)",
   "log(HighHzlimit)~log(ECD)",
   "log(HighHzlimit)~log(TM)",
   "log(HighHzlimit)~log(FP)",
   "log(HighHzlimit)~log(RW)",
   "log(HighHzlimit)~log(HM)",
-  "log(HighHzlimit)~log(BM)",
   "log(HighHzlimit)~log(CL)",
   "log(HighHzlimit)~log(CV)")
 
@@ -221,14 +223,13 @@ modellist_bh<-c(
   "log(besthz)~log(ES)",
   "log(besthz)~log(TMA)",
   "log(besthz)~log(UH)",
-  "log(besthz)~log(COff)",
+  "log(besthz)~log(COffset)",
   "log(besthz)~log(TM_FP)",
   "log(besthz)~log(ECD)",
   "log(besthz)~log(TM)",
   "log(besthz)~log(FP)",
   "log(besthz)~log(RW)",
   "log(besthz)~log(HM)",
-  "log(besthz)~log(BM)",
   "log(besthz)~log(CL)",
   "log(besthz)~log(CV)")
 
@@ -242,8 +243,7 @@ categorylist_lf<-c("Stiffness",
                    "Input/output areas",
                    "Input/output areas",
                    "Input/output areas",
-                   "Animal size",
-                   "Animal size",
+                   "Head size",
                    "Columella size",
                    "Columella size")
 
@@ -254,7 +254,7 @@ categorylist_hf<-categorylist_lf
 #only select the rows for which anatomical data is available for the corresponding audiograms
 limitsanat<-limits[which(!is.na(limits$binomial)),]
 
-#matching congeners to the appropriate position in the phylogeny
+#rename phylogeny tips to matching with the species for which audiogram is available
 birdtreels$tip.label[14]<-"Corvus_cornix" #renamed from Corvus_albus
 birdtreels$tip.label[51]<-"Phalacrocorax_carbo" #rename "phalacrocorax_lucidus"
 
@@ -282,21 +282,16 @@ source("pgls_audiogram_bs.R")
 #flexall
 
 #define pgls model diagnostics function
-pgls_dplot<-function(modellist){
-  par(mfrow=c(2,2))
-  par(mar=c(1,1,1,1))
-  i <- 1
-  while (i<length(modellist))
-  {
-    plot(modellist[[i]])
-    i<-i+1
-  }
-}
+#pgls model diagnostics
+par(mfrow=c(2,2))
+par(mar=c(1,1,1,1))
+plots_audio<-lapply(pgls_models_list_bs, plot)
+plots_audio
 
-pgls_dplot(pgls_models_list_bs)
+
 ###print results
-write.csv(audiogrampgls_bs,"audiogrampgls_bs.csv")
-print(toprint,target = "audiogrampgls_bs.docx")
+#write.csv(audiogrampgls_bs,"audiogrampgls_bs.csv")
+#print(toprint,target = "audiogrampgls_bs.docx")
 
 
 # low frequency limit (Hz) ------------------------------------------------
@@ -304,7 +299,11 @@ print(toprint,target = "audiogrampgls_bs.docx")
 source("pgls_audiogram_lf.R")
 
 #results table is saved as 'audiogrampgls-lf'
-
+#pgls model diagnostics
+par(mfrow=c(2,2))
+par(mar=c(1,1,1,1))
+plots_audio<-lapply(pgls_models_list_lf, plot)
+plots_audio
 
 #visualize the table better using the flextable package
 #flexall<-flextable(audiogrampgls_lf) %>% add_header_lines(
@@ -313,12 +312,10 @@ source("pgls_audiogram_lf.R")
 #  autofit()
 #flexall
 
-#diagnostics
-pgls_dplot(pgls_models_list_lf)
 
 #print to file
-write.csv(audiogrampgls_lf,"audiogrampgls_lf.csv")
-print(toprint,target = "audiogrampgls_lf.docx")
+#write.csv(audiogrampgls_lf,"audiogrampgls_lf.csv")
+#print(toprint,target = "audiogrampgls_lf.docx")
 
 
 # high frequency limit ----------------------------------------------------
@@ -337,53 +334,89 @@ source("pgls_audiogram_hf.R")
 
 
 #diagnostics
-pgls_dplot(pgls_models_list_hf)
-
+#pgls model diagnostics
+par(mfrow=c(2,2))
+par(mar=c(1,1,1,1))
+plots_audio<-lapply(pgls_models_list_hf, plot)
+plots_audio
 #print to file
-write.csv(audiogrampgls_hf,"audiogrampgls_hf.csv")
-print(toprint,target = "audiogrampgls_hf.docx")
+#write.csv(audiogrampgls_hf,"audiogrampgls_hf.csv")
+#print(toprint,target = "audiogrampgls_hf.docx")
 
 
-# best frequency ----------------------------------------------------------
+## best frequency ----------------------------------------------------------
 
 source("pgls_audiogram_bh.R")
 
 #results table is saved as 'audiogrampgls-bh'
+#pgls model diagnostics
+par(mfrow=c(2,2))
+par(mar=c(1,1,1,1))
+plots_audio<-lapply(pgls_models_list_bs, plot)
+plots_audio
 
+### combine results from regressions for each measure into a single datagrame
 audio_pgls_results<-bind_rows(audiogrampgls_bh,
                               audiogrampgls_bs,
                               audiogrampgls_lf,
                               audiogrampgls_hf)
+audio_pgls_results$CI95_low<-audio_pgls_results$Estimate-audio_pgls_results$`Std. Error`*1.96
+audio_pgls_results$CI95_high<-audio_pgls_results$Estimate-audio_pgls_results$`Std. Error`*1.96
+
+#combine estimate +/- 95 CI into one cell
+audio_pgls_results$pglsslope<-paste0(audio_pgls_results$Estimate," (",
+                        format(round(audio_pgls_results$CI95_low, 3), nsmall = 3),
+                        ",",
+                        format(round(audio_pgls_results$CI95_high, 3), nsmall = 3),
+                        ")")
+
+
 #split up model column
 spltmodel<-strsplit(audio_pgls_results$Model,"~")
-audio_pgls_results$`Audiogram metric`<-lapply(spltmodel, `[[`, 1)
-audio_pgls_results$anattraitx<-lapply(spltmodel, `[[`, 2)
+audio_pgls_results$`Audiogram metric`<-unlist(lapply(spltmodel, `[[`, 1))
+audio_pgls_results$anattraitx<-unlist(lapply(spltmodel, `[[`, 2))
 
-#reorder columns
-audio_pgls_results<-audio_pgls_results %>% relocate(`Audiogram metric`)
-
-#remove intercept estimates, drop model column,
 #only keep significant relationships
-audio_pgls_results<-audio_pgls_results %>% select(-Model) %>%
+audio_pgls_results<-audio_pgls_results %>% select(`Audiogram metric`,
+                                                  category,
+                                                  Coefficients,
+                                                  pglsslope,
+                                                  Adj_Rsquared,
+                                                  P.val,
+                                                  Lambda)%>%
   filter(Coefficients!="(Intercept)" &
-                                P.val <0.05)
+           P.val <0.05)
 
+#arrange by audiogram metric, category, and R2
+audio_pgls_results <-audio_pgls_results %>%
+  arrange(factor(audio_pgls_results$`Audiogram metric`),
+          factor(category,levels = c("Impedance match",
+                                     "Stiffness",
+                                     "Input/output areas",
+                                     "Auditory endorgan length",
+                                     "Columella size")),
+          desc(Adj_Rsquared))
 
+# remove the "log" from 'Coefficients'
+#audio_pgls_results$xmodel_nolog<-numeric()
+for(i in seq_along(audio_pgls_results$Coefficients)){
+  audio_pgls_results$Coefficients[i]<-gsub("[\\(\\)]", "", regmatches(audio_pgls_results$Coefficients, gregexpr("\\(.*?\\)", audio_pgls_results$Coefficients))[[i]])
+}
 
 
 #visualize the table better using the flextable package
 flexall<-flextable(audio_pgls_results) %>% add_header_lines(
-  values = "Table X. Models for selection") %>%
+  values = "Table X. ") %>%
   #bold(i = ~ P.val < 0.05) %>% # select columns add: j = ~ Coefficients + P.val
   autofit()
 flexall
 
-#diagnostics
-pgls_dplot(pgls_models_list_bh)
-
-setwd(choose.dir())
-write.csv(audiogrampgls_bh,"audiogrampgls_all.csv")
-print(toprint,target = "audiogrampgls_all.docx")
+#write table to word file
+toprint<-read_docx() #create word doc object
+body_add_flextable(toprint,flexall)#add pgls output table
+body_end_section_landscape(toprint)
+#write.csv(intra,"E:/Analysis_plots/scalingintra feb 17.csv")
+print(toprint,target = paste0(choose.dir(),"/pgls_audio all_Apr4 2022.docx"))
 
 
 #######plotting metrics on audiogram########

@@ -1,4 +1,4 @@
-options(digits = 3)
+
 options(scipen = 100)
 library(flextable)
 library(officer)
@@ -49,11 +49,11 @@ hm$CI95_high<-hm$Estimate+hm$`Std. Error`*1.96
 hm$geometric_exp<-rep(geomcoefs,each =2)
 
 hm$category<-rep(categorylist,each = 2)
-hm$scalingtype<-ifelse(hm$CI95_high<hm$geometric_exp,"hypoallometric",
+hm$scalingtype<-ifelse(hm$CI95_high<hm$geometric_exp,"Hypo",
                        "other")
-hm$scalingtype<-ifelse(hm$CI95_low>hm$geometric_exp,"hyperallometric",
+hm$scalingtype<-ifelse(hm$CI95_low>hm$geometric_exp,"Hyper",
                        hm$scalingtype)
-hm$scalingtype<-ifelse(hm$CI95_high>hm$geometric_exp&hm$CI95_low<hm$geometric_exp,"isometric",
+hm$scalingtype<-ifelse(hm$CI95_high>hm$geometric_exp&hm$CI95_low<hm$geometric_exp,"Iso",
                        hm$scalingtype)
 
 hm$tval<-(hm$Estimate-hm$geometric_exp)/hm$`Std. Error`#t-value of differnce between estimate and isometric slope

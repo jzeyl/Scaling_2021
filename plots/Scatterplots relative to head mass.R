@@ -18,13 +18,14 @@ birdCDO<-comparative.data(phy = birdtreels,data = avgdf,#[avgdf$Category!="Terre
 #check any tips dropped between linking phylogeny and dataframe
 birdCDO$dropped
 
-pgls_todo_hm
+#order of plots is set here, based on the hm dataframe
+pgls_todo_hm<-paste0("log(",hm$ymodel_nolog,")~log(HM)")
 pgls_models_list1<-lapply(pgls_todo_hm,pgls_models)#run pgls
 
 #pgls_todo_hm_w<- paste(pgls_todo_hm,"+waterbirds")
 #pgls_models_list2<-lapply(pgls_todo_hm_w,pgls_models)#run pgls
 #
-pgls_todo_bm<- gsub("Head.mass..g.","bodymass",pgls_todo_hm)
+pgls_todo_bm<- gsub("HM","bodymass",pgls_todo_hm)
 pgls_models_list3<-lapply(pgls_todo_bm,pgls_models)#run pgls
 #
 #modellist_intra
@@ -32,7 +33,7 @@ pgls_models_list3<-lapply(pgls_todo_bm,pgls_models)#run pgls
 
 #put in long format
 longdfplotting<-gather(avgdf,key = "earmeasures", value = "earmeasureval",
-                       -c(Binomial, Skull.width..mm.,Head.mass..g.,waterbirds, Order,
+                       -c(Binomial, Skull.width..mm.,HM, Order,
                           Family))#
 longdfplotting$earmeasures<-as.factor(longdfplotting$earmeasures)
 longdfplotting$earmeasureval<-as.numeric(longdfplotting$earmeasureval)
@@ -40,7 +41,6 @@ longdfplotting$earmeasureval<-as.numeric(longdfplotting$earmeasureval)
 pgls_todo_hm
 
 splt_hm<-strsplit(pgls_todo_hm,"~")
-
 
 splt_hm_anat<-numeric()
 for (i in seq_along(splt_hm)){
@@ -58,31 +58,18 @@ splt_hm_anatsimple
 #make list of ear measures to plot
 yvarnames<-splt_hm_anatsimple
 
-codes<-c(
-  "TM_FP",
-  "COff",
-  "UH",
-  "TMA",
-  "ECD",
-  "TM",
-  "FP",
-  "RW",
-  "ES",
-  "Air",
-  "CL",
-  "CV",
-  "BM"
-)
+codes<-hm$ymodel_nolog
+
 #Plotting functions for interaction model. takes the index of the 'yvarnames' list as an argument
 
 options(scipen = 999)
 #input geomcoff
 runplot_HM_only<-function(e){
   slopeline<-pgls_models_list1[e][[1]]$model$coef[1]+
-    log(subset(longdfplotting,longdfplotting$earmeasures==yvarnames[e])$Head.mass..g.)*
+    log(subset(longdfplotting,longdfplotting$earmeasures==yvarnames[e])$HM)*
     (pgls_models_list1[e][[1]]$model$coef[2])
   isoline<-pgls_models_list1[e][[1]]$model$coef[1]+
-    log(subset(longdfplotting,longdfplotting$earmeasures==yvarnames[e])$Head.mass..g.)*
+    log(subset(longdfplotting,longdfplotting$earmeasures==yvarnames[e])$HM)*
    geomcoefs[e]
 
   pval<-summary(pgls_models_list1[[e]])$coefficients[,4][[2]]
@@ -98,29 +85,30 @@ runplot_HM_only<-function(e){
 
 
   ggplot(subset(longdfplotting,longdfplotting$earmeasures==yvarnames[e]),
-            aes(x = log(Head.mass..g.), y = log(earmeasureval), label = Binomial),
+            aes(x = log(HM), y = log(earmeasureval), label = Binomial),
             factor = as.factor(waterbirds))+
        theme_classic()+
-    theme(legend.position = "none",
+    theme(legend.position = "none")+{
           #axis.text.x = element_blank(),
-          axis.title.x = element_blank())+{
-    if(hm$scalingtype[e*2] == "isometric")
+          #axis.title.x = element_blank())+{
+    if(hm$scalingtype[e] == "Iso")
     geom_point(aes(), size = 2, col = "grey")
-    else if(hm$scalingtype[e*2] == "hypoallometric")
+    else if(hm$scalingtype[e] == "Hypo")
       geom_point(aes(), size = 2, col = "blue")
-    else  if(hm$scalingtype[e*2] == "hyperallometric")
+    else  if(hm$scalingtype[e] == "Hyper")
       geom_point(aes(), size = 2, col = "red")
       }  +
     scale_color_manual(values=c("green","blue","darkgrey","l2ghtblue","green","darkgray","darkgreen","corns2lk4","blue"))+
     geom_line(data = subset(longdfplotting,longdfplotting$earmeasures==yvarnames[e]),
-              aes(x = log(Head.mass..g.),y = slopeline), col = "black", size = 2)+
-    geom_line(data = subset(longdfplotting,longdfplotting$earmeasures==yvarnames[e]),
-              aes(x = log(Head.mass..g.),y = isoline), col = "grey", size = 2)+
+              aes(x = log(HM),y = slopeline), col = "black", size = 2)+
+    #isometric line
+    #geom_line(data = subset(longdfplotting,longdfplotting$earmeasures==yvarnames[e]),
+    #          aes(x = log(HM),y = isoline), col = "grey", size = 2)+
   ylab(paste0("log(",codes[e],")"))+
     #geom_text(data = lbl,aes(x = xpos, y = ypos, label = annotateText,
     #                         hjust = hjust, vjust = vjust, paste = TRUE))+
     annotate(geom = 'text', x = Inf, y = -Inf, label = paste('R^2 == ',signif(summary(pgls_models_list1[[e]])$r.squared,2)), hjust = "inward", vjust = -0.5, parse = TRUE)+
-    ggtitle(categorylist[e])#+
+    ggtitle(hm$category[e])#+
 }
 runplot_HM_only(3)
 
@@ -136,5 +124,8 @@ runplot_HM_only(8)+
 runplot_HM_only(9)+
 runplot_HM_only(10)+
 runplot_HM_only(11)+
-runplot_HM_only(12)+
-  runplot_HM_only(13) +plot_annotation(tag_levels = "A")
+runplot_HM_only(12) +plot_annotation(tag_levels = "A")
+
+
+ggsave(file=paste0(choose.dir(),"/scatterheadmass apr 4.svg"), width=10, height=8)
+

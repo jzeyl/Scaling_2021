@@ -1,116 +1,89 @@
 library(patchwork)
 library(dplyr)
 ########SETUP############
-#modellist_intra
-
-#classification for the two species withaverage
-limits$aud_rel[limits$binomial=="Corvus_cornix"]<-"Congener"
-limits$aud_rel[limits$binomial=="Phalacrocorax_carbo"]<-"Congener"
 
 modellist_bs
 modellist_lf
 modellist_bh
 modellist_hf
 
-splt_modellist_bs<-strsplit(modellist_bs,"~")
-splt_modellist_lf<-strsplit(modellist_lf,"~")
-splt_modellist_bh<-strsplit(modellist_bh,"~")
-splt_modellist_hf<-strsplit(modellist_hf,"~")
+#get model list from the results table (only significant results)
+modellist_sig<-paste0(audio_pgls_results$`Audiogram metric`,"~log(",
+                      audio_pgls_results$Coefficients,")")
 
-#different y
-vecty_modellist_lf<-numeric()
-for (i in seq_along(splt_modellist_lf)){
-  vecty_modellist_lf[i]<-splt_modellist_lf[[i]][1]
-}
-vecty_modellist_lf
+pgls_models_sig<-lapply(modellist_sig,pgls_models)#run pgls
 
-vecty_modellist_bh<-numeric()
-for (i in seq_along(splt_modellist_bh)){
-  vecty_modellist_bh[i]<-splt_modellist_bh[[i]][1]
-}
-vecty_modellist_bh
 
-vecty_modellist_hf<-numeric()
-for (i in seq_along(splt_modellist_hf)){
-  vecty_modellist_hf[i]<-splt_modellist_hf[[i]][1]
-}
-vecty_modellist_hf
-
-#all x variables
-vectx_modellist_lf<-numeric()
-for (i in seq_along(modellist_bs)){
-  vectx_modellist_lf[i]<-splt_modellist_bs[[i]][2]
-}
-vectx_modellist_lf
+#split up model column
+spltmodel<-strsplit(modellist_sig,"~")
+traity<-unlist(lapply(spltmodel, `[[`, 1))
+anattraitx<-unlist(lapply(spltmodel, `[[`, 2))
 
 # remove variable from within log
-vectxsimple_lf<-numeric()
-for(i in seq_along(vectx_modellist_lf)){
-  vectxsimple_lf[i]<-gsub("[\\(\\)]", "", regmatches(vectx_modellist_lf, gregexpr("\\(.*?\\)", vectx_modellist_lf))[[i]])
+anattrait_simple<-numeric()
+for(i in seq_along(anattraitx)){
+  anattrait_simple[i]<-gsub("[\\(\\)]", "", regmatches(anattraitx, gregexpr("\\(.*?\\)", anattraitx))[[i]])
 }
 
-#log transform anatomy data for the slope line
-ok<-limits%>% mutate_at(vectxsimple_lf,log)
-okselect<-ok[,vectxsimple_lf]
+#only keep significant relationships
+audio_pgls_plt<-audio_pgls_plt %>% select(Model, Coefficients, P.val)%>%
+  filter(Coefficients!="(Intercept)" &
+           P.val <0.05)
 
-categorylist_aud<-c(rep("Stiffness",2),
-                    rep("Impedance-matching", 4),
-                    rep("Auditory endorgan length",1),
-                    rep("Input/output areas",3),
-                    rep("Animal size",2),
-                    rep("Columella size",2))
+
+
+#log transform anatomy data for the slope line
+logged<-limits%>% mutate_at(audio_pgls_results$Coefficients,log)
+loggedselect<-ok[,audio_pgls_results$Coefficients]
+
+categorylist_aud<-audio_pgls_results$category
+
 
 
 ##########best Hz##############
-for(i in seq_along(vectxsimple_lf)){
-  assign(paste0("slpline","_",as.character(i)),pgls_models_list_bh[i][[1]]$model$coef[1]+
-           ok[,vectxsimple_lf[i]]*pgls_models_list_bh[i][[1]]$model$coef[2])
+for(i in seq_along(anattrait_simple)){
+  assign(paste0("slpline","_",as.character(i)),
+         pgls_models_sig[i][[1]]$model$coef[1]+
+           logged[,anattrait_simple[i]]*pgls_models_sig[i][[1]]$model$coef[2])
 }
 
-runplotpgls_aud_bh<-function(e){
-  pval<-summary(pgls_models_list_bh[[e]])$coefficients[,4][[2]]
-
+runplot_audio<-function(e){
   p<-ggplot(limits,
-            aes_string(x = vectx_modellist_lf[e], y = "log(besthz)"))+
+            aes_string(x = spltmodel[[e]][2], y = spltmodel[[e]][1]))+
     theme_classic()+
-    theme(legend.position = "none",
-          axis.text.y = element_blank(),
-          axis.title.y = element_blank())+
-    geom_point(aes_string(shape="aud_rel"), size = 2)+{
-      if (pval<0.05)  geom_point(aes_string(shape="aud_rel"), size = 2, col = "black")
-      else geom_point(aes_string(shape="aud_rel"), size = 2, col = "black", alpha = 0.4)
-    } + {
-      if (pval<0.05)  geom_line(aes_string(x = vectx_modellist_lf[e],
-                                           y = paste0("slpline_",as.character(e))),
+    theme(legend.position = "none")+
+    #      axis.text.y = element_blank(),
+    #      axis.title.y = element_blank())+
+    geom_point(aes_string(shape="aud_rel"), size = 2)+
+    geom_line(aes_string(x = anattraitx[e],
+                                          y = paste0("slpline_",as.character(e))),
                                 col = "black", size = 2)
-    }+
-    #geom_text(data = lbl,aes(x = xpos, y = ypos, label = annotateText,
-    #                         hjust = hjust, vjust = vjust))+
-    #scale_shape_manual(values=c(17, 16))+
-    annotate(geom = 'text', x = -Inf, y = -Inf, label = paste(' ',' R^2 == ',signif(summary(pgls_models_list_bh[[e]])$r.squared,2)), hjust = -0.05, vjust = -0.1, parse = TRUE)+
-    annotate(geom = 'text', x = -Inf, y = -Inf, label = paste(' ',' P == ',signif(summary(pgls_models_list_bh[[e]])$coefficients[,4][[2]],2)), hjust = -0.05, vjust = -2.1, parse = TRUE)
 
-    ggtitle(categorylist_aud[e])
   p
 }
 
-runplotpgls_aud_bh(10)+  geom_text(aes(label=binomial), angle = 30)
+runplot_audio(1)
 
 #PLOT ALL BEST FREQUENCY
-runplotpgls_aud_bh(1)+
-  runplotpgls_aud_bh(2)+
-  runplotpgls_aud_bh(3)+
-  runplotpgls_aud_bh(4)+
-  runplotpgls_aud_bh(5)+
-  runplotpgls_aud_bh(6)+
-  runplotpgls_aud_bh(7)+
-  runplotpgls_aud_bh(8)+
-  runplotpgls_aud_bh(9)+
-  runplotpgls_aud_bh(10)+
-  runplotpgls_aud_bh(11)+
-  runplotpgls_aud_bh(12)+
-  runplotpgls_aud_bh(13)+
-  runplotpgls_aud_bh(14)+plot_annotation(tag_levels = "A")
+runplot_audio(1)+
+  runplot_audio(2)+
+  runplot_audio(3)+
+  runplot_audio(4)+
+  runplot_audio(5)+
+  runplot_audio(6)+
+  runplot_audio(7)+
+  runplot_audio(8)+
+  runplot_audio(9)+
+  runplot_audio(10)+
+  runplot_audio(11)+
+  runplot_audio(12)+
+  runplot_audio(13)+
+  runplot_audio(14)+
+  runplot_audio(15)+
+  runplot_audio(16)+
+  runplot_audio(17)+
+  runplot_audio(18)+
+  plot_annotation(tag_levels = "A")
 
 
 ################signif bh##################

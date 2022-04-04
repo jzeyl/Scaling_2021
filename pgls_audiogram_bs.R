@@ -3,7 +3,7 @@
 #Head mass only
 #modellist<-pgls_todo_hm
 
-options(digits = 3, scipen = 1000)
+options(scipen = 1000)
 pgls_models_list_bs<-lapply(modellist_bs,pgls_models)#run pgls
 
 

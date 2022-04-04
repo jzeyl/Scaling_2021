@@ -2,8 +2,9 @@ library(dplyr)
 library(patchwork)
 
 
-###########
-modellist_intra
+###########get order of plots here based on intra df
+modellist_intra<-paste0("log(",intra$ymodel_nolog,")~log(",
+                        intra$Coefficients,")")
 
 #split up the model formula to get x and y components
 spleet<-strsplit(modellist_intra,"~")
@@ -40,7 +41,7 @@ o<-avgdf%>% mutate_at(c(
 "FP",
 
 "TM_FP",
-"Coffset",
+"COffset",
 
 "UH",
 "TMA",
@@ -57,35 +58,11 @@ o<-avgdf%>% mutate_at(c(
 "BM_lit"
 ),log)
 
-#select columns to plot
-oselect<-o[,c("waterbirds",
-
-  "TMtotalarea",
-  "FPtotalarea",
-
-  "area_ratio",
-  "dis_coltip_TMcentroid",
-
-  "Umbo_distancetoTMplane",
-  "meanTMangle",
-
-  "RWtotalarea",
-  "totalECDlength",
-
-  "totalEClength",
-  "CAtotalarea",
-
-  "Behind.TM",
-  "Columella.length.mm",
-
-  "Columella.volume.mm3",
-  "bodymass"
-)]
-
 
 #extract slope lines from pgls models
 for(i in seq_along(vecty)){
-  assign(paste0("slpline","_",as.character(i)),pgls_models_list_intra[i][[1]]$model$coef[1]+
+  assign(paste0("slpline","_",as.character(i)),
+         pgls_models_list_intra[i][[1]]$model$coef[1]+
            o[,vectxsimple[i]]*pgls_models_list_intra[i][[1]]$model$coef[2])
   assign(paste0("slplineiso_",as.character(i)),pgls_models_list_intra[i][[1]]$model$coef[1]+
            o[,vectxsimple[i]]*geomcoefs_intra[i])
@@ -105,11 +82,11 @@ runplotpglsintra<-function(e){
             aes_string(x = vectxsimple[e], y = vectysimple[e]))+
     theme_classic()+
     theme(legend.position = "none")+{
-      if(intra$scalingtype[e*2] == "isometric")
+      if(intra$scalingtype[e] == "Iso")
         geom_point(aes(), size = 2, col = "grey")
-      else if(intra$scalingtype[e*2] == "hypoallometric")
+      else if(intra$scalingtype[e] == "Hypo")
         geom_point(aes(), size = 2, col = "blue")
-      else  if(intra$scalingtype[e*2] == "hyperallometric")
+      else  if(intra$scalingtype[e] == "Hyper")
         geom_point(aes(), size = 2, col = "red")
     }  +
     #geom_line(aes_string(x = vectxsimple[e],#isometric slope line
@@ -139,7 +116,13 @@ runplotpglsintra(6)+
 runplotpglsintra(7)+
 runplotpglsintra(8)+
 runplotpglsintra(9)+
-runplotpglsintra(10)+plot_annotation(tag_levels = "A")
+runplotpglsintra(10)+plot_annotation(tag_levels = "A")+
+  plot_layout(design = layt)
 
-plotdir<-setwd(choose.dir())
-ggsave(file=paste0(plotdir,"/test.svg"), width=10, height=8)
+layt<-"
+12345
+6####
+789A#
+"
+
+ggsave(file=paste0(choose.dir(),"/scatter_intra apr 4.svg"), width=10, height=8)
