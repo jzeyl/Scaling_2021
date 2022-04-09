@@ -25,8 +25,8 @@ pgls_models_list1<-lapply(pgls_todo_hm,pgls_models)#run pgls
 #pgls_todo_hm_w<- paste(pgls_todo_hm,"+waterbirds")
 #pgls_models_list2<-lapply(pgls_todo_hm_w,pgls_models)#run pgls
 #
-pgls_todo_bm<- gsub("HM","bodymass",pgls_todo_hm)
-pgls_models_list3<-lapply(pgls_todo_bm,pgls_models)#run pgls
+#pgls_todo_bm<- gsub("HM","bodymass",pgls_todo_hm)
+#pgls_models_list3<-lapply(pgls_todo_bm,pgls_models)#run pgls
 #
 #modellist_intra
 
@@ -112,6 +112,12 @@ runplot_HM_only<-function(e){
 }
 runplot_HM_only(3)
 
+layout_<-"
+ABC
+DEF
+GHI
+JKL"
+
 #export multipanel plot
 runplot_HM_only(1)+
 runplot_HM_only(2)+
@@ -124,7 +130,8 @@ runplot_HM_only(8)+
 runplot_HM_only(9)+
 runplot_HM_only(10)+
 runplot_HM_only(11)+
-runplot_HM_only(12) +plot_annotation(tag_levels = "A")
+runplot_HM_only(12) +plot_annotation(tag_levels = "A")+
+  plot_layout(design = layout_)
 
 
 ggsave(file=paste0(choose.dir(),"/scatterheadmass apr 4.svg"), width=10, height=8)

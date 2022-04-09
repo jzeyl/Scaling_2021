@@ -29,7 +29,6 @@ for(i in seq_along(tbllist_audiogram)){
   numeric_cols <- unlist(lapply(tbllist_audiogram[[i]], is.numeric))# Identify numeric columns
   tbllist_audiogram[[i]]<-cbind(tbllist_audiogram[[i]][,which(character_cols)],signif(tbllist_audiogram[[i]][,which(numeric_cols)], digits = 2))
   colnames(tbllist_audiogram[[i]])[6]<-"P.val"#rename b/c flextable doesn't work will with the '>' sign
-  #tbllist_audiogram[[i]]$Model[2:nrow(tbllist_audiogram[[i]])]<-""
   row.names(tbllist_audiogram[[i]])<-c()#remove row names
   print(tbllist_audiogram[[i]])
 }

@@ -1,4 +1,4 @@
-pglsfit<-pgls(log(distinctdf$HM)~log(distinctdf$Skull.width..mm.), data = birdCDO, #check comparative data object here<---
+pglsfit<-pgls(log(HM)~log(Skull.width..mm.), data = birdCDO, #check comparative data object here<---
               lambda = 'ML', #find lambda using maximum likelihood
               bounds = list(lambda=c(0.00001,1)))
 print(summary(pglsfit))

@@ -6,6 +6,9 @@ library(patchwork)
 modellist_intra<-paste0("log(",intra$ymodel_nolog,")~log(",
                         intra$Coefficients,")")
 
+#re-run the pgls models between ear measures
+pgls_models_list_intra<-lapply(modellist_intra,pgls_models)#run pgls
+
 #split up the model formula to get x and y components
 spleet<-strsplit(modellist_intra,"~")
 vecty<-numeric()
@@ -31,8 +34,6 @@ for(i in seq_along(vectx)){
   vectxsimple[i]<-gsub("[\\(\\)]", "", regmatches(vectx, gregexpr("\\(.*?\\)", vectx))[[i]])
 }
 
-#re-run the pgls models between ear measures
-pgls_models_list_intra<-lapply(modellist_intra,pgls_models)#run pgls
 
 #logtransform measures of interest
 o<-avgdf%>% mutate_at(c(
@@ -107,6 +108,11 @@ runplotpglsintra<-function(e){
 
 runplotpglsintra(2)
 
+layt<-"
+12345
+6789A
+"
+
 runplotpglsintra(1)+
 runplotpglsintra(2)+
 runplotpglsintra(3)+
@@ -119,10 +125,7 @@ runplotpglsintra(9)+
 runplotpglsintra(10)+plot_annotation(tag_levels = "A")+
   plot_layout(design = layt)
 
-layt<-"
-12345
-6####
-789A#
-"
 
-ggsave(file=paste0(choose.dir(),"/scatter_intra apr 4.svg"), width=10, height=8)
+
+ggsave(file=paste0(choose.dir(),"/scatter_intra apr 4.svg"),
+       width=10, height=5)

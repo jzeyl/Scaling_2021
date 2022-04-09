@@ -7,9 +7,46 @@ modellist_lf
 modellist_bh
 modellist_hf
 
+### combine results from regressions for each measure into a single datagrame
+audio_pgls_results<-bind_rows(audiogrampgls_bh,
+                              audiogrampgls_bs,
+                              audiogrampgls_lf,
+                              audiogrampgls_hf)
+audio_pgls_results$CI95_low<-audio_pgls_results$Estimate-audio_pgls_results$`Std. Error`*1.96
+audio_pgls_results$CI95_high<-audio_pgls_results$Estimate+audio_pgls_results$`Std. Error`*1.96
+
+#combine estimate +/- 95 CI into one cell
+audio_pgls_results$pglsslope<-paste0(audio_pgls_results$Estimate," (",
+                                     format(round(audio_pgls_results$CI95_low, 3), nsmall = 3),
+                                     ",",
+                                     format(round(audio_pgls_results$CI95_high, 3), nsmall = 3),
+                                     ")")
+
+
+#arrange by audiogram metric, category, and R2
+audio_pgls_results <-audio_pgls_results %>%
+  arrange(factor(audio_pgls_results$`Audiogram metric`),
+          factor(category,levels = c("Impedance match",
+                                     "Stiffness",
+                                     "Input/output areas",
+                                     "Auditory endorgan length",
+                                     "Columella size")),
+          desc(Adj_Rsquared))
+
+#split up model column
+#spltmodel<-strsplit(audio_pgls_results$Model,"~")
+#audio_pgls_results$`Audiogram metric`<-unlist(lapply(spltmodel, `[[`, 1))
+#audio_pgls_results$anattraitx<-unlist(lapply(spltmodel, `[[`, 2))
+#
+##only keep significant relationships
+#audio_pgls_results<-audio_pgls_results %>%
+#  filter(Coefficients!="(Intercept)" &
+#           P.val <0.05)
+
+
 #get model list from the results table (only significant results)
-modellist_sig<-paste0(audio_pgls_results$`Audiogram metric`,"~log(",
-                      audio_pgls_results$Coefficients,")")
+modellist_sig<-paste0(audio_pgls_results$`Audiogram metric`,"~",
+                      audio_pgls_results$Coefficients)
 
 pgls_models_sig<-lapply(modellist_sig,pgls_models)#run pgls
 
@@ -26,17 +63,17 @@ for(i in seq_along(anattraitx)){
 }
 
 #only keep significant relationships
-audio_pgls_plt<-audio_pgls_plt %>% select(Model, Coefficients, P.val)%>%
-  filter(Coefficients!="(Intercept)" &
-           P.val <0.05)
+#audio_pgls_plt<-audio_pgls_plt %>% select(Model, Coefficients, P.val)%>%
+# filter(Coefficients!="(Intercept)" &
+#          P.val <0.05)
 
 
 
 #log transform anatomy data for the slope line
-logged<-limits%>% mutate_at(audio_pgls_results$Coefficients,log)
-loggedselect<-ok[,audio_pgls_results$Coefficients]
+logged<-limits%>% mutate_at(vars(TM:UH),log)
+#loggedselect<-ok[,audio_pgls_results$Coefficients]
 
-categorylist_aud<-audio_pgls_results$category
+#categorylist_aud<-audio_pgls_results$category
 
 
 
@@ -64,6 +101,13 @@ runplot_audio<-function(e){
 
 runplot_audio(1)
 
+design<-"
+ABCKL
+DEFMN
+GHIOP
+J##QR
+"
+
 #PLOT ALL BEST FREQUENCY
 runplot_audio(1)+
   runplot_audio(2)+
@@ -83,217 +127,6 @@ runplot_audio(1)+
   runplot_audio(16)+
   runplot_audio(17)+
   runplot_audio(18)+
-  plot_annotation(tag_levels = "A")
-
-
-################signif bh##################
-runplotpgls_aud_bh(8)+
-runplotpgls_aud_bh(10)+
-runplotpgls_aud_bh(11)+plot_annotation(tag_levels = "A")
-
-
-##############best sensitivity##############
-for(i in seq_along(vectxsimple_lf)){
-  assign(paste0("slpline","_",as.character(i)),pgls_models_list_bs[i][[1]]$model$coef[1]+
-           ok[,vectxsimple_lf[i]]*pgls_models_list_bs[i][[1]]$model$coef[2])
-}
-
-runplotpgls_aud_bs<-function(e){
-  pval<-summary(pgls_models_list_bs[[e]])$coefficients[,4][[2]]
-  lbl<-data.frame(
-    xpos = c(-Inf,-Inf),
-    ypos = c(-Inf,-Inf),
-    annotateText = c(paste0("P = ",
-                            signif(summary(pgls_models_list_bs[[e]])$coefficients[,4][[2]],2),
-                            ",",
-                            " R2 = ",signif(summary(pgls_models_list_bs[[e]])$r.squared,2))
-                     ,""),
-    hjust = c(-0.1,-0),
-    vjust = c(-1,-0)
-                     )
-
-  p<-ggplot(limits,
-            aes_string(x = vectx_modellist_lf[e], y = "bestsensitivity"))+
-    theme_classic()+
-    theme(legend.position = "none",
-          axis.text.y = element_blank(),
-          axis.title.y = element_blank())+{
-      if (pval<0.05)  geom_point(aes_string(shape="aud_rel"), size = 2, col = "black")
-       else geom_point(aes_string(shape="aud_rel"), size = 2, col = "black", alpha = 0.4)
-    } + {
-      if (pval<0.05)  geom_line(aes_string(x = vectx_modellist_lf[e],
-                         y = paste0("slpline_",as.character(e))),
-              col = "black", size = 2)
-    }+
-    scale_shape_manual(values=c(17, 16))+
-    annotate(geom = 'text', x = -Inf, y = -Inf, label = paste(' ',' R^2 == ',signif(summary(pgls_models_list_bs[[e]])$r.squared,2)), hjust = -0.05, vjust = -0.1, parse = TRUE)+
-    annotate(geom = 'text', x = -Inf, y = -Inf, label = paste(' ',' P == ',signif(summary(pgls_models_list_bs[[e]])$coefficients[,4][[2]],2)), hjust = -0.05, vjust = -2.1, parse = TRUE)
-  ggtitle(categorylist_aud[e])
-  p
-}
-
-runplotpgls_aud_bs(1)
-
-runplotpgls_aud_bs(1)+
-  runplotpgls_aud_bs(2)+
-  runplotpgls_aud_bs(3)+
-  runplotpgls_aud_bs(4)+
-  runplotpgls_aud_bs(5)+
-  runplotpgls_aud_bs(6)+
-  runplotpgls_aud_bs(7)+
-  runplotpgls_aud_bs(8)+
-  runplotpgls_aud_bs(9)+
-  runplotpgls_aud_bs(10)+
-  runplotpgls_aud_bs(11)+
-  runplotpgls_aud_bs(12)+
-  runplotpgls_aud_bs(13)+
-  runplotpgls_aud_bs(14)+plot_annotation(tag_levels = "A")
-
-####signif bs####
-(runplotpgls_aud_bs(1)+
-runplotpgls_aud_bs(2)+
-runplotpgls_aud_bs(3)+
-runplotpgls_aud_bs(4)+
-runplotpgls_aud_bs(5))/
-(runplotpgls_aud_bs(7)+
-runplotpgls_aud_bs(8)+
-runplotpgls_aud_bs(9)+
-runplotpgls_aud_bs(10)+
-runplotpgls_aud_bs(13)+
-runplotpgls_aud_bs(14))+plot_annotation(tag_levels = "A")
-
-##############low frequency limit##############
-for(i in seq_along(vectxsimple_lf)){
-  assign(paste0("slpline","_",as.character(i)),pgls_models_list_lf[i][[1]]$model$coef[1]+
-           ok[,vectxsimple_lf[i]]*pgls_models_list_lf[i][[1]]$model$coef[2])
-}
-
-runplotpgls_aud_lf<-function(e){
-  pval<-summary(pgls_models_list_lf[[e]])$coefficients[,4][[2]]
-  lbl<-data.frame(
-    xpos = c(-Inf,-Inf),
-    ypos = c(-Inf,-Inf),
-    annotateText = c(paste0("P = ",
-                            signif(summary(pgls_models_list_lf[[e]])$coefficients[,4][[2]],2),
-                            ",",
-                            " R2 = ",signif(summary(pgls_models_list_lf[[e]])$r.squared,2))
-                     ,""),
-    hjust = c(-0.1,-0),
-    vjust = c(-1,-0)
-  )
-  p<-ggplot(limits,
-            aes_string(x = vectx_modellist_lf[e], y = "log(LowHzlimit)"))+
-    theme_classic()+
-    theme(legend.position = "none",
-          axis.text.y = element_blank(),
-          axis.title.y = element_blank())+{
-      if (pval<0.05)  geom_point(aes_string(shape="aud_rel"), size = 2, col = "black")
-      # geom_line(aes_string(x = vectx_modellist_lf[e],
-      #                      y = paste0("slpline_",as.character(e))),
-      #           col = "red", size = 2)
-      else geom_point(aes_string(shape="aud_rel"), size = 2, col = "black", alpha = 0.5)
-    } +{
-      if (pval<0.05)  geom_line(aes_string(x = vectx_modellist_lf[e],
-                                           y = paste0("slpline_",as.character(e))),
-                                col = "black", size = 2)
-    }+
-    scale_shape_manual(values=c(17, 16))+
-    annotate(geom = 'text', x = -Inf, y = -Inf, label = paste(' ',' R^2 == ',signif(summary(pgls_models_list_lf[[e]])$r.squared,2)), hjust = -0.05, vjust = -0.1, parse = TRUE)+
-    annotate(geom = 'text', x = -Inf, y = -Inf, label = paste(' ',' P == ',signif(summary(pgls_models_list_lf[[e]])$coefficients[,4][[2]],2)), hjust = -0.05, vjust = -2.1, parse = TRUE)
-  ggtitle(categorylist_aud[e])
-  #geom_line(aes_string(x = vectxsimple[e],
-  #                     y = paste0("slpline_",as.character(e))),
-  #          col = "black", size = 2)
-  p
-}
-
-runplotpgls_aud_lf(1)
-
-
-runplotpgls_aud_lf(1)+
-runplotpgls_aud_lf(2)+
-runplotpgls_aud_lf(3)+
-runplotpgls_aud_lf(4)+
-runplotpgls_aud_lf(5)+
-runplotpgls_aud_lf(6)+
-runplotpgls_aud_lf(7)+
-runplotpgls_aud_lf(8)+
-runplotpgls_aud_lf(9)+
-runplotpgls_aud_lf(10)+
-runplotpgls_aud_lf(11)+
-runplotpgls_aud_lf(12)+
-runplotpgls_aud_lf(13)+
-  runplotpgls_aud_lf(14)+plot_annotation(tag_levels = "A")
-#############signif################
-runplotpgls_aud_lf(1)+
-runplotpgls_aud_lf(2)+
-runplotpgls_aud_lf(4)+
-plot_annotation(tag_levels = "A")
-
-
-##############high frequency limit##############
-for(i in seq_along(vectxsimple_lf)){
-  assign(paste0("slpline","_",as.character(i)),pgls_models_list_hf[i][[1]]$model$coef[1]+
-           ok[,vectxsimple_lf[i]]*pgls_models_list_hf[i][[1]]$model$coef[2])
-}
-
-runplotpgls_aud_hf<-function(e){
-  pval<-summary(pgls_models_list_hf[[e]])$coefficients[,4][[2]]
-  lbl<-data.frame(
-    xpos = c(-Inf,-Inf),
-    ypos = c(-Inf,-Inf),
-    annotateText = c(paste0("P = ",
-                            signif(summary(pgls_models_list_hf[[e]])$coefficients[,4][[2]],2),
-                            ",",
-                            " R2 = ",signif(summary(pgls_models_list_hf[[e]])$r.squared,2))
-                     ,""),
-    hjust = c(-0.1,-0),
-    vjust = c(-1,-0)
-  )
-  p<-ggplot(limits,
-            aes_string(x = vectx_modellist_lf[e], y = "log(HighHzlimit)"))+
-    theme_classic()+
-    theme(legend.position = "none",
-          axis.text.y = element_blank(),
-          axis.title.y = element_blank())+{
-      if (pval<0.05)  geom_point(aes_string(shape="aud_rel"), size = 2, col = "black")
-      # geom_line(aes_string(x = vectx_modellist_lf[e],
-      #                      y = paste0("slpline_",as.character(e))),
-      #           col = "red", size = 2)
-      else geom_point(aes_string(shape="aud_rel"), size = 2, col = "black", alpha = 0.5)
-    } +{
-      if (pval<0.05)  geom_line(aes_string(x = vectx_modellist_lf[e],
-                                           y = paste0("slpline_",as.character(e))),
-                                col = "black", size = 2)
-    }+
-    scale_shape_manual(values=c(17, 16))+
-    annotate(geom = 'text', x = Inf, y = -Inf, label = paste(' ',' R^2 == ',signif(summary(pgls_models_list_hf[[e]])$r.squared,2)), hjust = 0.99, vjust = -0.1, parse = TRUE)+
-    annotate(geom = 'text', x = Inf, y = -Inf, label = paste(' ',' P == ',signif(summary(pgls_models_list_hf[[e]])$coefficients[,4][[2]],2)), hjust = 0.99, vjust = -2.1, parse = TRUE)
-  ggtitle(categorylist_aud[e])
-  p
-}
-
-runplotpgls_aud_hf(1)
-
-runplotpgls_aud_hf(1)+
-  runplotpgls_aud_hf(2)+
-  runplotpgls_aud_hf(3)+
-  runplotpgls_aud_hf(4)+
-  runplotpgls_aud_hf(5)+
-  runplotpgls_aud_hf(6)+
-  runplotpgls_aud_hf(7)+
-  runplotpgls_aud_hf(8)+
-  runplotpgls_aud_hf(9)+
-  runplotpgls_aud_hf(10)+
-  runplotpgls_aud_hf(11)+
-  runplotpgls_aud_hf(12)+
-  runplotpgls_aud_hf(13)+
-  runplotpgls_aud_hf(14)+plot_annotation(tag_levels = "A")
-
-
-##########signif###############
-runplotpgls_aud_hf(3)+
-runplotpgls_aud_hf(4)+
-runplotpgls_aud_hf(5)+
-runplotpgls_aud_hf(7)+plot_annotation(tag_levels = "A")
+  plot_annotation(tag_levels = "A")+
+  plot_layout(design = design)
 

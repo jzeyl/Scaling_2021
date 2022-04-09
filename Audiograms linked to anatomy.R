@@ -28,13 +28,13 @@ avgdf<-cong_avg
 fig1<-read.csv(paste0(getwd(),"/audiograms.csv"), stringsAsFactors = FALSE)
 
 #check how many reach cutoff
-#lower Hz limit:
+#species not reaching lower Hz limit:
 minsubset<-fig1 %>% group_by(Species) %>% filter(Hz == min(Hz))
 minsubset$reachcutoff<-ifelse(minsubset$Threshold <35, "under35","over35")
 table(minsubset$reachcutoff)#count number
 minsubset$Species[minsubset$reachcutoff=="under35"]
 
-#upper Hz limit
+#species not reaching upper Hz limit
 maxsubset<-fig1 %>% group_by(Species) %>% filter(Hz == max(Hz))
 maxsubset$reachcutoff<-ifelse(maxsubset$Threshold <35, "under35","over35")
 table(maxsubset$reachcutoff)#count number
@@ -361,7 +361,7 @@ audio_pgls_results<-bind_rows(audiogrampgls_bh,
                               audiogrampgls_lf,
                               audiogrampgls_hf)
 audio_pgls_results$CI95_low<-audio_pgls_results$Estimate-audio_pgls_results$`Std. Error`*1.96
-audio_pgls_results$CI95_high<-audio_pgls_results$Estimate-audio_pgls_results$`Std. Error`*1.96
+audio_pgls_results$CI95_high<-audio_pgls_results$Estimate+audio_pgls_results$`Std. Error`*1.96
 
 #combine estimate +/- 95 CI into one cell
 audio_pgls_results$pglsslope<-paste0(audio_pgls_results$Estimate," (",

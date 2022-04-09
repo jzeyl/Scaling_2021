@@ -201,7 +201,9 @@ categorylist<-c(rep("Impedance matching",4),
 
 ############RUN PGLS############
 ####scaling vs head mass########
-source("pgls_HM.R")#creates dataframe with results 'hm'
+source("pgls_HM.R")#creates list of model outputs 'pgls_model_list'
+
+#dataframe with results 'hm'
 
 #formatting table
 #remove intercept estimates, drop model column,

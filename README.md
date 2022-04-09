@@ -1,16 +1,23 @@
 # Workflow
-This work corresponds to in prep.
+This work corresponds to in prep for Hearing Research  "Scaling of ear morphology among birds and its implications for hearing performance" quantifying allometric relationships in bird ear.
 
-To reproduce the scaling analyses, start with "Set up data_scl.R".
+To reproduce the the analyses of the paper, start with "Set up data_scl.R". This loads the data and phylogeny.This also runs the pgls between ear measures and between each ear measure and head mass. From this scripts the summary statistics and tables are exported to word file.
 
-The pgls between the ear structures and audiometric measurements are 
+To run the pgls between ear structures and audiometric measurements are , "Set up data_scl.R" also has to be run to get the data prepared (minus the pgls from those scripts)
+
+, to load the data, and then "Audiograms linked to anatomy.R".
+
+Scripts for plots are in the plots folder.
+To reproduce figure 1 of the phylogeny,  
+
+Supplemental materials are (audiogram plots), scatterplots between ear metrics (), between ear metrics and head mass (_), and between ear metrics and audiograms ()
 
 
 [Title] in prep. or recently submitted, with an abstract or a summary of the abstract of the paper. Then, a workflow of the scripts. To reproduce the analyses in the paper, where should I start? where should I go next?
 
 
-
-# Data files
+# File descriptions
+## Data files
 |File|Description|
 |-----|-----|
 |["databmadded.csv"](https://github.com/jzeyl/Scaling_2021/blob/main/databmadded.csv)|anatomical data|
@@ -18,7 +25,7 @@ The pgls between the ear structures and audiometric measurements are
 |["audiograms.csv"](https://github.com/jzeyl/Scaling_2021/blob/main/audiograms.csv)|threshold data from behavioural audiograms collected from literature|
 |["JZ tree Prum merged hackett.tree"](https://github.com/jzeyl/Scaling_2021/blob/main/JZ%20tree%20Prum%20merged%20hackett.tree)|phylogeny file|
 
-# Analysis scripts
+
 ## Scaling analyses
 
 |File|Description|
@@ -48,11 +55,7 @@ The pgls between the ear structures and audiometric measurements are
 | "Scatterplots, between ear measures.R"  ](https://github.com/jzeyl/Scaling_2021/blob/main/plots/2%20plot_intra_april%2014.R)|Plotting of ear measure relative to each other|
 |["Scatterplots relative to audiogram measures.R"](https://github.com/jzeyl/Scaling_2021/blob/main/plots/3%20plot%20link%20to%20anaomy%20Apr%2013.R)|Plotting of ear measures and audiogram data |
 |["Audiogram bar plots_Supplemental.R"]   |Plots for supplemental material|
-- 
-[1]         
-[2] 
-[3]        
-[4] 
+
 ![alt text](Picture1.svg)
 <!--![alt text](superorder.png)-->
 

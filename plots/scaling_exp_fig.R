@@ -5,126 +5,86 @@ library(ggtext)
 library(geomtextpath)
 
 
-bm<-seq(1,10000,5)
-
-three_d<-seq(1,10000,5)
-three_d_hyper<-three_d*1.1
-three_d_hypo<-three_d*0.9
-
-
-#0 is angle vs 3D
+#bm<-seq(1,100000,50)
+#three_d<-seq(1,100000,50)
 
 
 
-lineplot<-ggplot()+
-
- #geom_textabline(slope = 1, intercept = 0, label = "b:1",
- #                hjust = 0.6, vjust = -0.2)+
- #geom_textabline(slope = 0.66, intercept = 0, label = "b:0.66",
- #                hjust = 0.6, vjust = -0.2)+
- #geom_textabline(slope = 0.5, intercept = 0, label = "b:0.5",
- #                hjust = 0.6, vjust = -0.2)+
- #geom_textabline(slope = 0.33, intercept = 0, label = "b:0.33",
- #                hjust = 0.6, vjust = -0.2)+
- #geom_textabline(slope = 0, intercept = 0, label = "b:0",
- #                hjust = 0.6, vjust = -0.2)+
-
-  geom_richtext(aes(x = max(log(three_d))+0.1, y = max(log(three_d))),
+multidimensions<-ggplot()+
+  geom_richtext(aes(x =c(10), y = c(10)),
             label = "**b: 1** (mm~mm,mm<sup>2</sup>~mm<sup>2</sup>,mm<sup>3</sup>~mm<sup>3</sup>,g)", hjust = 0)+
-  #geom_path(aes(x = log(bm), y = log(three_d)))+
-  geom_textpath(aes(x = log(bm), y = log(three_d)),
+  geom_textpath(aes(x = c(0,10), y = c(0,10)),
                 label = "b:1",
                 hjust = 0.6, vjust = -0.2)+
- geom_richtext(aes(x = max(log(three_d)+0.1), y = max(log(three_d)*0.66)),
+  #0.6
+ geom_richtext(aes(x = c(10), y = c(6.6)),
             label = "**b: 0.66** (mm<sup>2</sup>~mm<sup>3</sup>,g)", hjust = 0)+
-  #geom_path(aes(x = log(bm), y = log(three_d)*0.66))+
-  geom_textpath(aes(x = log(bm), y = log(three_d)*0.66),
+ geom_textpath(aes(x = c(0,10), y = c(0,6.6)),
                 label = "b:0.66",
                 hjust = 0.6, vjust = -0.2)+
-  geom_richtext(aes(x = max(log(three_d)+0.1), y = max(log(three_d)*0.5)),
+  #0.5
+  geom_richtext(aes(x = c(10), y = c(5)),
             label = "**b: 0.5** (mm~mm<sup>2</sup>))", hjust = 0)+
-  #geom_path(aes(x = log(bm), y = log(three_d)*0.5))+
-  geom_textpath(aes(x = log(bm), y = log(three_d)*0.5),
+ geom_textpath(aes(x = c(0,10), y =  c(0,5)),
                 label = "b:0.5",
                 hjust = 0.6, vjust = -0.2)+
-  geom_richtext(aes(x = max(log(three_d)+0.1), y = max(log(three_d)*0.33)),
+#3.3
+  geom_richtext(aes(x = c(10), y =  c(3.3)),
             label = "**b: 0.33** (mm~mm<sup>3</sup>,g)" , hjust = 0)+
-geom_path(aes(x = log(bm), y = log(three_d)*0.33))+
-  geom_textpath(aes(x = log(bm), y = log(three_d)*0),
+geom_path(aes(x = c(0,10), y =  c(0,3.3)))+
+  #0
+  geom_textpath(aes(x = c(0,10), y = c(0,3.3)),
                 label = "b:0.33",
                 hjust = 0.6, vjust = -0.2)+
-
 #angle vs 3D
-geom_path(aes(x = log(bm), y = log(three_d)*0))+
-  geom_textpath(aes(x = log(bm), y = log(three_d)*0.33),
+geom_path(aes(x = c(0,10), y = c(0,0)))+
+  geom_textpath(aes(x = c(0,10), y = c(0,0)),
                 label = "b:0.0",
                 hjust = 0.6, vjust = -0.2)+
-  geom_richtext(aes(x = max(log(three_d)+0.1), y = max(log(three_d)*0)),
+  geom_richtext(aes(x = c(10), y = c(0)),
                 label = "**b: 0.0** (degree~mm<sup>3</sup>,g)" , hjust = 0)+
 
-
 #themes, scales
-ylab("log(measure)")+
-  xlab("log(measure)")+
-scale_x_continuous(limits = c(0,20), breaks = seq(0,10,2))+
-scale_y_continuous(limits = c(-2,11))+
-
   theme_minimal()+
-theme(axis.text = element_blank(),
-      panel.grid = element_blank())
-lineplot
-
+  ylab("log(y)")+
+  xlab("log(x)")+
+  scale_x_continuous(limits = c(0,20), breaks = seq(0,10, by = 2.5))+
+  scale_y_continuous(limits = c(0,10))+
+  coord_fixed(ratio = 1, clip = "off")+
+  theme(axis.text = element_text(colour = "black"))
+multidimensions
+scale_x_continuous(breaks = seq(50, 350, by = 2.5))
 #geom_textabline(slope = 15, intercept = -100, label = "partition line",
 #                color = "green4", hjust = 0.6, vjust = -0.2)
 
 
 
 # hypo-hyper-iso ----------------------------------------------------------
-
-inset<-ggplot()+
- #geom_ribbon(aes(x = log(bm),ymin=(log(three_d)*0.25),
- #                 ymax=log(three_d)),
- #             fill="red", alpha = 0.5)+
- # geom_ribbon(aes(x = log(bm),ymin=(log(three_d)*1.75),
- #                 ymax=log(three_d)),
- #             fill="red", alpha = 0.5) +
-  geom_textpath(aes(x = log(bm), y = log(three_d)), label = "Isometric",
+types<-ggplot()+
+  geom_textpath(aes(x = c(0,10), y = c(0,10)), label = "Isometric",
                 hjust = 0.6, vjust = -0.2)+
-  geom_textpath(aes(x = log(bm), y = log(three_d)*1.75), col = "black",  label = "Hyperallometric",
+  geom_textpath(aes(x = c(0,5), y = c(0,10)), col = "black",  label = "Hyperallometric",
                 hjust = 0.6, vjust = -0.2)+
-  geom_textpath(aes(x = log(bm), y = log(three_d)*0.25), col = "black",  label = "Hypoallometric",
+  geom_textpath(aes(x = c(0,10), y = c(0,5)), col = "black",  label = "Hypoallometric",
                 hjust = 0.6, vjust = -0.2)+
-
-  #geom_segment(aes(x = max(log(bm)), #hyperallometric
-  #               y = max(log(three_d)),
-  #               xend = max(log(bm)),
-  #               yend = max(log(three_d))*1.75),
-  #              arrow = arrow(type = "closed"))+
-  #geom_segment(aes(x = max(log(bm)), #hyperallometric
-  #                 y = max(log(three_d)),
-  #                 xend = max(log(bm)),
-  #                 yend = max(log(three_d))*0.25),
-  #             arrow = arrow(type = "closed"))+
   theme_minimal()+
-  #theme(axis.text = element_blank(),
-   #     panel.grid = element_blank())+
 ylab("log(y)")+
   xlab("log(x)")+
   scale_x_continuous(limits = c(0,10))+
-  scale_y_continuous(limits = c(0,10))
-  #geom_text(aes(x = max(log(three_d)+1), y = max(log(three_d))),
-  #          label = "Isometric", hjust = 0)+
-  #geom_text(aes(x = max(log(three_d)+1), y = max(log(three_d)*1.75)),
-  #          label = "Hyperallometric", hjust = 0)+
-  #geom_text(aes(x = max(log(three_d)+1), y = max(log(three_d)*0.25)),
-  #          label = "Hypoallometric", hjust = 0)
-  #coord_cartesian(clip = off)
-inset
+  scale_y_continuous(limits = c(0,10))+
+  coord_fixed(ratio = 1, clip = "off")+
+  theme(axis.text = element_text(colour = "black"))
+types
+
+
 
 # insert inset plot -------------------------------------------------------
-lineplot+ inset_element(inset, 0, 0.4, 0.5, 1)
+#combo<-lineplot+ inset_element(inset, 0, 0.4, 0.5, 1)
+#combo$patches$layout$widths  <- 1
+#combo$patches$layout$heights <- 1
+#combo
 
-inset+lineplot+plot_layout(widths = c(1,2))+
+types+multidimensions+plot_layout(widths = c(1,2))+
   plot_annotation(tag_levels = 'A')
 
 
@@ -147,3 +107,6 @@ plottab
 
 library(patchwork)
 lineplot+plottab
+
+ggsave(file=paste0(choose.dir(),"/scalingtypes_apr 8.svg"),
+       width=10, height=5)
