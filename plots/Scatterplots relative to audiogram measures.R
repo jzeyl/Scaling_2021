@@ -2,6 +2,9 @@ library(patchwork)
 library(dplyr)
 ########SETUP############
 
+#limits<- limits %>% rename(., `Best Sensitivity\n (dB)` = bestsensitivity)
+
+
 modellist_bs
 modellist_lf
 modellist_bh
@@ -22,6 +25,12 @@ audio_pgls_results$pglsslope<-paste0(audio_pgls_results$Estimate," (",
                                      format(round(audio_pgls_results$CI95_high, 3), nsmall = 3),
                                      ")")
 
+#split up model column
+spltmodel<-strsplit(audio_pgls_results$Model,"~")
+#spltmodel<-gsub('bestsensitivity', 'Best Sensitivity (dB)',spltmodel)
+audio_pgls_results$`Audiogram metric`<-unlist(lapply(spltmodel, `[[`, 1))
+audio_pgls_results$anattraitx<-unlist(lapply(spltmodel, `[[`, 2))
+
 
 #arrange by audiogram metric, category, and R2
 audio_pgls_results <-audio_pgls_results %>%
@@ -39,9 +48,9 @@ audio_pgls_results <-audio_pgls_results %>%
 #audio_pgls_results$anattraitx<-unlist(lapply(spltmodel, `[[`, 2))
 #
 ##only keep significant relationships
-#audio_pgls_results<-audio_pgls_results %>%
-#  filter(Coefficients!="(Intercept)" &
-#           P.val <0.05)
+audio_pgls_results<-audio_pgls_results %>%
+  filter(Coefficients!="(Intercept)" &
+           P.val <0.05)
 
 
 #get model list from the results table (only significant results)
@@ -72,10 +81,7 @@ for(i in seq_along(anattraitx)){
 #log transform anatomy data for the slope line
 logged<-limits%>% mutate_at(vars(TM:UH),log)
 #loggedselect<-ok[,audio_pgls_results$Coefficients]
-
 #categorylist_aud<-audio_pgls_results$category
-
-
 
 ##########best Hz##############
 for(i in seq_along(anattrait_simple)){
@@ -88,14 +94,22 @@ runplot_audio<-function(e){
   p<-ggplot(limits,
             aes_string(x = spltmodel[[e]][2], y = spltmodel[[e]][1]))+
     theme_classic()+
-    theme(legend.position = "none")+
+    #theme(legend.position = "none")+
     #      axis.text.y = element_blank(),
     #      axis.title.y = element_blank())+
     geom_point(aes_string(shape="aud_rel"), size = 2)+
     geom_line(aes_string(x = anattraitx[e],
                                           y = paste0("slpline_",as.character(e))),
-                                col = "black", size = 2)
-
+                                col = "black", size = 2)+{
+if(e<11)
+  ylab("Best Sensitivity\n (dB)")
+ else if(e >10 & e < 13)
+   ylab("Best Frequency\n (Hz)")
+else if(e >12 & e < 17)
+  ylab("High Frequency\n Limit (Hz)")
+else if(e > 16)
+ ylab("Low Frequency\n Limit (Hz)")
+                                }
   p
 }
 
@@ -127,6 +141,14 @@ runplot_audio(1)+
   runplot_audio(16)+
   runplot_audio(17)+
   runplot_audio(18)+
-  plot_annotation(tag_levels = "A")+
+  plot_annotation(tag_levels = list(c(
+    "A","","",
+    "","","",
+    "","","",
+    "",
+    "B","",
+    "C","","","",
+    "D","")))+
   plot_layout(design = design)
 
+ggsave(file=paste0(choose.dir(),"/audiogramscatter_supp apr 11.svg"), width=10, height=8)

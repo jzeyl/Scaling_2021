@@ -377,13 +377,14 @@ audio_pgls_results$`Audiogram metric`<-unlist(lapply(spltmodel, `[[`, 1))
 audio_pgls_results$anattraitx<-unlist(lapply(spltmodel, `[[`, 2))
 
 #only keep significant relationships
-audio_pgls_results<-audio_pgls_results %>% select(`Audiogram metric`,
-                                                  category,
-                                                  Coefficients,
-                                                  pglsslope,
-                                                  Adj_Rsquared,
-                                                  P.val,
-                                                  Lambda)%>%
+audio_pgls_results<-audio_pgls_results %>%
+  select(`Audiogram metric`,
+          category,
+          Coefficients,
+          pglsslope,
+          Adj_Rsquared,
+          P.val,
+          Lambda)%>%
   filter(Coefficients!="(Intercept)" &
            P.val <0.05)
 
@@ -416,7 +417,7 @@ toprint<-read_docx() #create word doc object
 body_add_flextable(toprint,flexall)#add pgls output table
 body_end_section_landscape(toprint)
 #write.csv(intra,"E:/Analysis_plots/scalingintra feb 17.csv")
-print(toprint,target = paste0(choose.dir(),"/pgls_audio all_Apr4 2022.docx"))
+print(toprint,target = paste0(choose.dir(),"/pgls_audio all_Apr 11 2022.docx"))
 
 
 #######plotting metrics on audiogram########
