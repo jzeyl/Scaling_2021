@@ -23,6 +23,7 @@ cong_avg<-cong_avg[-c(grep('Corvus_albus|Corvus_splendens', cong_avg$Binomial)),
 cong_avg<-cong_avg[-c(grep('Phalacrocorax_capensis|Phalacrocorax_lucidus|Phalacrocorax_neglectus', cong_avg$Binomial)), ]
 avgdf<-cong_avg
 
+#avgdf$aud_spp<-distinctdforder$spp_audio
 
 # load audiograms ---------------------------------------------------------
 fig1<-read.csv(paste0(getwd(),"/audiograms.csv"), stringsAsFactors = FALSE)
@@ -318,9 +319,7 @@ plots_audio
 #print(toprint,target = "audiogrampgls_lf.docx")
 
 
-# high frequency limit ----------------------------------------------------
 
-source("pgls_audiogram_hf.R")
 
 #results table is saved as 'audiogrampgls-hf'
 

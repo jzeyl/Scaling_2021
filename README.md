@@ -1,19 +1,17 @@
 # Workflow
 This work corresponds to in prep for Hearing Research  "Scaling of ear morphology among birds and its implications for hearing performance" quantifying allometric relationships in bird ear.
 
-To reproduce the the analyses of the paper, start with "Set up data_scl.R". This loads the data and phylogeny.This also runs the pgls between ear measures and between each ear measure and head mass. From this scripts the summary statistics and tables are exported to word file.
+**To reproduce the the scaling pgls analyses:**
 
-To run the pgls between ear structures and audiometric measurements are , "Set up data_scl.R" also has to be run to get the data prepared (minus the pgls from those scripts)
+start with "Set up data_scl.R". This loads the data and phylogeny. This also runs the phylogenetic regressions (phylogenetic generalized least squares regressions, or PGLS) between ear measures and between each ear measure and head mass. This script also exports the summary statistics and tables to csv or word files.
 
-, to load the data, and then "Audiograms linked to anatomy.R".
+**To run the pgls between ear structures and audiometric measurements:**  
 
-Scripts for plots are in the plots folder.
-To reproduce figure 1 of the phylogeny,  
+First,  "Set up data_scl.R" also has to be run to get the data prepared (minus the pgls from those scripts). Next, the scripts in "Audiograms linked to anatomy.R" can be run.
 
-Supplemental materials are (audiogram plots), scatterplots between ear metrics (), between ear metrics and head mass (_), and between ear metrics and audiograms ()
+**Scripts for plots are in the plots folder.**  
 
 
-[Title] in prep. or recently submitted, with an abstract or a summary of the abstract of the paper. Then, a workflow of the scripts. To reproduce the analyses in the paper, where should I start? where should I go next?
 
 
 # File descriptions

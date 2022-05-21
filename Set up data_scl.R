@@ -101,7 +101,7 @@ categorylist_intra<-c(rep("Impedance match",5),
                       "Stiffness",
                       rep("Columella morphology",4))
 
-#run the
+#run the pgls models
 source("pgls_intraear.R")
 
 #remove intercept estimates, drop model column,
@@ -163,6 +163,9 @@ body_end_section_landscape(toprint)
 #write.csv(intra,"E:/Analysis_plots/scalingintra feb 17.csv")
 print(toprint,target = paste0(choose.dir(),"/pgls_intra_scaling all_Apr4 2022.docx"))
 
+
+############RUN PGLS############
+####scaling vs head mass########
 ####list of pgls models to run (only models with head mass are used)####
 pgls_todo_hm<- c("log(TM_FP)~log(HM)",
                         "log(COffset)~log(HM)",
@@ -199,11 +202,9 @@ categorylist<-c(rep("Impedance matching",4),
                 rep("Stiffness",2),
                 rep("Columella size",2))
 
-############RUN PGLS############
-####scaling vs head mass########
-source("pgls_HM.R")#creates list of model outputs 'pgls_model_list'
-
+#creates list of model outputs 'pgls_model_list'
 #dataframe with results 'hm'
+source("pgls_HM.R")
 
 #formatting table
 #remove intercept estimates, drop model column,
