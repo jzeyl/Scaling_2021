@@ -1,6 +1,6 @@
 library(patchwork)
 library(ggrepel)
-source("pgls_audiogram_bs.R")
+
 
 
 #average the congeners for linkage with audiograms
@@ -23,6 +23,8 @@ cong_avg$aud_rel[129]<-"Congener"
 cong_avg<-cong_avg[-c(grep('Corvus_albus|Corvus_splendens', cong_avg$Binomial)), ]
 cong_avg<-cong_avg[-c(grep('Phalacrocorax_capensis|Phalacrocorax_lucidus|Phalacrocorax_neglectus', cong_avg$Binomial)), ]
 avgdf<-cong_avg
+
+
 
 #remake comparative data frame object with averaged congeners
 #rename phylogeny tips to matching with the species for which audiogram is available
@@ -87,6 +89,7 @@ pgls_models_list
 #list of the original regressions here:
 pgls_todo_hm
 
+#########get residuals of a pgls of measure~head mass as a dataframe#####
 getresids_as_df<-function(i){
 residtest<-as.data.frame(residuals(pgls_models_list[[i]]))
 residtest$resid_bname<-row.names(residtest)
@@ -96,17 +99,17 @@ resid_measure<-function(){
 residtest<-setNames(residtest,c(resid_measure(),"resid_bname"))
 }
 
-#create list of dataframes containing residuals
+#############create list of dataframes containing residuals##############
 resids_df_list<-list()
 for(i in seq_along(pgls_todo_hm)){
   resids_df_list[[i]]<-assign("toadd",getresids_as_df(i))
 }
 
-for(i in seq_along(resids_df_list)){
-limit2<-limits
-limit2<-full_join(limits,resids_df_list[[i]],by = c("spp_aud" = "resid_bname"))
-
-}
+#for(i in seq_along(resids_df_list)){
+#limit2<-limits
+#limit2<-full_join(limits,resids_df_list[[i]],by = c("spp_aud" = "resid_bname"))
+#
+#}
 
 joined<-limits %>% full_join(.,resids_df_list[[1]],by = c("spp_aud" = "resid_bname"))%>% 
   full_join(.,resids_df_list[[2]],by = c("spp_aud" = "resid_bname"))%>% 
@@ -141,7 +144,7 @@ birdCDO<-comparative.data(phy = birdtreels,data = joined,#[avgdf$Category!="Terr
 birdCDO$dropped
 
 
-
+############get model list#########3
 modellist_bs<-paste0("bestsensitivity~",residlist)
 modellist_lf<-paste0("log(LowHzlimit)~",residlist)
 modellist_hf<-paste0("log(HighHzlimit)~",residlist)
@@ -186,6 +189,7 @@ audio_pgls_results<-bind_rows(audiogrampgls_bh,
 audio_pgls_results$CI95_low<-audio_pgls_results$Estimate-audio_pgls_results$`Std. Error`*1.96
 audio_pgls_results$CI95_high<-audio_pgls_results$Estimate+audio_pgls_results$`Std. Error`*1.96
 
+#############formatting table###############
 #combine estimate +/- 95 CI into one cell
 audio_pgls_results$pglsslope<-paste0(audio_pgls_results$Estimate," (",
                                      format(round(audio_pgls_results$CI95_low, 3), nsmall = 3),
@@ -240,7 +244,7 @@ toprint<-read_docx() #create word doc object
 body_add_flextable(toprint,flexall)#add pgls output table
 body_end_section_landscape(toprint)
 #write.csv(intra,"E:/Analysis_plots/scalingintra feb 17.csv")
-print(toprint,target = paste0(choose.dir(),"/pgls_audio all_May 21 2022.docx"))
+print(toprint,target = paste0(choose.dir(),"/pgls_resid_table_3_jun3.docx"))
 
 
 

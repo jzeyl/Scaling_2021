@@ -5,7 +5,7 @@ library(flextable)
 library(officer)
 library(dplyr)
 
-
+####create averaged values for instances where multiple species match a congener with audiogram####
 # add avg Corvus and Phalacrocorax values----------------------------------------
 phalacrocoraxavg<-avgdf[grepl('Phalacrocorax', avgdf$Binomial), ] %>%
   dplyr::select(where(is.numeric)) %>%
@@ -23,7 +23,7 @@ cong_avg<-cong_avg[-c(grep('Corvus_albus|Corvus_splendens', cong_avg$Binomial)),
 cong_avg<-cong_avg[-c(grep('Phalacrocorax_capensis|Phalacrocorax_lucidus|Phalacrocorax_neglectus', cong_avg$Binomial)), ]
 avgdf<-cong_avg
 
-#avgdf$aud_spp<-distinctdforder$spp_audio
+avgdf$aud_spp<-distinctdforder$spp_audio
 
 # load audiograms ---------------------------------------------------------
 fig1<-read.csv(paste0(getwd(),"/audiograms.csv"), stringsAsFactors = FALSE)
@@ -142,6 +142,12 @@ limits$aud_rel[limits$binomial=="Corvus_cornix"]<-"Congener"
 limits$aud_rel[limits$binomial=="Phalacrocorax_carbo"]<-"Congener"
 
 
+########The audiogram metrics have now been computed.
+########the residual file can now be used to run the pgls modesl###
+########below the models are run without adjusting for head size####
+
+
+#########correlation betweenaudiogram measures#########3333
 # correlation plots - summary stats for audiogram metrics
 aud_data<- limits[,c("LowHzlimit","HighHzlimit","besthz","bestsensitivity")]
 audlog<-aud_data %>% mutate_at(vars(c("LowHzlimit","HighHzlimit","besthz")),log)
@@ -169,8 +175,9 @@ se_besthz<-sd(limits$besthz)/sqrt(length(limits$besthz))
 meanbestsens<-mean(limits$bestsensitivity)
 se_bestsens<-sd(limits$bestsensitivity)/sqrt(length(limits$bestsensitivity))
 
-
-###############PGLS MODELS BEST SENSITIVITY####################
+###############____########
+##################models unadjusted for ead mass #############
+  #PGLS MODELS BEST SENSITIVITY
 modellist_bs<-c(
   "bestsensitivity~log(Air)",
   "bestsensitivity~log(ES)",
@@ -418,7 +425,7 @@ body_end_section_landscape(toprint)
 #write.csv(intra,"E:/Analysis_plots/scalingintra feb 17.csv")
 print(toprint,target = paste0(choose.dir(),"/pgls_audio all_Apr 11 2022.docx"))
 
-
+###############____########
 #######plotting metrics on audiogram########
 aas<-function(d){
   set<-limits[d,]

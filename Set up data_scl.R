@@ -47,13 +47,12 @@ avgdf$Species<-distinctdforder$Species
 avgdf$Low.Hz<-distinctdforder$Low.Hz
 avgdf$Order<-distinctdforder$Order
 avgdf$Family<-distinctdforder$Family
-avgdf$maxdivedepth<-distinctdforder$max
 avgdf$Category<-as.character(distinctdforder$Category)
 avgdf$birdtree<-gsub(" ","_",distinctdforder$Birdtree)
 avgdf$BM_lit<-distinctdforder$BM_lit
 avgdf$aud_spp<-distinctdforder$spp_audio
 avgdf$aud_rel<-distinctdforder$audio_relation
-
+avgdf$aud_spp<-distinctdforder$spp_audio
 
 #make comparative data frame object
 birdCDO<-comparative.data(phy = birdtreels,data = avgdf,#[avgdf$Category!="Terrestrial",]
@@ -206,7 +205,7 @@ categorylist<-c(rep("Impedance matching",4),
 #dataframe with results 'hm'
 source("pgls_HM.R")
 
-#formatting table
+#################formatting table#########################
 #remove intercept estimates, drop model column,
 #only keep significant relationships
 
@@ -257,7 +256,7 @@ flexall<-flextable(hm) %>%
 flexall
 
 
-#pgls model diagnostics
+######pgls model diagnostics#####
 par(mfrow=c(2,2))
 par(mar=c(1,1,1,1))
 plots_hm<-lapply(pgls_models_list, plot)
