@@ -147,6 +147,24 @@ modellist_lf<-paste0("log(LowHzlimit)~",residlist)
 modellist_hf<-paste0("log(HighHzlimit)~",residlist)
 modellist_bh<-paste0("log(besthz)~",residlist)
 
+residlist
+#note same object name for category list but different order relative to non-resid pgls
+categorylist_lf<-c("Impedance match",
+                    "Impedance match",
+                    "Impedance match",
+                    "Impedance match",
+                    "Auditory endorgan length",
+                    "Input/output areas",
+                    "Input/output areas",
+                    "Input/output areas",
+                    "Stiffness",
+                   "Stiffness",
+                   "Columella size",
+                   "Columella size")
+
+categorylist_bs<-categorylist_lf
+categorylist_bh<-categorylist_lf
+categorylist_hf<-categorylist_lf
 
 pgls_models(modellist_bs[[1]])
 ###########best sensitivity#################
@@ -157,5 +175,72 @@ source("pgls_audiogram_lf.R")
 # high frequency limit ----------------------------------------------------
 
 source("pgls_audiogram_hf.R")
+
+source("pgls_audiogram_bh.R")
+
+### combine results from regressions for each measure into a single datagrame
+audio_pgls_results<-bind_rows(audiogrampgls_bh,
+                              audiogrampgls_bs,
+                              audiogrampgls_lf,
+                              audiogrampgls_hf)
+audio_pgls_results$CI95_low<-audio_pgls_results$Estimate-audio_pgls_results$`Std. Error`*1.96
+audio_pgls_results$CI95_high<-audio_pgls_results$Estimate+audio_pgls_results$`Std. Error`*1.96
+
+#combine estimate +/- 95 CI into one cell
+audio_pgls_results$pglsslope<-paste0(audio_pgls_results$Estimate," (",
+                                     format(round(audio_pgls_results$CI95_low, 3), nsmall = 3),
+                                     ",",
+                                     format(round(audio_pgls_results$CI95_high, 3), nsmall = 3),
+                                     ")")
+
+
+#split up model column
+spltmodel<-strsplit(audio_pgls_results$Model,"~")
+audio_pgls_results$`Audiogram metric`<-unlist(lapply(spltmodel, `[[`, 1))
+audio_pgls_results$anattraitx<-unlist(lapply(spltmodel, `[[`, 2))
+
+#only keep significant relationships
+audio_pgls_results<-audio_pgls_results %>%
+  select(`Audiogram metric`,
+         category,
+         Coefficients,
+         pglsslope,
+         Adj_Rsquared,
+         P.val,
+         Lambda)%>%
+  filter(Coefficients!="(Intercept)" &
+           P.val <0.05)
+
+#arrange by audiogram metric, category, and R2
+audio_pgls_results <-audio_pgls_results %>%
+  arrange(factor(audio_pgls_results$`Audiogram metric`),
+          factor(category,levels = c("Impedance match",
+                                     "Stiffness",
+                                     "Input/output areas",
+                                     "Auditory endorgan length",
+                                     "Columella size")),
+          desc(Adj_Rsquared))
+
+# remove the "log" from 'Coefficients'
+#audio_pgls_results$xmodel_nolog<-numeric()
+for(i in seq_along(audio_pgls_results$Coefficients)){
+  audio_pgls_results$Coefficients[i]<-gsub("[\\(\\)]", "", regmatches(audio_pgls_results$Coefficients, gregexpr("\\(.*?\\)", audio_pgls_results$Coefficients))[[i]])
+}
+
+
+#visualize the table better using the flextable package
+flexall<-flextable(audio_pgls_results) %>% add_header_lines(
+  values = "Table X. ") %>%
+  #bold(i = ~ P.val < 0.05) %>% # select columns add: j = ~ Coefficients + P.val
+  autofit()
+flexall
+
+#write table to word file
+toprint<-read_docx() #create word doc object
+body_add_flextable(toprint,flexall)#add pgls output table
+body_end_section_landscape(toprint)
+#write.csv(intra,"E:/Analysis_plots/scalingintra feb 17.csv")
+print(toprint,target = paste0(choose.dir(),"/pgls_audio all_May 21 2022.docx"))
+
 
 
