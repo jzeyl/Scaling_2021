@@ -139,7 +139,9 @@ limits$aud_rel<-avgdf$aud_rel[match(limits$binomial,avgdf$Binomial)]
 
 #classification for the two species withaverage
 limits$aud_rel[limits$binomial=="Corvus_cornix"]<-"Congener"
+limits$spp_aud[limits$binomial=="Corvus_cornix"]<-"Corvus_cornix"
 limits$aud_rel[limits$binomial=="Phalacrocorax_carbo"]<-"Congener"
+limits$spp_aud[limits$binomial=="Phalacrocorax_carbo"]<-"Phalacrocorax_carbo"
 
 
 ########The audiogram metrics have now been computed.

@@ -1,20 +1,22 @@
 # Workflow
-This work corresponds to in prep for Hearing Research  "Scaling of ear morphology among birds and its implications for hearing performance" quantifying allometric relationships in bird ear.
+This work corresponds to in prep for Hearing Research  "Inter-specific scaling of ear morphology of birds and its implications for hearing performance".
 
 **To reproduce the the scaling pgls analyses:**
 
-start with "Set up data_scl.R". This loads the data and phylogeny. This also runs the phylogenetic regressions (phylogenetic generalized least squares regressions, or PGLS) between ear measures and between each ear measure and head mass. This script also exports the summary statistics and tables to csv or word files.
+Start with "Set up data_scl.R". This loads the data and phylogeny. This also runs the phylogenetic regressions (phylogenetic generalized least squares regressions, or PGLS) between ear measures and between each ear measure and head mass. This script also exports the summary statistics and tables to csv or word files.
 
 **To run the pgls between ear structures and audiometric measurements:**  
 
-First,  "Set up data_scl.R" also has to be run to get the data prepared (minus the pgls from those scripts). Next, the scripts in "Audiograms linked to anatomy.R" can be run.
+First,  "Set up data_scl.R" also has to be run to get the data prepared (minus the pgls from those scripts). Next, the scripts in "Audiograms linked to anatomy.R" can be run. This creates a 'limits' dataframe with the audiogram metrics, which will be joined with the anatomy dataframes for analysis. Once the limits df is created the "pgls_resids re headmass.R" can be used to run the pgls analyses with head mass-corrected values.
 
 **Scripts for plots are in the plots folder.**  
+For scatterplots, the associated analysis files must be run before plotting.  
 
 
 
 
-# File descriptions
+
+
 ## Data files
 |File|Description|
 |-----|-----|
@@ -33,7 +35,7 @@ First,  "Set up data_scl.R" also has to be run to get the data prepared (minus t
 |"pgls_bm.R"|list of pgls formula against body mass|
 |"pgls_HM.R"|list of pgls formula against head mass|
 
-## Links to audiometry
+## Audiometry analyses
 
 |File|Description|
 |-----|-----|
@@ -43,16 +45,16 @@ First,  "Set up data_scl.R" also has to be run to get the data prepared (minus t
 |["pgls_audiogram_lf.R"]((https://github.com/jzeyl/Scaling_2021/blob/main/pgls_audiogram_hf.R))|list of pgls formula forlow frequency limit|
 |["pgls_audiogram_bh.R"](https://github.com/jzeyl/Scaling_2021/blob/main/pgls_audiogram_hf.R)|list of pgls formula for best frequency| 
 
-.
+
                       
 
 # Plotting
 |File|Description|
 |-----|-----|
  |["Scatterplots relative to head mass.R"  ](https://github.com/jzeyl/Scaling_2021/blob/main/plots/1%20plot%20scatterplots_scl_hm.R)|Plotting of ear measures relative to head mass and body mass|
-| "Scatterplots, between ear measures.R"  ](https://github.com/jzeyl/Scaling_2021/blob/main/plots/2%20plot_intra_april%2014.R)|Plotting of ear measure relative to each other|
+| ["Scatterplots, between ear measures.R"  ](https://github.com/jzeyl/Scaling_2021/blob/main/plots/2%20plot_intra_april%2014.R)|Plotting of ear measure relative to each other|
 |["Scatterplots relative to audiogram measures.R"](https://github.com/jzeyl/Scaling_2021/blob/main/plots/3%20plot%20link%20to%20anaomy%20Apr%2013.R)|Plotting of ear measures and audiogram data |
-|["Audiogram bar plots_Supplemental.R"]   |Plots for supplemental material|
+|"Audiogram bar plots_Supplemental.R"   |Plots for supplemental material|
 
 ![alt text](Picture1.svg)
 <!--![alt text](superorder.png)-->

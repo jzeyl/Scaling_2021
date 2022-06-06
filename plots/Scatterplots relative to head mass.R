@@ -107,8 +107,9 @@ runplot_HM_only<-function(e){
   ylab(paste0("log(",codes[e],")"))+
     #geom_text(data = lbl,aes(x = xpos, y = ypos, label = annotateText,
     #                         hjust = hjust, vjust = vjust, paste = TRUE))+
-    annotate(geom = 'text', x = Inf, y = -Inf, label = paste('R^2 == ',signif(summary(pgls_models_list1[[e]])$r.squared,2)), hjust = "inward", vjust = -0.5, parse = TRUE)+
-    ggtitle(hm$category[e])#+
+    annotate(geom = 'text', x = Inf, y = -Inf, 
+             label = paste('R^2 == ',signif(summary(pgls_models_list1[[e]])$r.squared,2)), hjust = "inward", vjust = -0.5, parse = TRUE)
+    #ggtitle(hm$category[e])#+
 }
 runplot_HM_only(3)
 
@@ -134,5 +135,6 @@ runplot_HM_only(12) +plot_annotation(tag_levels = "A")+
   plot_layout(design = layout_)
 
 
-ggsave(file=paste0(choose.dir(),"/scatterheadmass apr 4.svg"), width=10, height=8)
+ggsave(file=paste0(choose.dir(),"/scatterheadmass jun 6.svg"), 
+       width=6, height=10)
 

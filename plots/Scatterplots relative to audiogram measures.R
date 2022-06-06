@@ -79,19 +79,18 @@ for(i in seq_along(anattraitx)){
 
 
 #log transform anatomy data for the slope line
-logged<-limits%>% mutate_at(vars(TM:UH),log)
-#loggedselect<-ok[,audio_pgls_results$Coefficients]
-#categorylist_aud<-audio_pgls_results$category
+#logged<-limits%>% mutate_at(vars(TM:UH),log)
+
 
 ##########best Hz##############
-for(i in seq_along(anattrait_simple)){
+for(i in seq_along(anattraitx)){
   assign(paste0("slpline","_",as.character(i)),
          pgls_models_sig[i][[1]]$model$coef[1]+
-           logged[,anattrait_simple[i]]*pgls_models_sig[i][[1]]$model$coef[2])
+           joined[,anattraitx[i]]*pgls_models_sig[i][[1]]$model$coef[2])
 }
 
 runplot_audio<-function(e){
-  p<-ggplot(limits,
+  p<-ggplot(joined,
             aes_string(x = spltmodel[[e]][2], y = spltmodel[[e]][1]))+
     theme_classic()+
     #theme(legend.position = "none")+
@@ -103,11 +102,11 @@ runplot_audio<-function(e){
                                 col = "black", size = 2)+{
 if(e<11)
   ylab("Best Sensitivity\n (dB)")
- else if(e >10 & e < 13)
-   ylab("Best Frequency\n (Hz)")
-else if(e >12 & e < 17)
+ #else if(e >10 & e < 13)
+ #  ylab("Best Frequency\n (Hz)")
+else if(e >10 & e < 21)
   ylab("High Frequency\n Limit (Hz)")
-else if(e > 16)
+else if(e > 20)
  ylab("Low Frequency\n Limit (Hz)")
                                 }
   p
@@ -115,12 +114,18 @@ else if(e > 16)
 
 runplot_audio(1)
 
+#design<-"
+#ABCKL
+#DEFMN
+#GHIOP
+#J##QR
+#"
 design<-"
-ABCKL
-DEFMN
-GHIOP
-J##QR
-"
+ABCDE
+FGHIJ
+KLMNO
+PQRST
+U####"
 
 #PLOT ALL BEST FREQUENCY
 runplot_audio(1)+
@@ -141,14 +146,18 @@ runplot_audio(1)+
   runplot_audio(16)+
   runplot_audio(17)+
   runplot_audio(18)+
+  runplot_audio(19)+
+  runplot_audio(20)+
+  runplot_audio(21)+
   plot_annotation(tag_levels = list(c(
     "A","","",
     "","","",
     "","","",
     "",
     "B","",
-    "C","","","",
-    "D","")))+
-  plot_layout(design = design)
+    "","","","",
+    "","",
+    "","","C")))+
+  plot_layout(design = design, guides = "collect")
 
-ggsave(file=paste0(choose.dir(),"/audiogramscatter_supp apr 11.svg"), width=10, height=8)
+ggsave(file=paste0(choose.dir(),"/audiogramscatter_supp jun 6.svg"), width=10, height=8)

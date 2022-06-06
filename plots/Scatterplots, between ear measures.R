@@ -100,7 +100,7 @@ runplotpglsintra<-function(e){
     #                         hjust = hjust, vjust = vjust))+
     annotate(geom = 'text', x = Inf, y = -Inf, label = paste('R^2 == ',signif(summary(pgls_models_list_intra[[e]])$r.squared,2)), hjust = "inward", vjust = -0.5, parse = TRUE)+
 
-    ggtitle(categorylist_intra[e])+
+    #ggtitle(categorylist_intra[e])+
     ylab(paste0("log(",vectysimple[e],")"))+
     xlab(paste0("log(",vectxsimple[e],")"))
   p
@@ -127,5 +127,5 @@ runplotpglsintra(10)+plot_annotation(tag_levels = "A")+
 
 
 
-ggsave(file=paste0(choose.dir(),"/scatter_intra apr 4.svg"),
+ggsave(file=paste0(choose.dir(),"/scatter_intra jun 6.svg"),
        width=10, height=5)

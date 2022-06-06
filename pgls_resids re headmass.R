@@ -2,30 +2,7 @@ library(patchwork)
 library(ggrepel)
 
 
-
-#average the congeners for linkage with audiograms
-phalacrocoraxavg<-avgdf[grepl('Phalacrocorax', avgdf$Binomial), ] %>%
-  dplyr::select(where(is.numeric)) %>%
-  summarise_all(mean, na.rm=T)
-
-corvusavg<-avgdf[grepl('Corvus', avgdf$Binomial), ] %>%
-  dplyr::select(where(is.numeric)) %>%
-  summarise_all(mean, na.rm=T)
-names(corvusavg)
-
-cong_avg<-dplyr::bind_rows(avgdf,corvusavg,phalacrocoraxavg)
-cong_avg$Binomial[128]<-"Corvus_cornix"
-cong_avg$Binomial[129]<-"Phalacrocorax_carbo"
-cong_avg$aud_spp[128]<-"Corvus_cornix"
-cong_avg$aud_spp[129]<-"Phalacrocorax_carbo"
-cong_avg$aud_rel[128]<-"Congener"
-cong_avg$aud_rel[129]<-"Congener"
-cong_avg<-cong_avg[-c(grep('Corvus_albus|Corvus_splendens', cong_avg$Binomial)), ]
-cong_avg<-cong_avg[-c(grep('Phalacrocorax_capensis|Phalacrocorax_lucidus|Phalacrocorax_neglectus', cong_avg$Binomial)), ]
-avgdf<-cong_avg
-
-
-
+#ensure phylogeny matches dataframe
 #remake comparative data frame object with averaged congeners
 #rename phylogeny tips to matching with the species for which audiogram is available
 birdtreels$tip.label[14]<-"Corvus_cornix" #renamed from Corvus_albus

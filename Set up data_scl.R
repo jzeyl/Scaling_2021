@@ -63,7 +63,9 @@ birdCDO<-comparative.data(phy = birdtreels,data = avgdf,#[avgdf$Category!="Terre
 #check any tips dropped between linking phylogeny and dataframe
 birdCDO$dropped
 
-#go to 'Audiograms linked to anatomy.R' file to audiogram analysis
+######If doing audiogram analyses now proceed to
+######'Audiograms linked to anatomy.R'
+######Otherwise, proceed to do scaling between structures and with head mass
 
 
 #########scaling intraear##########
@@ -163,9 +165,9 @@ body_end_section_landscape(toprint)
 print(toprint,target = paste0(choose.dir(),"/pgls_intra_scaling all_Apr4 2022.docx"))
 
 
-############RUN PGLS############
+
 ####scaling vs head mass########
-####list of pgls models to run (only models with head mass are used)####
+#list of pgls models to run (only models with head mass are used)
 pgls_todo_hm<- c("log(TM_FP)~log(HM)",
                         "log(COffset)~log(HM)",
                         "log(UH)~log(HM)",
@@ -194,7 +196,7 @@ geomcoefs<-c(0,#impedance-matching
              1)
 
 
-#######functional category list#######
+#######functional category list
 categorylist<-c(rep("Impedance matching",4),
                 "Auditory endorgan length",
                 rep("Input/output areas",3),
@@ -205,7 +207,7 @@ categorylist<-c(rep("Impedance matching",4),
 #dataframe with results 'hm'
 source("pgls_HM.R")
 
-#################formatting table#########################
+#################formatting table
 #remove intercept estimates, drop model column,
 #only keep significant relationships
 
@@ -248,7 +250,7 @@ hm<-arrange(hm,factor(hm$category, levels = c(
 hm$pval<-format(round(hm$pval, 3), nsmall = 3)
 
 
-####visualize the table better using the flextable package####
+####visualize the table better using the flextable package
 flexall<-flextable(hm) %>%
   add_header_lines(  values = "Table X. Models for selection") %>%
   #bold(i = ~ P.val < 0.05) %>% # select columns add: j = ~ Coefficients + P.val
