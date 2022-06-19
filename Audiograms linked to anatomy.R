@@ -145,7 +145,7 @@ limits$spp_aud[limits$binomial=="Phalacrocorax_carbo"]<-"Phalacrocorax_carbo"
 
 
 ########The audiogram metrics have now been computed.
-########the residual file can now be used to run the pgls modesl###
+########the 'pgls_resid re headmass.R' file can now be used to run the pgls modesl###
 ########below the models are run without adjusting for head size####
 
 
@@ -328,7 +328,16 @@ plots_audio
 #print(toprint,target = "audiogrampgls_lf.docx")
 
 
+#high frequency limit (Hz) ------------------------------------------------
 
+source("pgls_audiogram_hf.R")
+
+#results table is saved as 'audiogrampgls-hf'
+#pgls model diagnostics
+par(mfrow=c(2,2))
+par(mar=c(1,1,1,1))
+plots_audio<-lapply(pgls_models_list_hf, plot)
+plots_audio
 
 #results table is saved as 'audiogrampgls-hf'
 
@@ -468,7 +477,7 @@ aas(16)+theme()
 aas(16)+ xlim(c(0,50000))
 
 
+#more audiogram descriptive statistics
 #CVs
-#CV high Hz
 mean(limits$HighHzlimit)/sd(limits$HighHzlimit)
 mean(limits$LowHzlimit)/sd(limits$LowHzlimit)

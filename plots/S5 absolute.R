@@ -10,8 +10,6 @@ modellist_lf
 modellist_bh
 modellist_hf
 
-#include the significant relationship with head mass
-#modellist_bh<-append(modellist, "log(besthz)~(HM)")
 ### combine results from regressions for each measure into a single datagrame
 audio_pgls_results<-bind_rows(audiogrampgls_bh,
                               audiogrampgls_bs,
@@ -49,7 +47,7 @@ audio_pgls_results <-audio_pgls_results %>%
 #audio_pgls_results$`Audiogram metric`<-unlist(lapply(spltmodel, `[[`, 1))
 #audio_pgls_results$anattraitx<-unlist(lapply(spltmodel, `[[`, 2))
 #
-##only keep significant relationships 
+##only keep significant relationships
 audio_pgls_results<-audio_pgls_results %>%
   filter(Coefficients!="(Intercept)" &
            P.val <0.05)
@@ -81,21 +79,19 @@ for(i in seq_along(anattraitx)){
 
 
 #log transform anatomy data for the slope line
-#logged<-limits%>% mutate_at(vars(TM:UH),log)
-
+logged<-limits%>% mutate_at(vars(TM:UH),log)
+#loggedselect<-ok[,audio_pgls_results$Coefficients]
+#categorylist_aud<-audio_pgls_results$category
 
 ##########best Hz##############
-for(i in seq_along(anattraitx)){
+for(i in seq_along(anattrait_simple)){
   assign(paste0("slpline","_",as.character(i)),
          pgls_models_sig[i][[1]]$model$coef[1]+
-           joined[,anattraitx[i]]*pgls_models_sig[i][[1]]$model$coef[2])
+           logged[,anattrait_simple[i]]*pgls_models_sig[i][[1]]$model$coef[2])
 }
 
-anattraitx2<-gsub("resid_log_", "Resid. ", anattraitx)
-anattraitx3<-gsub("_vslog_HM_", "",anattraitx2)
-
 runplot_audio<-function(e){
-  p<-ggplot(joined,
+  p<-ggplot(limits,
             aes_string(x = spltmodel[[e]][2], y = spltmodel[[e]][1]))+
     theme_classic()+
     #theme(legend.position = "none")+
@@ -103,55 +99,31 @@ runplot_audio<-function(e){
     #      axis.title.y = element_blank())+
     geom_point(aes_string(shape="aud_rel"), size = 2)+
     geom_line(aes_string(x = anattraitx[e],
-                                          y = paste0("slpline_",as.character(e))),
-                                col = "black", size = 2)+
-    xlab(anattraitx3[e])+{
-
-if(e<11)
-  ylab("Best Sensitivity\n (dB)")
- #else if(e >10 & e < 13)
- #  ylab("Best Frequency\n (Hz)")
-else if(e >10 & e < 21)
-  ylab("High Frequency\n Limit (Hz)")
-else if(e > 20)
- ylab("Low Frequency\n Limit (Hz)")
-                                }
+                         y = paste0("slpline_",as.character(e))),
+              col = "black", size = 2)+{
+                if(e<11)
+                  ylab("Best Sensitivity\n (dB)")
+                else if(e >10 & e < 13)
+                  ylab("Best Frequency\n (Hz)")
+                else if(e >12 & e < 17)
+                  ylab("High Frequency\n Limit (Hz)")
+                else if(e > 16)
+                  ylab("Low Frequency\n Limit (Hz)")
+              }
   p
 }
 
 runplot_audio(1)
 
-#design<-"
-#ABCKL
-#DEFMN
-#GHIOP
-#J##QR
-#"
 design<-"
 ABCDE
 FGHIJ
-KLMNO
-PQRST
-U####
-V####"
-xs = c(log(min(limits$HM, na.rm = T)), log(max(limits$HM, na.rm = T)))
-beta = c(8.4, -0.26)
-ys = cbind(1, xs) %*% beta
-
-hmplot<-ggplot(limits,aes(x = log(HM), y = log(besthz)))+
-  theme_classic()+
-  geom_point(aes_string(shape="aud_rel"), size = 2)+
-  #geom_abline(intercept = 8.4, slope = -0.26,
-   #         col = "black", size = 2, fullrange = T)
-geom_segment(x = log(min(limits$HM, na.rm = T)), xend = log(max(limits$HM, na.rm = T)), 
-             y = ys[1],
-             yend = ys[2], size = 2)+
-  ylab("Best Frequency\n(Hz)")
-  #slope = -0.26, intercept = 8.4
-hmplot
+KLMN#
+OP###
+QR###"
 
 #PLOT ALL BEST FREQUENCY
-runplot_audio(1)+
+runplot_audio(1)+#
   runplot_audio(2)+
   runplot_audio(3)+
   runplot_audio(4)+
@@ -161,28 +133,24 @@ runplot_audio(1)+
   runplot_audio(8)+
   runplot_audio(9)+
   runplot_audio(10)+
-  runplot_audio(11)+
-  runplot_audio(12)+
+
   runplot_audio(13)+
   runplot_audio(14)+
   runplot_audio(15)+
   runplot_audio(16)+
   runplot_audio(17)+
   runplot_audio(18)+
-  runplot_audio(19)+
-  runplot_audio(20)+
-  runplot_audio(21)+
-  hmplot+
+  runplot_audio(11)+#best frequency
+  runplot_audio(12)+#best frequency
   plot_annotation(tag_levels = list(c(
     "A","","","","",
     "","","","","",
-    "B","","","","",
-    "","","","","",
-    "C","D","","","",
-    "D","","","","")))+
+    "B","","","",
+    "C","",
+    "D","")))+
   plot_layout(design = design, guides = "collect")
 
+ggsave(file=paste0(choose.dir(),"/audiogramscatter_supp jun 19.svg"), width=10, height=10)
 
 
-
-ggsave(file=paste0(choose.dir(),"/audiogramscatter_supp_RESID jun 17.svg"), width=10, height=10)
+bhsave<-audiogrampgls_bh

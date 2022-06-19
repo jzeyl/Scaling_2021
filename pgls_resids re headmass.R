@@ -88,6 +88,7 @@ for(i in seq_along(pgls_todo_hm)){
 #
 #}
 
+#join residual data into single dataframe
 joined<-limits %>% full_join(.,resids_df_list[[1]],by = c("spp_aud" = "resid_bname"))%>% 
   full_join(.,resids_df_list[[2]],by = c("spp_aud" = "resid_bname"))%>% 
   full_join(.,resids_df_list[[3]],by = c("spp_aud" = "resid_bname"))%>%
@@ -147,8 +148,8 @@ categorylist_bh<-categorylist_lf
 categorylist_hf<-categorylist_lf
 
 pgls_models(modellist_bs[[1]])
-###########best sensitivity#################
-source("pgls_audiogram_bs.R")
+###########recreate the pgls forumula list to include the residuals#################
+####now the same scripts can be run for analysis for each part of the audiogram####
 
 source("pgls_audiogram_lf.R")
 
@@ -157,6 +158,9 @@ source("pgls_audiogram_lf.R")
 source("pgls_audiogram_hf.R")
 
 source("pgls_audiogram_bh.R")
+
+source("pgls_audiogram_bs.R")
+
 
 ### combine results from regressions for each measure into a single datagrame
 audio_pgls_results<-bind_rows(audiogrampgls_bh,
@@ -221,7 +225,7 @@ toprint<-read_docx() #create word doc object
 body_add_flextable(toprint,flexall)#add pgls output table
 body_end_section_landscape(toprint)
 #write.csv(intra,"E:/Analysis_plots/scalingintra feb 17.csv")
-print(toprint,target = paste0(choose.dir(),"/pgls_resid_table_3_jun3.docx"))
+print(toprint,target = paste0(choose.dir(),"/pgls_resid_table_3_jun 17.docx"))
 
 
 

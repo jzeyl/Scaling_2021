@@ -42,7 +42,7 @@ flexall<-flextable(audiogrampgls_bs) %>% add_header_lines(
   values = "Table X. Models for selection") %>%
   bold(i = ~ P.val < 0.05) %>% # select columns add: j = ~ Coefficients + P.val
   autofit()
-flexall
+flexall 
 
 #pgls diagnostics
 
