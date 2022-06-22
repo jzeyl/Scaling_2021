@@ -4,10 +4,8 @@ library(patchwork)
 library(tidyr)
 library(ggrepel)
 
+##plot graph after creating the 'limits' dataframe (see 'Audiograms linked to anatomy' file)
 
-
-display.brewer.pal(n, name)
-display.brewer.all(2)
 
 df_audiogrm_lst<-list()
 
@@ -15,26 +13,26 @@ for(i in seq_along(splt)){
   df_audiogrm_lst[[i]]<-as.data.frame(approx(splt[[i]]$Hz,splt[[i]]$Threshold,n = 5000))
   df_audiogrm_lst[[i]]$Species<- rep(splt[[i]]$Species,length.out = 5000)
   }
-#single y example
-ggplot(df_audiogram, aes(x = x, y = y), col = y)+
-  geom_point(aes(y = 60, col = y))+
-  scale_color_viridis()
 
-#using data
+#single y audiogram example
+#ggplot(df_audiogram, aes(x = x, y = y), col = y)+
+#  geom_point(aes(y = 60, col = y))+
+#  scale_color_viridis()
+
+#bind audiograms together
 bound<-do.call(rbind.data.frame,df_audiogrm_lst)
 
-ggplot(bound, aes(x = x, y = Species), col = y)+
-  scale_x_log10()+
-  geom_point()+
-  geom_point(aes(col = y))+
-  scale_color_viridis()
+#ggplot(bound, aes(x = x, y = Species), col = y)+
+#  scale_x_log10()+
+#  geom_point()+
+#  geom_point(aes(col = y))+
+#  scale_color_viridis()
 
-limits$Hz<-limits$besthz
-
-
+#convert "limits" dataframe to long format
 tolong<-limits %>% select(Species,LowHzlimit,HighHzlimit,besthz)
 limitslong<-tolong %>% gather(key = "limit", value = "Hz", -Species)
 
+#we will append data from the 'limits' df using species as a key
 bound$LowHzlimit<-NA
 bound$HighHzlimit<-NA
 bound$besthz<-NA
@@ -47,18 +45,12 @@ bound$HighHzlimit<-limits$HighHzlimit[match(bound$Species,limits$Species)]
 bound$LowHzlimit<-limits$LowHzlimit[match(bound$Species,limits$Species)]
 
 
-bound2<-bound
-bound2[nrow(bound) + 1, ] <- new_row
 
-# Add new row
+# Add new rows with audiogram metrics (best Hz, etc.)
+bound$Species<-as.factor(bound$Species)
+
 bound2<-bound
 levels(bound2$Species)<-c(levels(bound2$Species),"High freq. limit","Best freq.","Low freq. limit")
-newrow<-c(5,5,as.factor("test"), 5,5)
-newrow1<-c(5,5,as.factor("test1"), 5,5)
-newrow2<-c(5,5,as.factor("test2"), 5,5)
-
-bound2<-rbind(bound2,newrow,newrow1,newrow2)
-
 bound2[95001,c("Species","besthz")]<-c("Low freq. limit",10)
  bound2[95002,c("Species","besthz")]<-c("Best freq.", 10)
 bound2[95003,c("Species","besthz")]<-c("High freq. limit" ,10)
@@ -66,25 +58,25 @@ bound2[95003,c("Species","besthz")]<-c("High freq. limit" ,10)
 #bound$besthz<-as.numeric(bound$besthz)
 
 #reorder 'bound' df by besthz
-bound$Hz<-bound$x
+bound$Hz<-bound$x #give appropriate naming for x
 bound$Species = with(bound, reorder(Species, besthz, median))
 bound2$Species = with(bound2, reorder(Species, besthz, median))
 bound2$`Threshold (dB)`<-bound2$y
 
-#View(bound2[seq(1, nrow(bound2), 10), ])
-range<-ggplot(bound2, aes(x = Hz, y = Species))+   #, col= supraorder
+#plot audiograms as bars, per species
+range<-ggplot(bound, aes(x = Hz, y = Species))+   #, col= supraorder
   geom_path(data = bound2[c(seq(1, 95000, 10),95001,95002,95003), ],aes(col = `Threshold (dB)`), size = 2)+
-  geom_point(data = limitslong, col = "black", size = 2)+
+  geom_point(data = limitslong, aes(x = Hz, y = Species),col = "black", size = 2)+
   scale_color_viridis()+
   scale_x_log10()+
   theme_classic()+
   coord_cartesian(clip = "off", ylim = c(1,22))+
   annotation_logticks(sides = "b", outside = TRUE, colour = "black")+
-  geom_point(data = limits, shape = 21, size = 2, colour = "black", fill = "white")+
+  geom_point(data = limits, aes(x = besthz, y = Species), shape = 21, size = 2, colour = "black", fill = "white")+
   #geom_vline(xintercept = min(limits$LowHzlimit))+
   #geom_vline(xintercept = max(limits$LowHzlimit))+
   #geom_hline(yintercept = 5)+
-  ylab("Species")+
+  ylab("")+
   xlab("Frequency(Hz)")+
   #theme(legend.position = "none")
   #ylim(c(-2,20))+
@@ -119,7 +111,8 @@ bestsens<-ggplot(limits, aes(x = 0,y = bestsensitivity))+
 bestsens
 
 range/bestsens+
-  #plot_layout(widths = c(1,1))+
+  plot_layout(heights = c(2,1))+
   plot_annotation(tag_levels = "A")
 
+ggsave(file=paste0(choose.dir(),"/supplemental_bar.svg"), width=10, height=10)
 
