@@ -31,31 +31,22 @@ For scatterplots, the associated analysis files must be run before plotting.
 |File|Description|
 |-----|-----|
 |["Set up data_scl.R"](https://github.com/jzeyl/Scaling_2021/blob/main/Set%20up%20data_scl.R)|This is the main analysis script, which imports the data analysis and runs pgls regressions, calling formulas make in other R scripts. Outputs are tables with statistical results (hm, intra, bm) exported to csv or word.|
-|"pgls_intraear.R"|list of pgls formula for scaling between auditory structures|
-|"pgls_bm.R"|list of pgls formula against body mass|
-|"pgls_HM.R"|list of pgls formula against head mass|
+|"pgls_intraear.R"|pgls models run between auditory structures|
+|"pgls_bm.R"|pgls models run against body mass|
+|"pgls_HM.R"|pgls models run against head mass|
 
 ## Audiometry analyses
 
 |File|Description|
 |-----|-----|
 |"Audiograms linked to anatomy.R"|This is the main analysis script for analyses between anatomy and audiogram metrics. This script runs the pgls regressions, calling formulas make in other R scripts. Outputs are tables with statistical results exported to csv or word.|
-|["pgls_audiogram_bs.R"](https://github.com/jzeyl/Scaling_2021/blob/main/pgls_audiogram_bs.R)|list of pgls for best sensitivity|
-|["pgls_audiogram_hf.R"](https://github.com/jzeyl/Scaling_2021/blob/main/pgls_audiogram_hf.R)|list of pgls formula forhigh frequency limit|
-|["pgls_audiogram_lf.R"]((https://github.com/jzeyl/Scaling_2021/blob/main/pgls_audiogram_hf.R))|list of pgls formula forlow frequency limit|
-|["pgls_audiogram_bh.R"](https://github.com/jzeyl/Scaling_2021/blob/main/pgls_audiogram_hf.R)|list of pgls formula for best frequency| 
+|["pgls_audiogram_bs.R"](https://github.com/jzeyl/Scaling_2021/blob/main/pgls_audiogram_bs.R)|pgls models run against best sensitivity|
+|["pgls_audiogram_hf.R"](https://github.com/jzeyl/Scaling_2021/blob/main/pgls_audiogram_hf.R)|pgls models run against high frequency limit|
+|["pgls_audiogram_lf.R"]((https://github.com/jzeyl/Scaling_2021/blob/main/pgls_audiogram_hf.R))|pgls models run against low frequency limit|
+|["pgls_audiogram_bh.R"](https://github.com/jzeyl/Scaling_2021/blob/main/pgls_audiogram_hf.R)|pgls models run against best frequency| 
 
 
                       
 
-# Plotting
-|File|Description|
-|-----|-----|
- |["Scatterplots relative to head mass.R"  ](https://github.com/jzeyl/Scaling_2021/blob/main/plots/1%20plot%20scatterplots_scl_hm.R)|Plotting of ear measures relative to head mass and body mass|
-| ["Scatterplots, between ear measures.R"  ](https://github.com/jzeyl/Scaling_2021/blob/main/plots/2%20plot_intra_april%2014.R)|Plotting of ear measure relative to each other|
-|["Scatterplots relative to audiogram measures.R"](https://github.com/jzeyl/Scaling_2021/blob/main/plots/3%20plot%20link%20to%20anaomy%20Apr%2013.R)|Plotting of ear measures and audiogram data |
-|"Audiogram bar plots_Supplemental.R"   |Plots for supplemental material|
 
-![alt text](Picture1.svg)
-<!--![alt text](superorder.png)-->
 
