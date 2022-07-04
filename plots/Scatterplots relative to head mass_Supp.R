@@ -1,13 +1,12 @@
 #this script puts the data in long format so that a list of ggplots can be made using a loop
 
+
 library(ggplot2)
 library(ggrepel)
 library(cowplot)
 library(gridGraphics)
 library(patchwork)
 library(png)
-
-#earimg<-readPNG("C:/Users/jeffz/Desktop/ear.png", native = T)
 
 #made data frame object
 birdCDO<-comparative.data(phy = birdtreels,data = avgdf,#[avgdf$Category!="Terrestrial",]
@@ -21,15 +20,6 @@ birdCDO$dropped
 #order of plots is set here, based on the hm dataframe
 pgls_todo_hm<-paste0("log(",hm$ymodel_nolog,")~log(HM)")
 pgls_models_list1<-lapply(pgls_todo_hm,pgls_models)#run pgls
-
-#pgls_todo_hm_w<- paste(pgls_todo_hm,"+waterbirds")
-#pgls_models_list2<-lapply(pgls_todo_hm_w,pgls_models)#run pgls
-#
-#pgls_todo_bm<- gsub("HM","bodymass",pgls_todo_hm)
-#pgls_models_list3<-lapply(pgls_todo_bm,pgls_models)#run pgls
-#
-#modellist_intra
-
 
 #put in long format
 longdfplotting<-gather(avgdf,key = "earmeasures", value = "earmeasureval",
