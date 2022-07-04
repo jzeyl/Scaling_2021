@@ -31,18 +31,18 @@ For scatterplots, the associated analysis files must be run before plotting.
 |File|Description|
 |-----|-----|
 |["Set up data_scl.R"](https://github.com/jzeyl/Scaling_2021/blob/main/Set%20up%20data_scl.R)|This is the main analysis script, which imports the data analysis and runs pgls regressions, calling formulas make in other R scripts. Outputs are tables with statistical results (hm, intra, bm) exported to csv or word.|
-|"pgls_intraear.R"|pgls models run between auditory structures|
-|"pgls_bm.R"|pgls models run against body mass|
-|"pgls_HM.R"|pgls models run against head mass|
+|["pgls_intraear.R"](https://github.com/jzeyl/Scaling_2022/blob/main/pgls_intraear.R)|pgls models run between auditory structures|
+|["pgls_bm.R"](https://github.com/jzeyl/Scaling_2022/blob/main/pgls_bm.R)|pgls models run against body mass|
+|["pgls_HM.R"](https://github.com/jzeyl/Scaling_2022/blob/main/pgls_HM.R)|pgls models run against head mass|
 
 ## Audiometry analyses
 
 |File|Description|
 |-----|-----|
-|"Audiograms linked to anatomy.R"|This is the main analysis script for analyses between anatomy and audiogram metrics. This script runs the pgls regressions, calling formulas make in other R scripts. Outputs are tables with statistical results exported to csv or word.|
+|["Audiograms linked to anatomy.R"](https://github.com/jzeyl/Scaling_2022/blob/main/Audiograms%20linked%20to%20anatomy.R)|This is the main analysis script for analyses between anatomy and audiogram metrics. This script runs the pgls regressions, calling formulas make in other R scripts. Outputs are tables with statistical results exported to csv or word.|
 |["pgls_audiogram_bs.R"](https://github.com/jzeyl/Scaling_2021/blob/main/pgls_audiogram_bs.R)|pgls models run against best sensitivity|
 |["pgls_audiogram_hf.R"](https://github.com/jzeyl/Scaling_2021/blob/main/pgls_audiogram_hf.R)|pgls models run against high frequency limit|
-|["pgls_audiogram_lf.R"]((https://github.com/jzeyl/Scaling_2021/blob/main/pgls_audiogram_hf.R))|pgls models run against low frequency limit|
+|["pgls_audiogram_lf.R"](https://github.com/jzeyl/Scaling_2021/blob/main/pgls_audiogram_lf.R)|pgls models run against low frequency limit|
 |["pgls_audiogram_bh.R"](https://github.com/jzeyl/Scaling_2021/blob/main/pgls_audiogram_hf.R)|pgls models run against best frequency| 
 
 
