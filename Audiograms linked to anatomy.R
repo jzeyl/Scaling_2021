@@ -4,6 +4,7 @@ library(ggpubr)
 library(flextable)
 library(officer)
 library(dplyr)
+library(PerformanceAnalytics)
 
 ####create averaged values for instances where multiple species match a congener with audiogram####
 # add avg Corvus and Phalacrocorax values----------------------------------------
@@ -23,7 +24,6 @@ cong_avg<-cong_avg[-c(grep('Corvus_albus|Corvus_splendens', cong_avg$Binomial)),
 cong_avg<-cong_avg[-c(grep('Phalacrocorax_capensis|Phalacrocorax_lucidus|Phalacrocorax_neglectus', cong_avg$Binomial)), ]
 avgdf<-cong_avg
 
-avgdf$aud_spp<-distinctdforder$spp_audio
 
 # load audiograms ---------------------------------------------------------
 fig1<-read.csv(paste0(getwd(),"/audiograms.csv"), stringsAsFactors = FALSE)
@@ -154,7 +154,7 @@ limits$spp_aud[limits$binomial=="Phalacrocorax_carbo"]<-"Phalacrocorax_carbo"
 aud_data<- limits[,c("LowHzlimit","HighHzlimit","besthz","bestsensitivity")]
 audlog<-aud_data %>% mutate_at(vars(c("LowHzlimit","HighHzlimit","besthz")),log)
 
-library(PerformanceAnalytics)
+
 chart.Correlation(audlog, histogram = TRUE, method = "pearson")
 
 # p-values from correlation tests
@@ -257,7 +257,7 @@ categorylist_lf<-c("Stiffness",
                    "Columella size",
                    "Columella size")
 
-categorylist_bs<-categorylist_lf
+categorylist_bs<-categorylist_lf#category list is the same, regardless of which metric we are predicting
 categorylist_bh<-categorylist_lf
 categorylist_hf<-categorylist_lf
 

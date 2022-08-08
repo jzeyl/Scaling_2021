@@ -27,8 +27,9 @@ source("load phylogeny and make CDO.R")
 
 #Some missing headmass values to be imputed using PGLS of skull width and head mass
 #Computed head mass from head mass~skullwidth pgls
+
 df$HM#without imputed values
-source("SW_HM_.R")#add phylogeny here
+source("SW_HM_.R")#
 df$HM#with imputed values
 
 
@@ -63,10 +64,11 @@ birdCDO<-comparative.data(phy = birdtreels,data = avgdf,#[avgdf$Category!="Terre
 #check any tips dropped between linking phylogeny and dataframe
 birdCDO$dropped
 
-######If doing audiogram analyses now proceed to
+######If doing audiogram analyses, you can now proceed to
 ######'Audiograms linked to anatomy.R'
 ######Otherwise, proceed to do scaling between structures and with head mass
-
+###To do scaling analyses corrected for head mass, proceed
+###to 'pgls_resids re headmass.R'
 
 #########scaling intraear##########
 #set up intra-ear analyses
@@ -105,6 +107,7 @@ categorylist_intra<-c(rep("Impedance match",5),
 #run the pgls models
 source("pgls_intraear.R")
 
+#Summarizing model output
 #remove intercept estimates, drop model column,
 #only keep significant relationships
 
@@ -129,6 +132,7 @@ options(scipen = 100, digits = 2)
 intra<-intra %>% select(category, ymodel_nolog,Coefficients,
                   geometric_exp, pglsslope,scalingtype,Adj_Rsquared,pval, Lambda) %>%
   filter(Coefficients!="(Intercept)")
+
 # remove the "log" from 'Coefficients'
 #intra$xmodel_nolog<-numeric()
 for(i in seq_along(intra$Coefficients)){
@@ -137,14 +141,14 @@ for(i in seq_along(intra$Coefficients)){
 
 #sort table by category and then adjusted R2
 intra$category<-as.factor(intra$category)
-levels(intra$category)<-c("Impedance match",
+
 intra<-arrange(intra,factor(intra$category, levels = c("Impedance match", "Stiffness", "Columella morphology")),
                desc(Adj_Rsquared))
 intra$pval<-format(round(intra$pval, 3), nsmall = 3)
 
 
 
-#visualize the table better using the flextable package
+#visualize the table using the flextable package
 flexall<-flextable(intra) %>%
   add_header_lines(values = "Table X. ") %>%
   #bold(i = ~ P.val < 0.05) %>% # select columns add: j = ~ Coefficients + P.val
@@ -232,6 +236,7 @@ options(scipen = 100, digits = 2)
 hm<-hm %>% select(category, ymodel_nolog,Coefficients,
                   geometric_exp, pglsslope,scalingtype,Adj_Rsquared,pval, Lambda) %>%
   filter(Coefficients!="(Intercept)")
+
 # remove the "log" from 'Coefficients'
 #hm$xmodel_nolog<-numeric()
 for(i in seq_along(hm$Coefficients)){
@@ -245,8 +250,8 @@ hm<-arrange(hm,factor(hm$category, levels = c(
   "Auditory endorgan length",
   "Input/output areas",
   "Stiffness",
-  "Impedance match")),desc(Adj_Rsquared)
-            )
+  "Impedance match")),desc(Adj_Rsquared))
+
 hm$pval<-format(round(hm$pval, 3), nsmall = 3)
 
 
@@ -264,7 +269,7 @@ par(mar=c(1,1,1,1))
 plots_hm<-lapply(pgls_models_list, plot)
 plots_hm
 
-#write table to word file
+
 #write table to word file
 toprint<-read_docx() #create word doc object
 body_add_flextable(toprint,flexall)#add pgls output table
@@ -273,8 +278,7 @@ body_end_section_landscape(toprint)
 print(toprint,target = paste0(choose.dir(),"/pgls_hm_scaling all_Apr4 2022.docx"))
 
 
-
-#body mass independent
+#body mass vs head mass
 bm_vs_hm<-pgls_models(log(HM)~log(BM_lit))
 summary(bm_vs_hm)
 

@@ -1,18 +1,20 @@
 library(patchwork)
 library(ggrepel)
 
+###note the dataframe 'limits', created from 'Audiograms linked to anatomy.R'
+###is required to run this code
+
+birdCDO<-comparative.data(phy = birdtreels,data = avgdf,#[avgdf$Category!="Terrestrial",]
+                          names.col = Binomial,
+                          vcv = TRUE, na.omit = FALSE,
+                          warn.dropped = TRUE)
+
 
 #ensure phylogeny matches dataframe
 #remake comparative data frame object with averaged congeners
 #rename phylogeny tips to matching with the species for which audiogram is available
 birdtreels$tip.label[14]<-"Corvus_cornix" #renamed from Corvus_albus
 birdtreels$tip.label[51]<-"Phalacrocorax_carbo" #rename "phalacrocorax_lucidus"
-
-
-birdCDO<-comparative.data(phy = birdtreels,data = avgdf,#[avgdf$Category!="Terrestrial",]
-                          names.col = Binomial,
-                          vcv = TRUE, na.omit = FALSE,
-                          warn.dropped = TRUE)
 
 #check any tips dropped between linking phylogeny and dataframe
 birdCDO$dropped
@@ -89,8 +91,8 @@ for(i in seq_along(pgls_todo_hm)){
 #}
 
 #join residual data into single dataframe
-joined<-limits %>% full_join(.,resids_df_list[[1]],by = c("spp_aud" = "resid_bname"))%>% 
-  full_join(.,resids_df_list[[2]],by = c("spp_aud" = "resid_bname"))%>% 
+joined<-limits %>% full_join(.,resids_df_list[[1]],by = c("spp_aud" = "resid_bname"))%>%
+  full_join(.,resids_df_list[[2]],by = c("spp_aud" = "resid_bname"))%>%
   full_join(.,resids_df_list[[3]],by = c("spp_aud" = "resid_bname"))%>%
   full_join(.,resids_df_list[[4]],by = c("spp_aud" = "resid_bname"))%>%
   full_join(.,resids_df_list[[5]],by = c("spp_aud" = "resid_bname"))%>%
@@ -103,16 +105,17 @@ joined<-limits %>% full_join(.,resids_df_list[[1]],by = c("spp_aud" = "resid_bna
   full_join(.,resids_df_list[[12]],by = c("spp_aud" = "resid_bname"))
 
 #only keep audiogram species
-joined<-joined[which(!is.na(joined$aud_rel)),] 
+joined<-joined[which(!is.na(joined$aud_rel)),]
 
 names(joined)
 
 #remove tilda from names to not mess up pgls formulas based on names
-joined<-joined %>% rename_with(~ gsub("~", "vs", .x, fixed = TRUE)) 
+joined<-joined %>% rename_with(~ gsub("~", "vs", .x, fixed = TRUE))
 residlist<-gsub("[()]","_",names(joined)[25:36])
 joined<-setNames(joined,c(names(joined)[1:24],residlist))
 
 names(joined)
+
 birdCDO<-comparative.data(phy = birdtreels,data = joined,#[avgdf$Category!="Terrestrial",]
                           names.col =binomial,
                           vcv = TRUE, na.omit = F,
