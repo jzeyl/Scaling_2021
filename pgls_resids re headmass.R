@@ -116,6 +116,8 @@ joined<-setNames(joined,c(names(joined)[1:24],residlist))
 
 names(joined)
 
+#make the comparative data object for pgls point to your new
+#residual data
 birdCDO<-comparative.data(phy = birdtreels,data = joined,#[avgdf$Category!="Terrestrial",]
                           names.col =binomial,
                           vcv = TRUE, na.omit = F,
@@ -228,7 +230,7 @@ toprint<-read_docx() #create word doc object
 body_add_flextable(toprint,flexall)#add pgls output table
 body_end_section_landscape(toprint)
 #write.csv(intra,"E:/Analysis_plots/scalingintra feb 17.csv")
-print(toprint,target = paste0(choose.dir(),"/pgls_resid_table_3_jun 17.docx"))
+print(toprint,target = paste0(choose.dir(),"/pgls_resid_60 db cutoff with na.docx"))
 
 
 

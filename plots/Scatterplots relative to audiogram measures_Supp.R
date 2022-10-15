@@ -49,7 +49,7 @@ audio_pgls_results <-audio_pgls_results %>%
 #audio_pgls_results$`Audiogram metric`<-unlist(lapply(spltmodel, `[[`, 1))
 #audio_pgls_results$anattraitx<-unlist(lapply(spltmodel, `[[`, 2))
 #
-##only keep significant relationships 
+##only keep significant relationships
 audio_pgls_results<-audio_pgls_results %>%
   filter(Coefficients!="(Intercept)" &
            P.val <0.05)
@@ -111,10 +111,10 @@ if(e<11)
   ylab("Best Sensitivity\n (dB)")
  #else if(e >10 & e < 13)
  #  ylab("Best Frequency\n (Hz)")
-else if(e >10 & e < 21)
-  ylab("High Frequency\n Limit (Hz)")
-else if(e > 20)
- ylab("Low Frequency\n Limit (Hz)")
+else if(traity[e] == "log(LowHzlimit)")
+  ylab("Low Frequency\n Limit (Hz)")
+else if(traity[e] == "log(HighHzlimit)")
+ ylab("High Frequency\n Limit (Hz)")
                                 }
   p
 }
@@ -130,10 +130,9 @@ runplot_audio(1)
 design<-"
 ABCDE
 FGHIJ
-KLMNO
-PQRST
-U####
-V####"
+KLMN#
+O####
+"
 xs = c(log(min(limits$HM, na.rm = T)), log(max(limits$HM, na.rm = T)))
 beta = c(8.4, -0.26)
 ys = cbind(1, xs) %*% beta
@@ -143,14 +142,14 @@ hmplot<-ggplot(limits,aes(x = log(HM), y = log(besthz)))+
   geom_point(aes_string(shape="aud_rel"), size = 2)+
   #geom_abline(intercept = 8.4, slope = -0.26,
    #         col = "black", size = 2, fullrange = T)
-geom_segment(x = log(min(limits$HM, na.rm = T)), xend = log(max(limits$HM, na.rm = T)), 
+geom_segment(x = log(min(limits$HM, na.rm = T)), xend = log(max(limits$HM, na.rm = T)),
              y = ys[1],
              yend = ys[2], size = 2)+
   ylab("Best Frequency\n(Hz)")
   #slope = -0.26, intercept = 8.4
 hmplot
 
-#PLOT ALL BEST FREQUENCY
+#PLOT ALL
 runplot_audio(1)+
   runplot_audio(2)+
   runplot_audio(3)+
@@ -165,21 +164,23 @@ runplot_audio(1)+
   runplot_audio(12)+
   runplot_audio(13)+
   runplot_audio(14)+
-  runplot_audio(15)+
-  runplot_audio(16)+
-  runplot_audio(17)+
-  runplot_audio(18)+
-  runplot_audio(19)+
-  runplot_audio(20)+
-  runplot_audio(21)+
+  #runplot_audio(15)+
+  #runplot_audio(16)+
+  #runplot_audio(17)+
+  #runplot_audio(18)+
+  #runplot_audio(19)+
+  #runplot_audio(20)+
+  #runplot_audio(21)+
   hmplot+
   plot_annotation(tag_levels = list(c(
     "A","","","","",
     "","","","","",
-    "B","","","","",
-    "","","","","",
-    "C","D","","","",
-    "D","","","","")))+
+    "B","","","","C")))+
+
+    #,"",
+    #"","","","","",
+    #"C","D","","","",
+    #"D","","","",""+
   plot_layout(design = design, guides = "collect")
 
 

@@ -29,24 +29,34 @@ avgdf<-cong_avg
 fig1<-read.csv(paste0(getwd(),"/audiograms.csv"), stringsAsFactors = FALSE)
 
 #check how many reach cutoff
-#species not reaching lower Hz limit:
-minsubset<-fig1 %>% group_by(Species) %>% filter(Hz == min(Hz))
-minsubset$reachcutoff<-ifelse(minsubset$Threshold <35, "under35","over35")
-table(minsubset$reachcutoff)#count number
-minsubset$Species[minsubset$reachcutoff=="under35"]
+cutoff<- 60#set cutoff here as 35 or 60 dB
 
+#species not reaching lower Hz limit:
+#minsubset<-fig1 %>% group_by(Species) %>% filter(Hz == min(Hz))
 #species not reaching upper Hz limit
-maxsubset<-fig1 %>% group_by(Species) %>% filter(Hz == max(Hz))
-maxsubset$reachcutoff<-ifelse(maxsubset$Threshold <35, "under35","over35")
+#maxsubset<-fig1 %>% group_by(Species) %>% filter(Hz == max(Hz))
+
+
+#option to include only ones with anatomical data
+minsubset<-fig1 %>% group_by(Species) %>% filter(Hz == min(Hz), havescan == "Have scan data for species")
+maxsubset<-fig1 %>% group_by(Species) %>% filter(Hz == max(Hz), havescan == "Have scan data for species")
+
+#create columns testing whether min & max tested frequencies are above cutoffs
+minsubset$reachcutoff<-ifelse(minsubset$Threshold <cutoff, "under cutoff","over cutoff")
+minsubset$Species[minsubset$reachcutoff=="under cutoff"]
+
+maxsubset$reachcutoff<-ifelse(maxsubset$Threshold <cutoff, "under cutoff","over cutoff")
+maxsubset$Species[maxsubset$reachcutoff=="under cutoff"]
+
+table(minsubset$reachcutoff)#count number
 table(maxsubset$reachcutoff)#count number
-maxsubset$Species[maxsubset$reachcutoff=="under35"]
 
 
 # get the high and low Hz limits from a cutoff level ----------------------
 splt<-split(fig1,fig1$Species)
 
-#set cutoff for the high and low Hz limits (35 dB)
-cutoff<-35
+#set cutoff for the high and low Hz limits (35 or 60 dB)
+
 
 #create new matrix to populate with data and convert to data audiogramram
 limits<-matrix(nrow=length(splt),ncol = 7)
@@ -62,8 +72,9 @@ for(i in seq_along(splt)){
   bestsensitivity<-df_audiogram$y[df_audiogram$y==min(df_audiogram$y)]
 
   #calcualte low Hz limit
-  if(nrow(df_audiogram[df_audiogram$y>cutoff & df_audiogram$x <besthz,])==0){#if the audiogram does not go above cutoff value, get minimum frequency tested
-    lowlimit<-min(df_audiogram$x)
+  if(nrow(df_audiogram[df_audiogram$y>cutoff & df_audiogram$x <besthz,])==0){#if the audiogram does not go above cutoff value, value is NA
+    #lowlimit<-min(df_audiogram$x) #<--other option here to get minimum frequency tested
+    lowlimit<-NA
   }
 
   else{
@@ -72,9 +83,9 @@ for(i in seq_along(splt)){
   }
 
   #calculate high Hz limit
-  if(nrow(df_audiogram[df_audiogram$y>cutoff & df_audiogram$x >besthz,])==0){# #if the audiogram does not go above cutoff value, get max frequency tested
-    highlimit<-max(df_audiogram$x)
-
+  if(nrow(df_audiogram[df_audiogram$y>cutoff & df_audiogram$x >besthz,])==0){# #if the audiogram does not go above cutoff value
+    #highlimit<-max(df_audiogram$x)
+    highlimit<-NA
   }
 
   else{
@@ -434,7 +445,7 @@ toprint<-read_docx() #create word doc object
 body_add_flextable(toprint,flexall)#add pgls output table
 body_end_section_landscape(toprint)
 #write.csv(intra,"E:/Analysis_plots/scalingintra feb 17.csv")
-print(toprint,target = paste0(choose.dir(),"/pgls_audio all_Apr 11 2022.docx"))
+print(toprint,target = paste0(choose.dir(),"/pgls_audio 60cutoff oct 15.docx"))
 
 ###############____########
 #######plotting metrics on audiogram########
