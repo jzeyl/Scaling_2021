@@ -1,11 +1,5 @@
 #pgls_todo_hm<-pgls_todo_nogeomet[seq(2,length(pgls_todo_nogeomet),2)]
 
-pgls_models<-function(i){
-  pglsfit<-pgls(as.formula(i), data = birdCDO, #check comparative data object here<---
-                lambda = 'ML', #find lambda using maximum likelihood
-                bounds = list(lambda=c(0.01,1)))#####
-}
-
 #Head mass only
 #modellist<-pgls_todo_hm
 pgls_models_list_hf<-lapply(modellist_hf,pgls_models)#run pgls

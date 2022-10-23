@@ -9,7 +9,7 @@ library(purrr)
 
 ################Set up data############
 #set working directory and load data
-setwd(choose.dir())
+#setwd(choose.dir())
 
 #load main dataframe
 df<-read.csv("databmadded.csv", stringsAsFactors = F, header = T) #, stringsAsFactors = FALSE
@@ -18,7 +18,7 @@ df<-read.csv("databmadded.csv", stringsAsFactors = F, header = T) #, stringsAsFa
 pgls_models<-function(i){
   pglsfit<-pgls(as.formula(i), data = birdCDO, #check comparative data object here<---
                 lambda = 'ML', #find lambda using maximum likelihood
-                bounds = list(lambda=c(0.0001,1)))#####
+                bounds = list(lambda=c(0.01,1)))#####
 }
 
 

@@ -6,6 +6,9 @@ library(ggrepel)
 
 ##plot graph after creating the 'limits' dataframe (see 'Audiograms linked to anatomy' file)
 
+#split into audiograms by species, only including ones with scan data
+splt<-fig1 %>% filter(.,fig1$havescan=="Have scan data for species")%>%
+  split(.$Species)
 
 df_audiogrm_lst<-list()
 
@@ -29,8 +32,11 @@ bound<-do.call(rbind.data.frame,df_audiogrm_lst)
 #  scale_color_viridis()
 
 #convert "limits" dataframe to long format
-tolong<-limits %>% select(Species,LowHzlimit,HighHzlimit,besthz)
-limitslong<-tolong %>% gather(key = "limit", value = "Hz", -Species)
+
+limitslong<-limits[which(!is.na(limits$aud_rel)),] %>%#only select the rows for which anatomical data is available for the corresponding audiograms
+  select(Species,LowHzlimit,HighHzlimit,besthz,reallowdBlimit,realhighdBlimit) %>%
+  gather(key = "limit", value = "Hz", -c(Species,reallowdBlimit,realhighdBlimit))
+
 
 #we will append data from the 'limits' df using species as a key
 bound$LowHzlimit<-NA
@@ -44,28 +50,38 @@ bound$bestsensitivity<-limits$bestsensitivity[match(bound$Species,limits$Species
 bound$HighHzlimit<-limits$HighHzlimit[match(bound$Species,limits$Species)]
 bound$LowHzlimit<-limits$LowHzlimit[match(bound$Species,limits$Species)]
 
-
-
-# Add new rows with audiogram metrics (best Hz, etc.)
+#
 bound$Species<-as.factor(bound$Species)
+#reorder 'bound' df by besthz
+bound$Hz<-bound$x #give appropriate naming for x
 
+bound %>% arrange(Species)
+
+#bound$Species = with(bound, reorder(Species, besthz, median))
+
+#Add new rows to end of dataframe with audiogram metrics (best Hz, etc.)
 bound2<-bound
 levels(bound2$Species)<-c(levels(bound2$Species),"High freq. limit","Best freq.","Low freq. limit")
-bound2[95001,c("Species","besthz")]<-c("Low freq. limit",10)
- bound2[95002,c("Species","besthz")]<-c("Best freq.", 10)
-bound2[95003,c("Species","besthz")]<-c("High freq. limit" ,10)
+##bound2[95001,"Species"]<-"Low freq. limit"#add 'low hz as species name, placeholder for bethz
+# bound2[95002,"Species"]<-"Best freq."
+#bound2[95003,"Species"]<-"High freq. limit"
 #bound$Species<-as.character(bound$Species)
 #bound$besthz<-as.numeric(bound$besthz)
 
-#reorder 'bound' df by besthz
-bound$Hz<-bound$x #give appropriate naming for x
-bound$Species = with(bound, reorder(Species, besthz, median))
+bound2$Hz<-bound2$x #give appropriate naming for x
 bound2$Species = with(bound2, reorder(Species, besthz, median))
 bound2$`Threshold (dB)`<-bound2$y
 
+library(forcats)
+bound %>%
+  mutate(spp = fct_reorder(Species, Species))%>%
+ggplot(bound, aes(x = Hz, y = Species))+   #, col= supraorder
+         geom_path(data = bound2,aes(col = `Threshold (dB)`), size = 2)+
+         geom_point(data = limitslong, aes(x = Hz, y = Species),col = "black", size = 2)+
+         scale_color_viridis()
 #plot audiograms as bars, per species
-range<-ggplot(bound, aes(x = Hz, y = Species))+   #, col= supraorder
-  geom_path(data = bound2[c(seq(1, 95000, 10),95001,95002,95003), ],aes(col = `Threshold (dB)`), size = 2)+
+range<-ggplot(bound, aes(x = Hz, y = reorder(Species))+   #, col= supraorder
+  geom_path(data = bound2,aes(col = `Threshold (dB)`), size = 2)+
   geom_point(data = limitslong, aes(x = Hz, y = Species),col = "black", size = 2)+
   scale_color_viridis()+
   scale_x_log10()+
@@ -80,9 +96,9 @@ range<-ggplot(bound, aes(x = Hz, y = Species))+   #, col= supraorder
   xlab("Frequency(Hz)")+
   #theme(legend.position = "none")
   #ylim(c(-2,20))+
-  geom_boxplot(data = limits,aes(x = LowHzlimit, y = 1), width = 0.8)+
-  geom_boxplot(data = limits,aes(x =  besthz, y = 2), width = 0.8)+
-  geom_boxplot(data = limits,aes(x = HighHzlimit, y = 3), width = 0.8)+
+  #geom_boxplot(data = limits,aes(x = LowHzlimit, y = 1), width = 0.8)+
+  #geom_boxplot(data = limits,aes(x =  besthz, y = 2), width = 0.8)+
+  #geom_boxplot(data = limits,aes(x = HighHzlimit, y = 3), width = 0.8)+
   geom_hline(yintercept = 3.5)+
   theme(axis.title.y = element_text(angle= 0, vjust = 0.5, hjust=1),
         axis.text.x = element_text(angle= 0, vjust = -2.5, hjust=0.5))
@@ -98,7 +114,7 @@ bestsens<-ggplot(limits, aes(x = 0,y = bestsensitivity))+
                   #nudge_x = 1,
                   box.padding = unit(0.35, "lines"),
                 point.padding = unit(1, "lines"))+
-  coord_flip()+
+  #coord_flip()+
   #geom_text(aes(x = 0, label = Species))+
   theme_classic()+
   xlim(c(-4,4))+

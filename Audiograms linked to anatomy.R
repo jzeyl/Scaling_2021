@@ -6,8 +6,10 @@ library(officer)
 library(dplyr)
 library(PerformanceAnalytics)
 
+cutoff<- 35#set cutoff here as 35 or 60 dB
+
+
 ####create averaged values for instances where multiple species match a congener with audiogram####
-# add avg Corvus and Phalacrocorax values----------------------------------------
 phalacrocoraxavg<-avgdf[grepl('Phalacrocorax', avgdf$Binomial), ] %>%
   dplyr::select(where(is.numeric)) %>%
   summarise_all(mean, na.rm=T)
@@ -17,9 +19,12 @@ corvusavg<-avgdf[grepl('Corvus', avgdf$Binomial), ] %>%
   summarise_all(mean, na.rm=T)
 names(corvusavg)
 
+# add averaged Corvus and Phalacrocorax values----------------------------------------
 cong_avg<-dplyr::bind_rows(avgdf,corvusavg,phalacrocoraxavg)
 cong_avg$Binomial[128]<-"Corvus_cornix"
 cong_avg$Binomial[129]<-"Phalacrocorax_carbo"
+
+#remove single-species
 cong_avg<-cong_avg[-c(grep('Corvus_albus|Corvus_splendens', cong_avg$Binomial)), ]
 cong_avg<-cong_avg[-c(grep('Phalacrocorax_capensis|Phalacrocorax_lucidus|Phalacrocorax_neglectus', cong_avg$Binomial)), ]
 avgdf<-cong_avg
@@ -29,7 +34,6 @@ avgdf<-cong_avg
 fig1<-read.csv(paste0(getwd(),"/audiograms.csv"), stringsAsFactors = FALSE)
 
 #check how many reach cutoff
-cutoff<- 60#set cutoff here as 35 or 60 dB
 
 #species not reaching lower Hz limit:
 #minsubset<-fig1 %>% group_by(Species) %>% filter(Hz == min(Hz))
@@ -59,38 +63,47 @@ splt<-split(fig1,fig1$Species)
 
 
 #create new matrix to populate with data and convert to data audiogramram
-limits<-matrix(nrow=length(splt),ncol = 7)
+limits<-matrix(nrow=length(splt),ncol = 9)
 
 
 for(i in seq_along(splt)){
   audiogram<-data.frame()#
   df_audiogram<-as.data.frame(approx(splt[[i]]$Hz,splt[[i]]$Threshold,n = 5000))#approx function to interpolate audiogram
   df_audiogram
-  #df_audiogram$y is sound level (dB)
-  #df_audiogram$x is frequency (Hz)
+  #NOTE:df_audiogram$y is sound level (dB)
+  #and df_audiogram$x is frequency (Hz)
   besthz<-df_audiogram$x[df_audiogram$y==min(df_audiogram$y)]
   bestsensitivity<-df_audiogram$y[df_audiogram$y==min(df_audiogram$y)]
 
-  #calcualte low Hz limit
-  if(nrow(df_audiogram[df_audiogram$y>cutoff & df_audiogram$x <besthz,])==0){#if the audiogram does not go above cutoff value, value is NA
+  #calculate low Hz limit by segmenting audiogram into lowerhalf and upper half
+  lowflank<-df_audiogram[df_audiogram$y>cutoff & df_audiogram$x <besthz,]#get frequency where audiogram crosses cutoff value
+  highflank<-df_audiogram[df_audiogram$y>cutoff & df_audiogram$x >besthz,]#get frequency where audiogram crosses cutoff value
+
+  #if the audiogram does not go above cutoff value, value is NA
+  if(nrow(df_audiogram[df_audiogram$y>cutoff & df_audiogram$x <besthz,])==0){
     #lowlimit<-min(df_audiogram$x) #<--other option here to get minimum frequency tested
     lowlimit<-NA
-  }
+    lowlimitdB<-df_audiogram$y[df_audiogram$x==min(df_audiogram$x)] #get dB at which min frequ occurs
 
+  }
+  #when audiogram surpasses cutoff
   else{
-    lowflank<-df_audiogram[df_audiogram$y>cutoff & df_audiogram$x <besthz,]#get frequency where audiogram crosses cutoff value
     lowlimit<-max(lowflank$x)#lowhz limit
+    lowlimitdB<-cutoff
   }
 
-  #calculate high Hz limit
+  #high frequency
+  #if the audiogram does not go above cutoff value, value is NA
   if(nrow(df_audiogram[df_audiogram$y>cutoff & df_audiogram$x >besthz,])==0){# #if the audiogram does not go above cutoff value
     #highlimit<-max(df_audiogram$x)
     highlimit<-NA
+    highlimitdB<-df_audiogram$y[df_audiogram$x==max(df_audiogram$x)] #get dB at which min frequ occurs
+
   }
 
   else{
-    highflank<-df_audiogram[df_audiogram$y>35 & df_audiogram$x >besthz,]#get frequency where audiogram crosses cutoff value
     highlimit<-min(highflank$x)#High hz limit
+    highlimitdB<-cutoff
   }
 
   limits[i,1]<-lowlimit
@@ -100,19 +113,25 @@ for(i in seq_along(splt)){
   limits[i,5]<-splt[[i]]$Hz[1]
   limits[i,6]<-besthz
   limits[i,7]<-bestsensitivity
+  limits[i,8]<-lowlimitdB
+  limits[i,9]<-highlimitdB
+
 }
 #View(limits)
 
 #convert to dataframe and give column names
 limits<-as.data.frame(limits)
-colnames(limits)<-c("LowHzlimit","HighHzlimit","Species","supraorder","Hz", "besthz","bestsensitivity")
-limits[,1]<-as.numeric(as.character(limits$LowHzlimit))
-limits[,2]<-as.numeric(as.character(limits$HighHzlimit))
-limits$Hz<-as.numeric(as.character(limits$Hz))
-limits$besthz<-as.numeric(as.character(limits$besthz))
-limits$bestsensitivity<-as.numeric(as.character(limits$bestsensitivity))
+colnames(limits)<-c("LowHzlimit","HighHzlimit","Species","supraorder","Hz",
+                    "besthz","bestsensitivity","reallowdBlimit","realhighdBlimit")
+limits[,1]<-as.numeric(limits$LowHzlimit)
+limits[,2]<-as.numeric(limits$HighHzlimit)
+limits$Hz<-as.numeric(limits$Hz)
+limits$besthz<-as.numeric(limits$besthz)
+limits$bestsensitivity<-as.numeric(limits$bestsensitivity)
+limits$reallowdBlimit<-as.numeric(limits$reallowdBlimit)
+limits$realhighdBlimit<-as.numeric(limits$realhighdBlimit)
 
-###################add species from scan data that correspond with audiograms###############
+###################add the anatomical data with audiograms###############
 limits$binomial<-NA
 limits$binomial[limits$Species=="Barn owl"]<-"Tyto_alba"
 limits$binomial[limits$Species=="American kestrel"]<-"Falco_rupicolus" #
@@ -128,6 +147,13 @@ limits$binomial[limits$Species=="Indian peafowl"]<-"Pavo_muticus"
 limits$binomial[limits$Species=="Mallard duck"]<-"Anas_georgica_georgica"
 limits$binomial[limits$Species=="Rock dove"]<-"Columba_livia"#
 limits$binomial[limits$Species=="Zebra finch"]<-"Taeniopygia_guttata"
+
+#limits$binomial[limits$Species=="Orange fronted conure"]<-"Aratinga_canicularis"
+#limits$binomial[limits$Species=="Lesser scaup"]<-"Aythya_affinis"
+#limits$binomial[limits$Species=="Japanese quail"]<-"Coturnix_japonica"
+#limits$binomial[limits$Species=="Blue Jay"]<-"Cyanocitta_cristata"
+#limits$binomial[limits$Species=="Kea parrot"]<-"Nestor_notabilis"
+
 
 ##################add anatomical data from anatomy df############
 limits$TM<-avgdf$TM[match(limits$binomial,avgdf$Binomial)]
@@ -153,6 +179,7 @@ limits$aud_rel[limits$binomial=="Corvus_cornix"]<-"Congener"
 limits$spp_aud[limits$binomial=="Corvus_cornix"]<-"Corvus_cornix"
 limits$aud_rel[limits$binomial=="Phalacrocorax_carbo"]<-"Congener"
 limits$spp_aud[limits$binomial=="Phalacrocorax_carbo"]<-"Phalacrocorax_carbo"
+limits$aud_rel[limits$binomial=="Corvus_cornix"]<-"Congener"
 
 
 ########The audiogram metrics have now been computed.
@@ -176,11 +203,11 @@ cor.test(aud_data$HighHzlimit, aud_data$bestsensitivity)
 
 
 #summary statistics of audiograms
-meanhigh<-mean(limits$HighHzlimit)
-se_high<-sd(limits$HighHzlimit)/sqrt(length(limits$HighHzlimit))
+meanhigh<-mean(limits$HighHzlimit, na.rm = TRUE)
+se_high<-sd(limits$HighHzlimit, na.rm = TRUE)/sqrt(length(limits$HighHzlimit))
 
-meanlow<-mean(limits$LowHzlimit)
-se_low<-sd(limits$LowHzlimit)/sqrt(length(limits$LowHzlimit))
+meanlow<-mean(limits$LowHzlimit, na.rm = TRUE)
+se_low<-sd(limits$LowHzlimit, na.rm = TRUE)/sqrt(length(limits$LowHzlimit))
 
 meanbesthz<-mean(limits$besthz)
 se_besthz<-sd(limits$besthz)/sqrt(length(limits$besthz))
@@ -445,7 +472,7 @@ toprint<-read_docx() #create word doc object
 body_add_flextable(toprint,flexall)#add pgls output table
 body_end_section_landscape(toprint)
 #write.csv(intra,"E:/Analysis_plots/scalingintra feb 17.csv")
-print(toprint,target = paste0(choose.dir(),"/pgls_audio 60cutoff oct 15.docx"))
+print(toprint,target = paste0(choose.dir(),"/pgls_audio 60 cutoff with na no head size adjustment.docx"))
 
 ###############____########
 #######plotting metrics on audiogram########

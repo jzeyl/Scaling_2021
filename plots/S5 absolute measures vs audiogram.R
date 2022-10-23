@@ -100,29 +100,33 @@ runplot_audio<-function(e){
     geom_point(aes_string(shape="aud_rel"), size = 2)+
     geom_line(aes_string(x = anattraitx[e],
                          y = paste0("slpline_",as.character(e))),
-              col = "black", size = 2)+{
-                if(e<11)
-                  ylab("Best Sensitivity\n (dB)")
-                else if(e >10 & e < 13)
-                  ylab("Best Frequency\n (Hz)")
-                else if(e >12 & e < 17)
-                  ylab("High Frequency\n Limit (Hz)")
-                else if(e > 16)
-                  ylab("Low Frequency\n Limit (Hz)")
+              col = "black", size = 1)+{
+               #if(e<11)
+               #  ylab("Best Sensitivity\n (dB)")
+               #else if(e >10 & e < 13)
+               #  ylab("Best Frequency\n (Hz)")
+               #else if(e >12 & e < 17)
+               #  ylab("High Frequency\n Limit (Hz)")
+               #else if(e > 16)
+               #  ylab("Low Frequency\n Limit (Hz)")
               }
   p
 }
 
 runplot_audio(1)
 
-design<-"
+#check the list of relationships being shown
+spltmodel
+
+design60cutoff<-"
 ABCDE
 FGHIJ
-KLMN#
-OP###
-QR###"
+KLMNO
+PQ###"
 
-#PLOT ALL BEST FREQUENCY
+
+
+#PLOT ALL at 60 db cutoff
 runplot_audio(1)+#
   runplot_audio(2)+
   runplot_audio(3)+
@@ -139,18 +143,57 @@ runplot_audio(1)+#
   runplot_audio(15)+
   runplot_audio(16)+
   runplot_audio(17)+
+ #runplot_audio(18)+
+ runplot_audio(11)+#best frequency
+ runplot_audio(12)+#best frequency
+  plot_annotation(tag_levels = list(c(
+    "A","","","","",
+    "","","","","",
+    "B","","","","",
+    "C","","")))+
+  plot_layout(design = design60cutoff, guides = "collect")
+
+ggsave(file=paste0(choose.dir(),"/audiogramscatter_supp unadjusted hm 60 cutoff.svg"), width=10, height=10)
+
+
+design35cutoff<-"
+ABCDE
+FGHIJ
+KLMN#
+OPQR#
+ST###"
+
+#PLOT ALL at 35 db cutoff
+runplot_audio(1)+#
+  runplot_audio(2)+
+  runplot_audio(3)+
+  runplot_audio(4)+
+  runplot_audio(5)+
+  runplot_audio(6)+
+  runplot_audio(7)+
+  runplot_audio(8)+
+  runplot_audio(9)+
+  runplot_audio(10)+
+
+  runplot_audio(13)+
+  runplot_audio(14)+
+  runplot_audio(15)+
+  runplot_audio(16)+
+
+  runplot_audio(17)+
   runplot_audio(18)+
+  runplot_audio(19)+
+  runplot_audio(20)+
+
   runplot_audio(11)+#best frequency
   runplot_audio(12)+#best frequency
   plot_annotation(tag_levels = list(c(
     "A","","","","",
     "","","","","",
     "B","","","",
-    "C","",
-    "D","")))+
-  plot_layout(design = design, guides = "collect")
+    "C","","","",
+    "D","","","")))+
+  plot_layout(design = design35cutoff, guides = "collect")
 
-ggsave(file=paste0(choose.dir(),"/audiogramscatter_supp jun 19.svg"), width=10, height=10)
+ggsave(file=paste0(choose.dir(),"/audiogramscatter_supp unadjusted hm 35 cutoff.svg"), width=10, height=10)
 
-
-bhsave<-audiogrampgls_bh

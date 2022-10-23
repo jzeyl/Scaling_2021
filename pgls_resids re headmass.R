@@ -4,17 +4,19 @@ library(ggrepel)
 ###note the dataframe 'limits', created from 'Audiograms linked to anatomy.R'
 ###is required to run this code
 
+#ensure phylogeny matches dataframe
+#remake comparative data frame object with averaged congeners
+#rename phylogeny tips to matching with the species for which audiogram is available
+birdtreels$tip.label[14]<-"Corvus_cornix" #renamed from Corvus_albus
+birdtreels$tip.label[51]<-"Phalacrocorax_carbo" #rename "phalacrocorax_lucidus"
+
+
 birdCDO<-comparative.data(phy = birdtreels,data = avgdf,#[avgdf$Category!="Terrestrial",]
                           names.col = Binomial,
                           vcv = TRUE, na.omit = FALSE,
                           warn.dropped = TRUE)
 
 
-#ensure phylogeny matches dataframe
-#remake comparative data frame object with averaged congeners
-#rename phylogeny tips to matching with the species for which audiogram is available
-birdtreels$tip.label[14]<-"Corvus_cornix" #renamed from Corvus_albus
-birdtreels$tip.label[51]<-"Phalacrocorax_carbo" #rename "phalacrocorax_lucidus"
 
 #check any tips dropped between linking phylogeny and dataframe
 birdCDO$dropped
@@ -111,8 +113,8 @@ names(joined)
 
 #remove tilda from names to not mess up pgls formulas based on names
 joined<-joined %>% rename_with(~ gsub("~", "vs", .x, fixed = TRUE))
-residlist<-gsub("[()]","_",names(joined)[25:36])
-joined<-setNames(joined,c(names(joined)[1:24],residlist))
+residlist<-gsub("[()]","_",names(joined)[27:38])
+joined<-setNames(joined,c(names(joined)[1:26],residlist))
 
 names(joined)
 
@@ -152,7 +154,7 @@ categorylist_bs<-categorylist_lf
 categorylist_bh<-categorylist_lf
 categorylist_hf<-categorylist_lf
 
-pgls_models(modellist_bs[[1]])
+#pgls_models(modellist_bs[[2]])
 ###########recreate the pgls forumula list to include the residuals#################
 ####now the same scripts can be run for analysis for each part of the audiogram####
 
@@ -230,7 +232,7 @@ toprint<-read_docx() #create word doc object
 body_add_flextable(toprint,flexall)#add pgls output table
 body_end_section_landscape(toprint)
 #write.csv(intra,"E:/Analysis_plots/scalingintra feb 17.csv")
-print(toprint,target = paste0(choose.dir(),"/pgls_resid_60 db cutoff with na.docx"))
+print(toprint,target = paste0(choose.dir(),"/pgls_resid_35 db cutoff with na_oct22.docx"))
 
 
 
