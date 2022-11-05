@@ -258,7 +258,6 @@ hm$pval<-format(round(hm$pval, 3), nsmall = 3)
 ####visualize the table better using the flextable package
 flexall<-flextable(hm) %>%
   add_header_lines(  values = "Table X. Models for selection") %>%
-  #bold(i = ~ P.val < 0.05) %>% # select columns add: j = ~ Coefficients + P.val
   autofit()
 flexall
 
