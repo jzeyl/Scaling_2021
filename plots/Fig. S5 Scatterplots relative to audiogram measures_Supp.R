@@ -2,9 +2,6 @@ library(patchwork)
 library(dplyr)
 ########SETUP############
 
-#limits<- limits %>% rename(., `Best Sensitivity\n (dB)` = bestsensitivity)
-
-
 modellist_bs
 modellist_lf
 modellist_bh
@@ -73,44 +70,51 @@ for(i in seq_along(anattraitx)){
   anattrait_simple[i]<-gsub("[\\(\\)]", "", regmatches(anattraitx, gregexpr("\\(.*?\\)", anattraitx))[[i]])
 }
 
-#only keep significant relationships
-#audio_pgls_plt<-audio_pgls_plt %>% select(Model, Coefficients, P.val)%>%
-# filter(Coefficients!="(Intercept)" &
-#          P.val <0.05)
 
-
-
-#log transform anatomy data for the slope line
-#logged<-limits%>% mutate_at(vars(TM:UH),log)
-
-
-##########best Hz##############
+##########get names of relationships for labels##############
 for(i in seq_along(anattraitx)){
+
+  if(traity[i]=="log(LowHzlimit)"){
+    j<-joined[-which(is.na(joined$LowHzlimit)),]
+  }
+  else if(traity[i]=="log(HighHzlimit)"){
+    j<-joined[-which(is.na(joined$HighHzlimit)),]
+  }
+  else{
+    j<-joined
+  }
+
   assign(paste0("slpline","_",as.character(i)),
          pgls_models_sig[i][[1]]$model$coef[1]+
-           joined[,anattraitx[i]]*pgls_models_sig[i][[1]]$model$coef[2])
+
+           j[,anattraitx[i]]*pgls_models_sig[i][[1]]$model$coef[2])
 }
 
 anattraitx2<-gsub("resid_log_", "Resid. ", anattraitx)
 anattraitx3<-gsub("_vslog_HM_", "",anattraitx2)
 
+
 runplot_audio<-function(e){
+  if(traity[e]=="log(LowHzlimit)"){
+    joined<-joined[-which(is.na(joined$LowHzlimit)),]
+  }
+  else if(traity[e]=="log(HighHzlimit)"){
+    joined<-joined[-which(is.na(joined$HighHzlimit)),]
+  }
   p<-ggplot(joined,
             aes_string(x = spltmodel[[e]][2], y = spltmodel[[e]][1]))+
     theme_classic()+
-    #theme(legend.position = "none")+
-    #      axis.text.y = element_blank(),
-    #      axis.title.y = element_blank())+
+
     geom_point(aes_string(shape="aud_rel"), size = 2)+
     geom_line(aes_string(x = anattraitx[e],
-                                          y = paste0("slpline_",as.character(e))),
-                                col = "black", size = 2)+
+                         y = paste0("slpline_",as.character(e))),
+                                col = "black", size = 1)+
+    scale_shape_discrete(name = "Anatomical data\nsource:")+
+    theme(legend.background = element_blank(),
+      legend.box.background = element_rect(colour = "black"))+
     xlab(anattraitx3[e])+{
-
 if(e<11)
   ylab("Best Sensitivity\n (dB)")
- #else if(e >10 & e < 13)
- #  ylab("Best Frequency\n (Hz)")
 else if(traity[e] == "log(LowHzlimit)")
   ylab("Low Frequency\n Limit (Hz)")
 else if(traity[e] == "log(HighHzlimit)")
@@ -121,35 +125,54 @@ else if(traity[e] == "log(HighHzlimit)")
 
 runplot_audio(1)
 
-#design<-"
-#ABCKL
-#DEFMN
-#GHIOP
-#J##QR
-#"
-design<-"
-ABCDE
-FGHIJ
-KLMN#
-O####
-"
+
+#configureline
 xs = c(log(min(limits$HM, na.rm = T)), log(max(limits$HM, na.rm = T)))
-beta = c(8.4, -0.26)
+beta = c(8.4, -0.26)#hardcoded slopes
 ys = cbind(1, xs) %*% beta
 
 hmplot<-ggplot(limits,aes(x = log(HM), y = log(besthz)))+
   theme_classic()+
   geom_point(aes_string(shape="aud_rel"), size = 2)+
-  #geom_abline(intercept = 8.4, slope = -0.26,
-   #         col = "black", size = 2, fullrange = T)
-geom_segment(x = log(min(limits$HM, na.rm = T)), xend = log(max(limits$HM, na.rm = T)),
+geom_segment(x = log(min(limits$HM, na.rm = T)),
+             xend = log(max(limits$HM, na.rm = T)),
              y = ys[1],
-             yend = ys[2], size = 2)+
-  ylab("Best Frequency\n(Hz)")
-  #slope = -0.26, intercept = 8.4
+             yend = ys[2], size = 1)+
+  ylab("Best Frequency\n(Hz)")+
+  theme(legend.position = "none")
 hmplot
 
-#PLOT ALL
+#################PLOTTING###
+#re-run analysis and 35 and 60 dB cutoff then combine figs in svg editor
+label_35<-ggplot() +
+  annotate("text", x = 0,  y = 10,
+           size = 4,
+           label = " 35 dB cut-off level",
+           hjust = 0) +
+  xlim(c(0,10))+
+  geom_vline(xintercept = 0)+
+  theme_void()
+label_35
+
+label_60<-ggplot() +
+  annotate("text", x = 0,  y = 10,
+           size = 4,
+           label = " 60 dB cut-off level",
+           hjust = 0) +
+  geom_vline(xintercept = 0)+
+  xlim(c(0,10))+
+  theme_void()
+
+#35 dB design
+design35<-"
+ABCDE
+FGHIJ
+KLMNO
+P###Q
+R###S
+"
+
+#PLOT 35
 runplot_audio(1)+
   runplot_audio(2)+
   runplot_audio(3)+
@@ -160,30 +183,62 @@ runplot_audio(1)+
   runplot_audio(8)+
   runplot_audio(9)+
   runplot_audio(10)+
+
   runplot_audio(11)+
   runplot_audio(12)+
   runplot_audio(13)+
   runplot_audio(14)+
-  #runplot_audio(15)+
-  #runplot_audio(16)+
-  #runplot_audio(17)+
-  #runplot_audio(18)+
-  #runplot_audio(19)+
-  #runplot_audio(20)+
-  #runplot_audio(21)+
+  label_35+
   hmplot+
+  label_60+
+  hmplot+
+  #guide_area()+
   plot_annotation(tag_levels = list(c(
     "A","","","","",
-    "","","","","",
-    "B","","","","C")))+
+    "","","","","","B",
+    "","","","","C","","D")),
+    theme = theme(legend.background = element_blank(),
+                  legend.box.background = element_rect(colour = "black")))+
+  plot_layout(design = design35, guides = "collect")
 
-    #,"",
-    #"","","","","",
-    #"C","D","","","",
-    #"D","","","",""+
-  plot_layout(design = design, guides = "collect")
+#PLOT 60
+#60 dB design
+design60<-"
+ABCDE
+FGHIJ
+####K
+LMNOP
+Q###R
+"
 
+#swap out design of 'design35' or design60'
+#and labellinng
+runplot_audio(1)+
+  runplot_audio(2)+
+  runplot_audio(3)+
+  runplot_audio(4)+
+  runplot_audio(5)+
+  runplot_audio(6)+
+  runplot_audio(7)+
+  runplot_audio(8)+
+  runplot_audio(9)+
+  runplot_audio(10)+
+  label_35+
+  runplot_audio(11)+
+  runplot_audio(12)+
+  runplot_audio(13)+
+  runplot_audio(14)+
+  label_60+
+  hmplot+
+  #guide_area()+
+  plot_annotation(tag_levels = list(c(
+    "A","","","","",
+    "","","","","","",
+    "C","","","","","D")),
+    theme = theme(legend.background = element_blank(),
+                  legend.box.background = element_rect(colour = "black")))+
+  plot_layout(design = design60, guides = "collect")
 
-
-
-ggsave(file=paste0(choose.dir(),"/audiogramscatter_supp_RESID jun 17.svg"), width=10, height=10)
+ggsave(file=paste0(choose.dir(),
+                   "/audiogramscatter_supp_RESID_60_.svg"),
+       width=10, height=10)

@@ -1,3 +1,6 @@
+#run up until line 185, proceed to pgls_resids re headmass
+#otherwise unadjusted for head mass proceed past line 185
+
 library(ggrepel)
 library(ggplot2)
 library(ggpubr)
@@ -6,7 +9,7 @@ library(officer)
 library(dplyr)
 library(PerformanceAnalytics)
 
-cutoff<- 35#set cutoff here as 35 or 60 dB
+cutoff<- 60#set cutoff here as 35 or 60 dB
 
 
 ####create averaged values for instances where multiple species match a congener with audiogram####

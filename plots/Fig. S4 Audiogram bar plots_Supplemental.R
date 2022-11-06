@@ -26,6 +26,7 @@ limitslong35<-limits35[which(!is.na(limits35$aud_rel)),] %>%#only select the row
 #now re-run the analysis to get the limits at 60 dB, changing the cutoff
 rm(list = setdiff(ls(),c("limits35","limitslong35")))
 
+#START HERE RUN TO LNE 219 first time
 #set cutoff here as 35 or 60 dB
 cutoff<- 60
 ######################################333
@@ -237,21 +238,13 @@ bound$bestsensitivity<-NA
 #add best hz to interpolated datset for sorting
 bound$besthz<-limits$besthz[match(bound$Species,limits$Species)]
 bound$bestsensitivity<-limits$bestsensitivity[match(bound$Species,limits$Species)]
-#bound$HighHzlimit<-limits$HighHzlimit[match(bound$Species,limits$Species)]
-#bound$LowHzlimit<-limits$LowHzlimit[match(bound$Species,limits$Species)]
 bound$Hz<-bound$x #give appropriate naming for x
-#bound2$Hz<-bound2$x #give appropriate naming for x
 bound$Species<-as.factor(bound$Species)
 bound$`Threshold (dB)`<-bound$y
-
-#bound$Species = with(bound, reorder(Species, besthz, median))
 
 #Add new rows to end of dataframe with audiogram metrics (best Hz, etc.)
 bound2<-bound
 levels(bound2$Species)<-c(levels(bound2$Species),"High freq. limit","Best freq.","Low freq. limit")
-##bound2[95001,"Species"]<-"Low freq. limit"#add 'low hz as species name, placeholder for bethz
-# bound2[95002,"Species"]<-"Best freq."
-#bound2[95003,"Species"]<-"High freq. limit"
 bound$Species<-as.character(bound$Species)
 bound$besthz<-as.numeric(bound$besthz)
 bound2$Species = with(bound2, reorder(Species, besthz, median))
@@ -265,45 +258,48 @@ geom_path(data = bound,aes(col = `Threshold (dB)`), size = 2)+
   geom_point(data = filter(limitslong60,limit!="besthz"), aes(x = Hz, y = Species),shape = 21, size = 2, colour = "black", fill = "black")+
   geom_point(data = filter(limitslong35,limit!="besthz"), aes(x = Hz, y = Species),shape = 21, size = 2, colour = "black", fill = "grey")+
   scale_color_viridis()+
-  scale_x_log10()+
+  scale_x_log10(labels = scales::comma)+
   theme_classic()+
-  #coord_cartesian(clip = "off", ylim = c(1,22))+
-  annotation_logticks(sides = "b", outside = TRUE, colour = "black")+
+  coord_cartesian(clip = "off")+#, ylim = c(0,19)
+  annotation_logticks(side = "b", outside = TRUE, color = "black")+
   ylab("")+
   xlab("Frequency(Hz)")+
   #geom_hline(yintercept = 3.5)+
   theme(axis.title.y = element_text(angle= 0, vjust = 0.5, hjust=1),
-        axis.text.x = element_text(angle= 0, vjust = -2.5, hjust=0.5))
+        axis.text.x = element_text(angle= 0, vjust = -2.5, hjust=0.5,color = "black"),
+        axis.text.y = element_text(color = "black"))
 range
 
 
 
 bestsens<-ggplot(limits, aes(x = bestsensitivity, y = 0))+
-  geom_boxplot(width = 0.25)+
+  geom_boxplot(width = 0.1, fill = "grey")+
   geom_point(aes(y = 0,label = Species))+
   geom_text_repel(aes(y = 0,label = Species),
-                  #direction = "x",
+                  direction = "both",
                   size = 3,
+                  angle = 90,
                   min.segment.length = 0,
-                  segment.size      = 1)+
-                  #nudge_y = 1)+
-                  #box.padding = unit(0.35, "lines"),
-                #point.padding = unit(1, "lines"))+
-  #coord_flip()+
-  #geom_text(aes(x = 0, label = Species))+
+                  nudge_y = 0.25)+
   theme_classic()+
-  ylim(c(-0.5,0.5))+
+  ylim(c(-0.05,0.3))+
+  xlim(c(-30,30))+
+  scale_x_continuous(breaks = seq(-20,20, by = 5))+
   xlab("Best sensitivity(dB SPL)")+
   ylab("")+
   theme(#axis.title.y = element_text(angle= 0, vjust = 0.5, hjust=1),
-        axis.text.x = element_blank(),
-        axis.ticks.x = element_blank(),
-        axis.line.x = element_blank())
+        axis.text.y = element_blank(),
+        axis.ticks.y = element_blank(),
+        axis.line.y = element_blank())
 bestsens
 
 range/bestsens+
-  plot_layout(heights = c(2,1))+
+  plot_layout(heights = c(1.5,1))+
   plot_annotation(tag_levels = "A")
 
-ggsave(file=paste0(choose.dir(),"/supplemental_bar S4 oct 24.png"))
+ggsave(file=paste0(choose.dir(),
+                   "/supplemental_bar S4.png"),
+       width = 1366,
+       height = 623,
+       units = "px")
 

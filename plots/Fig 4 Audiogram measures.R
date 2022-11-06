@@ -1,41 +1,56 @@
-# to plot, the 'fig1' and 'limits' 
+#limits35<-limits
+#now re-run the analysis to get the limits at 60 dB, changing the cutoff
+#rm(list = setdiff(ls(),c("limits35")))
+#limits60<-limits
+# to plot, the 'fig1' and 'limits'
 #dataframe comes from the 'Audiograms linked to anatomy.R' script
+
+library(ggtext)
 
 #######plotting metrics on audiogram########
 aas<-function(d){
-  set<-limits[d,]
-  bestsensitivity<-set$bestsensitivity
-  bestHz<-set$besthz
-  highHz<-set$HighHzlimit
-  lowHz<-set$LowHzlimit
-  ggplot(fig1[fig1$Species==set$Species,], aes(x = Hz, y = Threshold, factor = Species))+
-    scale_x_log10()+
-    #geom_vline(xintercept = lowHz, col = "grey", size = 2)+
-    
+  set60<-limits60[d,]
+  bestsensitivity60<-set60$bestsensitivity
+  bestHz60<-set60$besthz
+  highHz60<-set60$HighHzlimit
+  lowHz60<-set60$LowHzlimit
+  set35<-limits35[d,]
+  bestsensitivity35<-set35$bestsensitivity
+  bestHz35<-set35$besthz
+  highHz35<-set35$HighHzlimit
+  lowHz35<-set35$LowHzlimit
+  ggplot(fig1[fig1$Species==set60$Species,], aes(x = Hz, y = Threshold, factor = Species))+
+    geom_line(aes(x = Hz, y = Threshold), size = 1)+
+
+    scale_x_log10(labels = scales::comma)+
     #Hz metrics
-    geom_segment(aes(x = lowHz, y = -Inf, xend = lowHz, yend = 35), col = "grey", size = 2)+
-    geom_segment(aes(x = bestHz, y = -Inf, xend = bestHz, yend = bestsensitivity), col = "grey", size = 2)+
-    geom_segment(aes(x = highHz, y = -Inf, xend = highHz, yend = 35), col = "grey", size = 2)+
-    geom_line(aes(x = Hz, y = Threshold), size = 2)+
-    
-    #geom    geom_line(aes(x = Hz, y = Threshold), size = 2)+
+    geom_segment(aes(x = lowHz60, y = -Inf, xend = lowHz60, yend = 60), col = "grey", size = 2)+
+    geom_segment(aes(x = lowHz35, y = -Inf, xend = lowHz35, yend = 35), col = "grey", size = 2)+
+    geom_segment(aes(x = highHz60, y = -Inf, xend = highHz60, yend = 60), col = "grey", size = 2)+
+    geom_segment(aes(x = highHz35, y = -Inf, xend = highHz35, yend = 35), col = "grey", size = 2)+
+  geom_segment(aes(x = bestHz60, y = -Inf, xend = bestHz60, yend = bestsensitivity), col = "grey", size = 2)+
     scale_color_brewer(palette = "Set1")+
-    geom_hline(yintercept = bestsensitivity)+
+    geom_hline(yintercept = bestsensitivity60)+
     geom_hline(yintercept = 35, col = "black")+
+    geom_hline(yintercept = 60, col = "black")+
     theme_bw()+
-    #theme(legend.position = "none")+
     coord_cartesian(clip = "off")+
     ylab("Threshold (dB SPL)")+
     xlab("Frequency (Hz)")+
-    annotation_logticks(sides = "b", outside = TRUE)+
+    annotation_logticks(sides = "b")+
     ylim(c(0,80))+
-    annotate("text",x = 50, y = 35+3, label = "Cutoff level (dB)")+
-    annotate("text",x = 50, y = bestsensitivity+3, label = "Best sensitivity (dB)")+
-    annotate("text",x = bestHz, y = 5, label = "Best frequency")+
-    annotate("text",x = lowHz, y = 5, label = "Low frequency limit")+
-    annotate("text",x = highHz, y = 5, label = "High frequency limit")
-  
+    annotate("text",hjust = 0, x = 4, y = 65, label = "60 dB cut-off level")+
+    annotate("text",hjust = 0, x = 4, y = 40, label = "35 dB cut-off level")+
+    annotate("text",hjust = 0, x = 4, y = bestsensitivity60+5, label = "Best sensitivity (dB)")+
+    annotate("text",x = bestHz60, y = bestsensitivity60, label = "Best frequency", angle = 90, hjust = 0)+
+    geom_richtext(aes(x = lowHz35, y = 0, label = "Low frequency limit"), angle = 90, hjust = 0)+
+    annotate("label",x = lowHz60, y = 0, label = "Low frequency limit", angle = 90, hjust = 0)+
+    #ggtext::geom_richtext
+    annotate("text",x = highHz35, y = 0, label = "High frequency limit", angle = 90, hjust = 0)+
+    annotate("text",x = highHz60, y = 0, label = "High frequency limit", angle = 90, hjust = 0)
+
 }
-aas(16)+theme()
+aas(16)+
+  theme(axis.text = element_text(color = "black"))
 
 #aas(16)+ xlim(c(0,50000))

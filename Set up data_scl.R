@@ -7,6 +7,10 @@ library(ggplot2)
 library(tidyr)
 library(purrr)
 
+
+#########Line 73 - scaling intraear##########
+#########Line 173 - scaling vs head mass########
+
 ################Set up data############
 #set working directory and load data
 #setwd(choose.dir())

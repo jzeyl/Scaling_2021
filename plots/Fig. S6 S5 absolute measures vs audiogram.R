@@ -2,9 +2,6 @@ library(patchwork)
 library(dplyr)
 ########SETUP############
 
-#limits<- limits %>% rename(., `Best Sensitivity\n (dB)` = bestsensitivity)
-
-
 modellist_bs
 modellist_lf
 modellist_bh
@@ -42,16 +39,11 @@ audio_pgls_results <-audio_pgls_results %>%
                                      "Columella size")),
           desc(Adj_Rsquared))
 
-#split up model column
-#spltmodel<-strsplit(audio_pgls_results$Model,"~")
-#audio_pgls_results$`Audiogram metric`<-unlist(lapply(spltmodel, `[[`, 1))
-#audio_pgls_results$anattraitx<-unlist(lapply(spltmodel, `[[`, 2))
-#
+
 ##only keep significant relationships
 audio_pgls_results<-audio_pgls_results %>%
   filter(Coefficients!="(Intercept)" &
            P.val <0.05)
-
 
 #get model list from the results table (only significant results)
 modellist_sig<-paste0(audio_pgls_results$`Audiogram metric`,"~",
@@ -71,44 +63,48 @@ for(i in seq_along(anattraitx)){
   anattrait_simple[i]<-gsub("[\\(\\)]", "", regmatches(anattraitx, gregexpr("\\(.*?\\)", anattraitx))[[i]])
 }
 
-#only keep significant relationships
-#audio_pgls_plt<-audio_pgls_plt %>% select(Model, Coefficients, P.val)%>%
-# filter(Coefficients!="(Intercept)" &
-#          P.val <0.05)
-
-
-
 #log transform anatomy data for the slope line
 logged<-limits%>% mutate_at(vars(TM:UH),log)
-#loggedselect<-ok[,audio_pgls_results$Coefficients]
-#categorylist_aud<-audio_pgls_results$category
 
 ##########best Hz##############
 for(i in seq_along(anattrait_simple)){
+  if(traity[i]=="log(LowHzlimit)"){
+    l<-logged[-which(is.na(logged$LowHzlimit)),]
+  }
+  else if(traity[i]=="log(HighHzlimit)"){
+    l<-logged[-which(is.na(logged$HighHzlimit)),]
+  }
+  else{
+    l<-logged
+  }
   assign(paste0("slpline","_",as.character(i)),
          pgls_models_sig[i][[1]]$model$coef[1]+
-           logged[,anattrait_simple[i]]*pgls_models_sig[i][[1]]$model$coef[2])
+           l[,anattrait_simple[i]]*pgls_models_sig[i][[1]]$model$coef[2])
 }
 
 runplot_audio<-function(e){
+  if(traity[e]=="log(LowHzlimit)"){
+    limits<-limits[-which(is.na(limits$LowHzlimit)),]
+  }
+  else if(traity[e]=="log(HighHzlimit)"){
+    limits<-limits[-which(is.na(limits$HighHzlimit)),]
+  }
   p<-ggplot(limits,
             aes_string(x = spltmodel[[e]][2], y = spltmodel[[e]][1]))+
     theme_classic()+
-    #theme(legend.position = "none")+
-    #      axis.text.y = element_blank(),
-    #      axis.title.y = element_blank())+
     geom_point(aes_string(shape="aud_rel"), size = 2)+
     geom_line(aes_string(x = anattraitx[e],
                          y = paste0("slpline_",as.character(e))),
-              col = "black", size = 1)+{
-               #if(e<11)
-               #  ylab("Best Sensitivity\n (dB)")
-               #else if(e >10 & e < 13)
-               #  ylab("Best Frequency\n (Hz)")
-               #else if(e >12 & e < 17)
-               #  ylab("High Frequency\n Limit (Hz)")
-               #else if(e > 16)
-               #  ylab("Low Frequency\n Limit (Hz)")
+              col = "black", size = 1)+
+    theme(legend.background = element_blank(),
+          legend.box.background = element_rect(colour = "black"))+
+  xlab(anattraitx[e])+{
+                if(e<11)
+                  ylab("Best Sensitivity\n (dB)")
+                else if(traity[e] == "log(LowHzlimit)")
+                  ylab("Low Frequency\n Limit (Hz)")
+                else if(traity[e] == "log(HighHzlimit)")
+                  ylab("High Frequency\n Limit (Hz)")
               }
   p
 }
@@ -119,12 +115,31 @@ runplot_audio(1)
 spltmodel
 
 design60cutoff<-"
-ABCDE
-FGHIJ
-KLMNO
-PQ###"
+ABCDE#
+FGHIJ#
+KLMNOP
+Q####R
+S####R
+TU####"
 
+label_35<-ggplot() +
+  annotate("text", x = 0,  y = 10,
+           size = 4,
+           label = " 35 dB cut-off level",
+           hjust = 0) +
+  xlim(c(0,10))+
+  geom_vline(xintercept = 0)+
+  theme_void()
+label_35
 
+label_60<-ggplot() +
+  annotate("text", x = 0,  y = 10,
+           size = 4,
+           label = " 60 dB cut-off level",
+           hjust = 0) +
+  geom_vline(xintercept = 0)+
+  xlim(c(0,10))+
+  theme_void()
 
 #PLOT ALL at 60 db cutoff
 runplot_audio(1)+#
@@ -144,24 +159,33 @@ runplot_audio(1)+#
   runplot_audio(16)+
   runplot_audio(17)+
  #runplot_audio(18)+
+  label_35+#
+  runplot_audio(11)+#best frequency
+  label_60+#
+
  runplot_audio(11)+#best frequency
  runplot_audio(12)+#best frequency
+  runplot_audio(11)+
   plot_annotation(tag_levels = list(c(
     "A","","","","",
     "","","","","",
-    "B","","","","",
-    "C","","")))+
+    "B","","","","","",
+    "C","","","D")),
+    theme = theme(legend.background = element_blank(),
+                  legend.box.background = element_rect(colour = "black")))+
   plot_layout(design = design60cutoff, guides = "collect")
 
-ggsave(file=paste0(choose.dir(),"/audiogramscatter_supp unadjusted hm 60 cutoff.svg"), width=10, height=10)
+ggsave(file=paste0(choose.dir(),
+                   "/audiogramscatter_supp unadjusted hm 60 cutoff_.svg"), width=10, height=10)
 
 
 design35cutoff<-"
-ABCDE
-FGHIJ
-KLMN#
-OPQR#
-ST###"
+ABCDE#
+FGHIJ#
+K####L
+MNOP#Q
+RSTU#Q
+VW####"
 
 #PLOT ALL at 35 db cutoff
 runplot_audio(1)+#
@@ -174,12 +198,13 @@ runplot_audio(1)+#
   runplot_audio(8)+
   runplot_audio(9)+
   runplot_audio(10)+
-
+  runplot_audio(10)+
+  label_35+#
   runplot_audio(13)+
   runplot_audio(14)+
   runplot_audio(15)+
   runplot_audio(16)+
-
+  label_60+#
   runplot_audio(17)+
   runplot_audio(18)+
   runplot_audio(19)+
@@ -190,10 +215,11 @@ runplot_audio(1)+#
   plot_annotation(tag_levels = list(c(
     "A","","","","",
     "","","","","",
-    "B","","","",
-    "C","","","",
+    "B","",
+    "C","","","","","",
     "D","","","")))+
   plot_layout(design = design35cutoff, guides = "collect")
 
-ggsave(file=paste0(choose.dir(),"/audiogramscatter_supp unadjusted hm 35 cutoff.svg"), width=10, height=10)
+ggsave(file=paste0(choose.dir(),
+                   "/audiogramscatter_supp unadjusted hm 60 cutoff.svg"), width=10, height=10)
 
