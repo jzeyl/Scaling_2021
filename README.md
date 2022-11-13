@@ -7,7 +7,7 @@ Start with _**"Set up data_scl.R".**_ This loads the data and phylogeny. This al
 
 ## **To run the pgls between ear structures and audiometric measurements:**  
 
-First,  _**"Set up data_scl.R"**_ also has to be run to get the data prepared (minus the pgls from those scripts). Next, the scripts in _**"Audiograms linked to anatomy.R"**_ can be run. This creates a 'limits' dataframe with the audiogram metrics, which will be joined with the anatomy dataframes for analysis. Once the limits df is created the _**"pgls_resids re headmass.R"**_ can be used to run the pgls analyses with head mass-corrected values.  
+First,  _**"Set up data_scl.R"**_ also has to be run (up to line 70) to get the data prepared. Next, the scripts in _**"Audiograms linked to anatomy.R"**_ can be run to create a  dataframe ('limits') containing the audiogram metrics which will be joined with the morphological data.  Once the dataframe is created is created, _**"pgls_resids re headmass.R"**_ can be used to run the pgls analyses with head mass-corrected values. Note that for running analyses at different cut-off levels (35 or 60 dB), the cutoff is specified in the 'Audiograms linked to anatomy.R' file. When switching cut-off levels it is recommended to to empty the environment, modify the cut-off level, and re-rerun all relevant scripts with updated cut-off 
 
 <br>
 

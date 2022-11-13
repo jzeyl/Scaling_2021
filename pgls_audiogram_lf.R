@@ -26,7 +26,7 @@ for(i in seq_along(tbllist_audiogram)){
   #identify numeric cols and character cols to apply the significant digits function
   character_cols<-unlist(lapply(tbllist_audiogram[[i]], is.character))
   numeric_cols <- unlist(lapply(tbllist_audiogram[[i]], is.numeric))# Identify numeric columns
-  tbllist_audiogram[[i]]<-cbind(tbllist_audiogram[[i]][,which(character_cols)],signif(tbllist_audiogram[[i]][,which(numeric_cols)], digits = 2))
+  tbllist_audiogram[[i]]<-cbind(tbllist_audiogram[[i]][,which(character_cols)],signif(tbllist_audiogram[[i]][,which(numeric_cols)], digits = 3))
   #tbllist_audiogram[[i]] <- tbllist_audiogram[[i]][, c(6,11,8:10,7,5,1:4)]#change order of columns
   #dplyr::select_if(tbllist_audiogram[[i]], is.numeric)#select only numeric data
   colnames(tbllist_audiogram[[i]])[6]<-"P.val"#rename b/c flextable doesn't work will with the '>' sign

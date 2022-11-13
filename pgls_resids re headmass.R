@@ -1,8 +1,10 @@
+###Note the dataframe 'limits', created from 'Audiograms linked to anatomy.R'
+###is required to run this code
+
+
 library(patchwork)
 library(ggrepel)
 
-###note the dataframe 'limits', created from 'Audiograms linked to anatomy.R'
-###is required to run this code
 
 #ensure phylogeny matches dataframe
 #remake comparative data frame object with averaged congeners

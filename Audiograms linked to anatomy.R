@@ -1,5 +1,6 @@
-#run up until line 185, proceed to pgls_resids re headmass
-#otherwise unadjusted for head mass proceed past line 185
+#For analysis which is adjusted for head mass, run up until line 180,
+#then proceed to 'pgls_resids re headmass.R'
+#Otherwise, analysis unadjusted for head mass proceeds past line 185
 
 library(ggrepel)
 library(ggplot2)
@@ -150,12 +151,6 @@ limits$binomial[limits$Species=="Indian peafowl"]<-"Pavo_muticus"
 limits$binomial[limits$Species=="Mallard duck"]<-"Anas_georgica_georgica"
 limits$binomial[limits$Species=="Rock dove"]<-"Columba_livia"#
 limits$binomial[limits$Species=="Zebra finch"]<-"Taeniopygia_guttata"
-
-#limits$binomial[limits$Species=="Orange fronted conure"]<-"Aratinga_canicularis"
-#limits$binomial[limits$Species=="Lesser scaup"]<-"Aythya_affinis"
-#limits$binomial[limits$Species=="Japanese quail"]<-"Coturnix_japonica"
-#limits$binomial[limits$Species=="Blue Jay"]<-"Cyanocitta_cristata"
-#limits$binomial[limits$Species=="Kea parrot"]<-"Nestor_notabilis"
 
 
 ##################add anatomical data from anatomy df############

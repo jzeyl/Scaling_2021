@@ -3,7 +3,6 @@
 #Head mass only
 #modellist<-pgls_todo_hm
 
-options(scipen = 1000)
 pgls_models_list_bs<-lapply(modellist_bs,pgls_models)#run pgls
 
 
@@ -27,7 +26,7 @@ for(i in seq_along(tbllist_audiogram)){
   #identify numeric cols and character cols to apply the significant digits function
   character_cols<-unlist(lapply(tbllist_audiogram[[i]], is.character))
   numeric_cols <- unlist(lapply(tbllist_audiogram[[i]], is.numeric))# Identify numeric columns
-  tbllist_audiogram[[i]]<-cbind(tbllist_audiogram[[i]][,which(character_cols)],signif(tbllist_audiogram[[i]][,which(numeric_cols)], digits = 2))
+  tbllist_audiogram[[i]]<-cbind(tbllist_audiogram[[i]][,which(character_cols)],signif(tbllist_audiogram[[i]][,which(numeric_cols)], digits = 3))
   colnames(tbllist_audiogram[[i]])[6]<-"P.val"#rename b/c flextable doesn't work will with the '>' sign
   row.names(tbllist_audiogram[[i]])<-c()#remove row names
   print(tbllist_audiogram[[i]])
@@ -42,7 +41,7 @@ flexall<-flextable(audiogrampgls_bs) %>% add_header_lines(
   values = "Table X. Models for selection") %>%
   bold(i = ~ P.val < 0.05) %>% # select columns add: j = ~ Coefficients + P.val
   autofit()
-flexall 
+flexall
 
 #pgls diagnostics
 

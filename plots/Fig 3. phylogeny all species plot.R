@@ -1,3 +1,5 @@
+#run 'set up data_scl.R up to line 70 before running this script
+
 library(ggplot2)
 library(RColorBrewer)
 library(ggtree)
@@ -104,9 +106,6 @@ avgdf %>% dplyr::select(aud_rel) %>%
   scale_fill_manual(values = c("white","grey","black"), na.value = "#FFFFFF")
 
 
-#order level plot
-
-
 
 
 #open up the circle
@@ -115,64 +114,3 @@ l
 
 ggsave("D:/Analysis_plots/ecolcircle.pdf", width=10, height=10)
 
-
-#############plot heatmap showing sampling of all auditory traits (supplemental materials)#####333
-avgdf$Binomial2<-avgdf$Binomial
-
-avgdf$Binomial3<-gsub("_"," ",avgdf$Binomial2)
-
-
-library(ggtext)
-a<-ggtree(birdtreels) %<+% avgdf + ###########, layout = "circular"
-  geom_tiplab(aes(label= aud_rel), linesize = 0.01, offset = 30)+
-  #geom_tiplab(aes(label=paste0('italic(', Binomial2,')')),
-  #          parse=TRUE, linesize = 0.01, offset = 30)+
-  #geom_text(aes(label = node))+
-  xlim(NA, 160) +
-  ylim(NA,140)
-a
-
-
-
-avgdf$IACN<-ifelse(avgdf$IAC_detail=="",0,1)
-avgdf$IBPN<-ifelse(avgdf$IBP_detail=="",0,1)
-names(avgdf)
-
-sampled<-avgdf[,c("Head.mass..g.",
-                  "TMtotalarea"  ,
-                  "FPtotalarea"  ,
-                  "dis_coltip_TMcentroid",
-                  "meanTMangle"  ,
-                  "Umbo_distancetoTMplane",
-                  "CAtotalarea"  ,
-                  "RWtotalarea"  ,
-                  "totalEClength",
-                  "Columella.length.mm"   ,
-                  "Columella.volume.mm3" ,
-                  "Behind.TM"  ,
-                  "IACN","IBPN"  )]/avgdf[,c("Head.mass..g.",
-                                             "TMtotalarea"  ,
-                                             "FPtotalarea"  ,
-                                             "dis_coltip_TMcentroid",
-                                             "meanTMangle"  ,
-                                             "Umbo_distancetoTMplane",
-                                             "CAtotalarea"  ,
-                                             "RWtotalarea"  ,
-                                             "totalEClength",
-                                             "Columella.length.mm"   ,
-                                             "Columella.volume.mm3" ,
-                                             "Behind.TM"  ,
-                                             "IACN","IBPN"   )]
-colnames(sampled)
-colnames(sampled)<-seq(1:length(colnames(sampled)))
-#current sampling
-k2<-gheatmap(a,sampled,
-             width = 0.4, offset = 0,
-             color = "black",
-             low = "white",  high = "blue",
-             colnames = T,
-             colnames_position = "top",
-             colnames_angle = 0,
-             colnames_offset_x = 0,
-             colnames_offset_y = 5)
-k2

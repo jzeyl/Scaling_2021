@@ -8,7 +8,7 @@ library(tidyr)
 library(purrr)
 
 
-#########Line 73 - scaling intraear##########
+#########Line 73 - scaling between ear structures##########
 #########Line 173 - scaling vs head mass########
 
 ################Set up data############

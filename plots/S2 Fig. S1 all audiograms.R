@@ -1,3 +1,32 @@
+#run 'Set up data_scl.R' up to line 70 before running this script
+
+#NOTE: a portion of this script is to be re-run to
+#save hearing limits first at 35 and then 60 dB
+#When first prompted , return to the top of script
+#and run lines 20-31 to save data for cutoff level and update the cutoff
+
+#####SAVE limits 35, modify cutoff to 60 dB, and re-run###
+cutoff<- 60#set cutoff here as 35 or 60 dB
+
+
+#SAVE AT DIFFERENT CUT
+#limits35<-limits
+#limitslong35<-limits35[which(!is.na(limits35$aud_rel)),] %>%#only select the rows for which anatomical data is available for the corresponding audiograms
+#  select(Species,LowHzlimit,HighHzlimit,besthz,reallowdBlimit,realhighdBlimit) %>%
+#  gather(key = "limit", value = "Hz", -c(Species,reallowdBlimit,realhighdBlimit))
+#
+##now re-run the analysis to get the limits at 60 dB, changing the cutoff
+#rm(list = setdiff(ls(),c("limits35","limitslong35")))
+#
+##re-do with limits = 60
+#limits60<-limits
+#limitslong60<-limits60[which(!is.na(limits60$aud_rel)),] %>%#only select the rows for which anatomical data is available for the corresponding audiograms
+#  select(Species,LowHzlimit,HighHzlimit,besthz,reallowdBlimit,realhighdBlimit) %>%
+#  gather(key = "limit", value = "Hz", -c(Species,reallowdBlimit,realhighdBlimit))
+
+
+
+
 library(ggrepel)
 library(ggplot2)
 library(ggpubr)
@@ -6,7 +35,6 @@ library(officer)
 library(dplyr)
 library(PerformanceAnalytics)
 
-cutoff<- 60#set cutoff here as 35 or 60 dB
 
 
 ####create averaged values for instances where multiple species match a congener with audiogram####
@@ -242,22 +270,6 @@ bound$LowHzlimit<-limits$LowHzlimit[match(bound$Species,limits$Species)]
 bound$Species<-as.factor(bound$Species)
 #reorder 'bound' df by besthz
 bound$Hz<-bound$x #give appropriate naming for x
-
-#re-do with limits = 35
-limits35<-limits
-limitslong35<-limits35[which(!is.na(limits35$aud_rel)),] %>%#only select the rows for which anatomical data is available for the corresponding audiograms
-  select(Species,LowHzlimit,HighHzlimit,besthz,reallowdBlimit,realhighdBlimit) %>%
-  gather(key = "limit", value = "Hz", -c(Species,reallowdBlimit,realhighdBlimit))
-
-#now re-run the analysis to get the limits at 60 dB, changing the cutoff
-rm(list = setdiff(ls(),c("limits35","limitslong35")))
-
-#re-do with limits = 60
-limits60<-limits
-limitslong60<-limits60[which(!is.na(limits60$aud_rel)),] %>%#only select the rows for which anatomical data is available for the corresponding audiograms
-  select(Species,LowHzlimit,HighHzlimit,besthz,reallowdBlimit,realhighdBlimit) %>%
-  gather(key = "limit", value = "Hz", -c(Species,reallowdBlimit,realhighdBlimit))
-
 
 #limits long is 60
 
