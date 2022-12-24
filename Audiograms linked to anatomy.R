@@ -10,7 +10,7 @@ library(officer)
 library(dplyr)
 library(PerformanceAnalytics)
 
-cutoff<- 60#set cutoff here as 35 or 60 dB
+cutoff<- 35#set cutoff here as 35 or 60 dB
 
 
 ####create averaged values for instances where multiple species match a congener with audiogram####

@@ -165,15 +165,16 @@ label_60<-ggplot() +
 
 #35 dB design
 design35<-"
-ABCDE
-FGHIJ
-KLMNO
-P###Q
-R###S
+ABCDE#
+FGHIJ#
+KLMNOU
+QRST#U
+V####W
+X#####
 "
 
 #PLOT 35
-runplot_audio(1)+
+runplot_audio(1)+#best sensitivity
   runplot_audio(2)+
   runplot_audio(3)+
   runplot_audio(4)+
@@ -184,19 +185,27 @@ runplot_audio(1)+
   runplot_audio(9)+
   runplot_audio(10)+
 
-  runplot_audio(11)+
+  runplot_audio(11)+#high hz
   runplot_audio(12)+
   runplot_audio(13)+
   runplot_audio(14)+
-  label_35+
+  runplot_audio(15)+
+  runplot_audio(16)+
+  runplot_audio(17)+
+  runplot_audio(18)+
+  runplot_audio(19)+
+
+  label_35+#placeholder
   hmplot+
   label_60+
   hmplot+
   #guide_area()+
   plot_annotation(tag_levels = list(c(
     "A","","","","",
-    "","","","","","B",
-    "","","","","C","","D")),
+    "","","","","",
+    "B","","","","",
+    "","","","","",
+    "C","","D")),
     theme = theme(legend.background = element_blank(),
                   legend.box.background = element_rect(colour = "black")))+
   plot_layout(design = design35, guides = "collect")
@@ -204,16 +213,17 @@ runplot_audio(1)+
 #PLOT 60
 #60 dB design
 design60<-"
-ABCDE
-FGHIJ
-####K
-LMNOP
-Q###R
+ABCDE#
+FGHIJ#
+K####L
+M####L
+NOPQ#R
+S#####
 "
 
 #swap out design of 'design35' or design60'
 #and labellinng
-runplot_audio(1)+
+  runplot_audio(1)+#best sensitivity
   runplot_audio(2)+
   runplot_audio(3)+
   runplot_audio(4)+
@@ -223,17 +233,22 @@ runplot_audio(1)+
   runplot_audio(8)+
   runplot_audio(9)+
   runplot_audio(10)+
-  label_35+
+
+    runplot_audio(11)+#placeholder
+    label_35+
+    runplot_audio(11)+
+
   runplot_audio(11)+
   runplot_audio(12)+
   runplot_audio(13)+
   runplot_audio(14)+
   label_60+
+
   hmplot+
   #guide_area()+
   plot_annotation(tag_levels = list(c(
     "A","","","","",
-    "","","","","","",
+    "","","","","","","","",
     "C","","","","","D")),
     theme = theme(legend.background = element_blank(),
                   legend.box.background = element_rect(colour = "black")))+

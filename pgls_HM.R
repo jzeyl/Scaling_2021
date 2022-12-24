@@ -1,5 +1,5 @@
 
-options(scipen = 100)
+#options(scipen = 100)
 library(flextable)
 library(officer)
 #pgls_todo_hm<-pgls_todo_nogeomet[seq(2,length(pgls_todo_nogeomet),2)]
@@ -58,7 +58,7 @@ hm$scalingtype<-ifelse(hm$CI95_high>hm$geometric_exp&hm$CI95_low<hm$geometric_ex
 
 hm$tval<-(hm$Estimate-hm$geometric_exp)/hm$`Std. Error`#t-value of differnce between estimate and isometric slope
 hm$pval<-2*pt(abs(hm$tval),df=hm$Fstat_dendf, lower.tail = FALSE)#two tailed p-val
-hm$pval<-round(hm$pval,digits = 5)
+#hm$pval<-round(hm$pval,digits = 5)
 
 
 hm <- subset(hm, select = c(category,Model,Coefficients,

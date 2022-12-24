@@ -3,7 +3,7 @@
 pgls_todo_bm<-gsub("Head.mass..g.","bodymass",pgls_todo_hm)
 pgls_todo_bm[13]<-"log(Head.mass..g.)~log(bodymass)"
 
-options(digits = 3)
+options(digits = 5)
 
 library(flextable)
 library(officer)
@@ -13,7 +13,7 @@ library(officer)
 
 pgls_models_list<-lapply(pgls_todo_bm,pgls_models)#run pgls
 
-#make list of dataframes with the PGLS outputs. 
+#make list of dataframes with the PGLS outputs.
 tbllist_bm<-list()
 for (i in seq_along(pgls_models_list)){#change th 'Model' colume in this as appropriate
   tbllist_bm[[i]]<-as.data.frame(summary(pgls_models_list[[i]])$'coefficients')
@@ -28,14 +28,14 @@ for (i in seq_along(pgls_models_list)){#change th 'Model' colume in this as appr
   tbllist_bm[[i]]$T_0<-(coef(pgls_models_list[[i]])[2]-0)/pgls_models_list[[i]]$sterr[2]
   tbllist_bm[[i]]$p_slope_re_1<- 2*pt(abs(tbllist_bm[[i]]$T_1), pgls_models_list[[i]]$n-2, lower.tail = FALSE)
   tbllist_bm[[i]]$p_slope_re_0<- 2*pt(abs(tbllist_bm[[i]]$T_0), pgls_models_list[[i]]$n-2, lower.tail = FALSE)
-  
+
 }
 
 #organize the dataframe table (significant digist, remove redundant F stat & R squared)
 for(i in seq_along(tbllist_bm)){
   tbllist_bm[[i]]$Coefficients<-row.names(tbllist_bm[[i]])
   tbllist_bm[[i]]$Coefficients<-gsub('[[:digit:]]+', '', tbllist_bm[[i]]$Coefficients)#regex to remove number automatically added during the loop
-  #identify numeric cols and character cols to apply the significant digits function 
+  #identify numeric cols and character cols to apply the significant digits function
   character_cols<-unlist(lapply(tbllist_bm[[i]], is.character))
   numeric_cols <- unlist(lapply(tbllist_bm[[i]], is.numeric))# Identify numeric columns
   tbllist_bm[[i]]<-cbind(tbllist_bm[[i]][,which(character_cols)],signif(tbllist_bm[[i]][,which(numeric_cols)], digits = 2))
@@ -70,7 +70,7 @@ bm = subset(bm, select = c(category,Model,Coefficients,geometric_exp,Estimate, C
                            CI95_high,scalingtype,Adj_Rsquared,Lambda))
 
 #visualize the table better using the flextable package
-flexall<-flextable(bm) %>% 
+flexall<-flextable(bm) %>%
   add_header_lines(  values = "Table X. Models for selection") %>%
   bold(i = ~ scalingtype == "isometric") %>% # select columns add: j = ~ Coefficients + P.val
   autofit()
