@@ -1,7 +1,7 @@
 # Workflow
 This repository documents the statistics used for the following research paper:
 
-[Zeyl et al., "Scaling of ear morphology across 127 bird species and its implications for hearing performance", Hearing Research (2023), https://doi.org/10.1016/j.heares.2022.108679](https://doi.org/10.1016/j.heares.2022.108679)
+Zeyl et al., "Scaling of ear morphology across 127 bird species and its implications for hearing performance", Hearing Research (2023), [https://doi.org/10.1016/j.heares.2022.108679](https://doi.org/10.1016/j.heares.2022.108679) [![DOI](https://zenodo.org/badge/376639292.svg)](https://zenodo.org/badge/latestdoi/376639292)
 
 ## **To reproduce the the scaling pgls analyses:**
 
